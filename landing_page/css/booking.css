@@ -691,3 +691,134 @@ input[type="date"] {
     margin: 0 auto;
     padding: 12px 20px;
 }
+
+/* Payment Button and Modal Styles */
+.btn-pay {
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    background-color: #42b983;
+    color: white;
+    border: none;
+    margin-top: 15px;
+}
+
+.btn-pay:hover {
+    background-color: #36a573;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(54, 165, 115, 0.2);
+}
+
+.payment-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+.payment-modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    position: relative;
+    animation: modalFadeIn 0.4s;
+}
+
+@keyframes modalFadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.payment-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment-close:hover {
+    color: #333;
+}
+
+.payment-modal h2 {
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    font-family: "Playfair Display", serif;
+}
+
+.payment-info {
+    margin-bottom: 30px;
+}
+
+.payment-info h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.gcash-details {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.gcash-details p {
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.payment-instructions {
+    margin-bottom: 20px;
+}
+
+.payment-instructions ol {
+    margin-left: 20px;
+}
+
+.payment-instructions li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+.file-preview-container {
+    margin-top: 10px;
+    border: 1px dashed #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .payment-modal-content {
+        width: 90%;
+        padding: 20px;
+        margin: 10% auto;
+    }
+}

@@ -54,3 +54,20 @@ CREATE TABLE bookings (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (room_id) REFERENCES rooms(room_id)
 );
+
+
+
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `transaction_id` int NOT NULL AUTO_INCREMENT,
+  `booking_id` int NOT NULL,
+  `room_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `reference_no` text,
+  `payment_screenshot` text,
+  `amount` int NOT NULL,
+  `created_at` timestamp NOT NULL,
+  PRIMARY KEY (`transaction_id`),
+  UNIQUE KEY `room_id` (`room_id`),
+  KEY `booking_id` (`booking_id`),
+  KEY `user_id` (`user_id`)
+);

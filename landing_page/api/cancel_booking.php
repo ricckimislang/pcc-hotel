@@ -43,7 +43,7 @@ if ($result->num_rows === 0) {
 $booking = $result->fetch_assoc();
 
 // Check if booking is already cancelled
-if ($booking['status'] === 'cancelled') {
+if ($booking['booking_status'] === 'cancelled') {
     echo json_encode([
         'success' => false,
         'message' => 'Booking is already cancelled'
@@ -62,7 +62,7 @@ if ($check_in_date <= time()) {
 }
 
 // Update booking status to cancelled
-$stmt = $conn->prepare("UPDATE bookings SET status = 'cancelled' WHERE booking_id = ?");
+$stmt = $conn->prepare("UPDATE bookings SET booking_status = 'cancelled' WHERE booking_id = ?");
 $stmt->bind_param("i", $booking_id);
 $result = $stmt->execute();
 
