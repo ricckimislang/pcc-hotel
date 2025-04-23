@@ -73,7 +73,7 @@ require_once '../api/bookings/get_checkin_table.php';
 
             </div>
             <div class="bookings-table-container">
-                <h3>Check In</h3>
+                <h3>Check In/out</h3>
                 <table id="checkInOutTable" class="table table-striped" width="100%">
                     <thead>
                         <tr>
@@ -101,15 +101,26 @@ require_once '../api/bookings/get_checkin_table.php';
                                     <td><?php echo date('M d, Y', strtotime($booking['check_in_date'])); ?></td>
                                     <td><?php echo date('M d, Y', strtotime($booking['check_out_date'])); ?></td>
                                     <td>
-                                        <span class="status-badge <?php echo strtolower($booking['booking_status']); ?>">
-                                            <?php echo ucfirst($booking['booking_status']); ?>
-                                        </span>
+                                        <?php if ($booking['booking_status'] == 'checked_in'): ?>
+                                            <span class="status-badge confirmed">
+                                                Checked In
+                                            </span>
+                                        <?php else: ?>
+
+                                        <?php endif; ?>
                                     </td>
                                     <td class="actions">
-                                        <button class="action-btn check-in-btn"
-                                            data-booking-id="<?php echo $booking['booking_id']; ?>">
-                                            <i class="fas fa-check"></i>
-                                        </button>
+                                        <?php if ($booking['booking_status'] == 'confirmed'): ?>
+                                            <button class="action-btn check-in-btn"
+                                                data-booking-id="<?php echo $booking['booking_id']; ?>">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        <?php elseif ($booking['booking_status'] == 'checked_in'): ?>
+                                            <button class="action-btn check-out-btn"
+                                                data-booking-id="<?php echo $booking['booking_id']; ?>">
+                                                <i class="fas fa-sign-out-alt"></i>
+                                            </button>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -122,6 +133,7 @@ require_once '../api/bookings/get_checkin_table.php';
             <?php include_once 'modals/modal-bookings.php'; ?>
             <script src="../js/manage_booking/manage_bookings.js"></script>
             <script src="../js/manage_booking/manage_check-in.js"></script>
+            <script src="../js/manage_booking/manage_check-out.js"></script>
 </body>
 
 </html>

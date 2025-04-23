@@ -1,22 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const checkInButtons = document.querySelectorAll(".check-in-btn");
+  const checkOutButtons = document.querySelectorAll(".check-out-btn");
 
-  checkInButtons.forEach((button) => {
+  checkOutButtons.forEach((button) => {
     button.addEventListener("click", function () {
-      // Skip processing if button is disabled
-      if (button.disabled) {
-        return;
-      }
-      
       const bookingId = button.getAttribute("data-booking-id");
 
       // Show confirmation dialog
       Swal.fire({
-        title: "Confirm Check-in",
-        text: "Are you sure you want to check-in this guest?",
+        title: "Confirm Check-out",
+        text: "Are you sure you want to check-out this guest?",
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: "Yes, check-in",
+        confirmButtonText: "Yes, check-out",
         cancelButtonText: "Cancel",
       }).then((result) => {
         if (result.isConfirmed) {
@@ -26,14 +21,14 @@ document.addEventListener("DOMContentLoaded", function () {
             method: "POST",
             data: {
               booking_id: bookingId,
-              status: "checked_in",
+              status: "completed",
             },
             dataType: "json",
             success: function (response) {
               if (response.success) {
                 Swal.fire({
                   title: "Success!",
-                  text: "Guest checked in successfully",
+                  text: "Guest checked out successfully",
                   icon: "success",
                   confirmButtonText: "OK",
                 }).then(() => {
@@ -43,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
               } else {
                 Swal.fire({
                   title: "Error!",
-                  text: response.message || "Failed to check-in guest",
+                  text: response.message || "Failed to check-out guest",
                   icon: "error",
                   confirmButtonText: "OK",
                 });
@@ -62,4 +57,4 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   });
-});
+}); 
