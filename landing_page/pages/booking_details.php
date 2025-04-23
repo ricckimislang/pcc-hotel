@@ -67,10 +67,7 @@ $nights = $check_in->diff($check_out)->days;
         </div>
 
         <div class="booking-details-container">
-            <div class="back-link">
-                <a href="my_bookings.php"><i class="fas fa-arrow-left"></i> Back to My Bookings</a>
-            </div>
-
+    
             <div class="booking-status-bar">
                 <div class="status-badge <?php echo strtolower($booking['booking_status']); ?>">
                     <?php echo ucfirst($booking['booking_status']); ?>
@@ -124,10 +121,6 @@ $nights = $check_in->diff($check_out)->days;
                     <span>Room Rate (₱<?php echo number_format($booking['base_price'], 2); ?> x <?php echo $nights; ?>
                         nights)</span>
                     <span>₱<?php echo number_format($booking['base_price'] * $nights, 2); ?></span>
-                </div>
-                <div class="price-row">
-                    <span>Taxes & Fees</span>
-                    <span>₱<?php echo number_format($booking['total_price'] - ($booking['base_price'] * $nights), 2); ?></span>
                 </div>
                 <div class="price-row total">
                     <span>Total</span>

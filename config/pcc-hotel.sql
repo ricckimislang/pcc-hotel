@@ -65,6 +65,8 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   `reference_no` text,
   `payment_screenshot` text,
   `amount` int NOT NULL,
+  `extra_payment` int DEFAULT 0,
+  `receipt_no` text NOT NULL,
   `created_at` timestamp NOT NULL,
   PRIMARY KEY (`transaction_id`),
   UNIQUE KEY `room_id` (`room_id`),

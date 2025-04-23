@@ -105,8 +105,10 @@ require_once '../api/bookings/get_checkin_table.php';
                                             <span class="status-badge confirmed">
                                                 Checked In
                                             </span>
-                                        <?php else: ?>
-
+                                        <?php elseif($booking['booking_status'] == 'confirmed'): ?>
+                                            <span class="status-badge completed">
+                                                Confirmed
+                                            </span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="actions">
@@ -131,6 +133,7 @@ require_once '../api/bookings/get_checkin_table.php';
             </div>
 
             <?php include_once 'modals/modal-bookings.php'; ?>
+            <?php include_once 'modals/payment-modal.php'; ?>
             <script src="../js/manage_booking/manage_bookings.js"></script>
             <script src="../js/manage_booking/manage_check-in.js"></script>
             <script src="../js/manage_booking/manage_check-out.js"></script>

@@ -5,6 +5,28 @@ require_once '../../config/db.php';
 
 $response = ['success' => false, 'message' => ''];
 
+// Function to generate receipt number
+function generateReceiptNumber($conn)
+{
+    // Get the last receipt number from transactions table
+    $query = "SELECT receipt_no FROM transactions ORDER BY transaction_id DESC LIMIT 1";
+    $result = mysqli_query($conn, $query);
+
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $lastReceiptNo = $row['receipt_no'];
+
+        // Extract the numeric part and increment by 1
+        $receiptNumber = intval($lastReceiptNo) + 1;
+
+        // Format with leading zeros to make it 3 digits
+        return sprintf('%03d', $receiptNumber);
+    } else {
+        // First transaction, start with 001
+        return '001';
+    }
+}
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     $response['message'] = 'User not logged in';
@@ -99,10 +121,13 @@ try {
     // Begin transaction
     $conn->begin_transaction();
 
+    // Generate receipt number
+    $receipt_no = generateReceiptNumber($conn);
+
     // Insert into transactions table
-    $stmt = $conn->prepare("INSERT INTO transactions (booking_id, room_id, user_id, reference_no, payment_screenshot, amount, created_at) 
-                           VALUES (?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->bind_param("iiissd", $booking_id, $room_id, $user_id, $reference_number, $upload_path, $payment_amount);
+    $stmt = $conn->prepare("INSERT INTO transactions (booking_id, room_id, user_id, reference_no, payment_screenshot, amount, receipt_no, created_at) 
+                           VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->bind_param("iiissds", $booking_id, $room_id, $user_id, $reference_number, $upload_path, $payment_amount, $receipt_no);
 
     if (!$stmt->execute()) {
         throw new Exception('Failed to record transaction: ' . $stmt->error);
@@ -128,6 +153,7 @@ try {
 
     $response['success'] = true;
     $response['message'] = 'Payment submitted successfully';
+    $response['receipt_no'] = $receipt_no;
 
 } catch (Exception $e) {
     // Rollback transaction on error

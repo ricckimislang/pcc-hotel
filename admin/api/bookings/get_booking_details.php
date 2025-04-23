@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
               JOIN users u ON b.user_id = u.user_id
               JOIN rooms r ON b.room_id = r.room_id
               JOIN room_types rt ON r.room_type_id = rt.room_type_id
-              JOIN transactions t ON b.booking_id = t.booking_id
+              LEFT JOIN transactions t ON b.booking_id = t.booking_id
               WHERE b.booking_id = ?";
 
     $stmt = $conn->prepare($query);
@@ -68,8 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
                     'source' => $booking['booking_source']
                 ],
                 'payment' => [
-                    'reference_no' => $booking['reference_no'],
-                    'payment_screenshot' => $booking['payment_screenshot']
+                    'reference_no' => $booking['reference_no'] ?? null,
+                    'payment_screenshot' => $booking['payment_screenshot'] ?? null
                 ]
             ]
         ];
