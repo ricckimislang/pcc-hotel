@@ -92,7 +92,7 @@
             </a>
         </li>
         <li>
-            <a href="../index.php?logout=1">
+            <a href="../pages/logout.php">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
