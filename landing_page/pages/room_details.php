@@ -14,7 +14,7 @@
     $type_stmt->close();
 
     // Then get available rooms of this type
-    $rooms_query = "SELECT * FROM rooms WHERE status = 'available'";
+    $rooms_query = "SELECT * FROM rooms WHERE status = 'available' AND room_type_id = $room_type_id";
     $rooms_stmt  = $conn->prepare($rooms_query);
     $rooms_stmt->execute();
     $rooms_result    = $rooms_stmt->get_result();
@@ -63,7 +63,7 @@
             <img src="../assets/images/luxury-twin.jpg" alt="<?php echo $type_name; ?>" class="hero-image">
         </div>
 
-        <div class="room-info">
+        <div class="room-info" id="available-rooms">
             <h1 class="room-title"><?php echo $type_name; ?></h1>
 
             <div class="room-meta">
@@ -79,7 +79,7 @@
 
             <p class="room-description"><?php echo $description; ?></p>
 
-            <div class="available-rooms">
+            <div class="available-rooms" >
                 <h2>Available Rooms</h2>
                 <?php if (! empty($available_rooms)): ?>
                     <div class="rooms-grid">
@@ -88,16 +88,16 @@
                                 <div class="room-card-header">
                                     <div class="room-number">
                                         <i class="fas fa-door-open"></i>
-                                        <h3>Room                                                                                                                                                                                                 <?php echo $room['room_number']; ?></h3>
+                                        <h3>Room                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $room['room_number']; ?></h3>
                                     </div>
                                     <div class="room-floor">
                                         <i class="fas fa-building"></i>
-                                        <span class="floor-badge">Floor                                                                                                                                                                                                                                                                                             <?php echo $room['floor']; ?></span>
+                                        <span class="floor-badge">Floor                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <?php echo $room['floor']; ?></span>
                                     </div>
                                 </div>
                                 <div class="room-card-body">
                                     <div class="room-status">
-                                        <span class="status-badge                                                                                                                                                                                                                                                                     <?php echo strtolower($room['status']); ?>">
+                                        <span class="status-badge                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <?php echo strtolower($room['status']); ?>">
                                             <i class="fas fa-circle"></i>
                                             <?php echo ucfirst($room['status']); ?>
                                         </span>
@@ -169,7 +169,7 @@
         </div>
 
         <div class="book-now-container">
-            <a href="javascript:void(0);" style="text-decoration: none;" class="book-now">Book Now</a>
+            <a href="#available-rooms" style="text-decoration: none;" class="book-now">Book Now</a>
         </div>
     </div>
 </body>

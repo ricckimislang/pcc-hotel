@@ -1,6 +1,6 @@
 <?php session_start();
 
-    $user_id = isset($_SESSION['user_id'])
+$user_id = isset($_SESSION['user_id'])
     ? $_SESSION['user_id']
     : null;
 ?>
@@ -13,23 +13,33 @@
     <header>
         <div class="header-container">
             <div class="menu-button">
-                <button><i class="fas fa-bars"></i> Menu</button>
+                <button id="menuToggle"><i class="fas fa-bars"></i> Menu</button>
+                <div class="dropdown-menu" id="navDropdown">
+                    <ul>
+                        <li><a href="my_bookings.php">My Bookings</a></li>
+                        <?php if ($user_id) { ?>
+                            <li><a href="profile.php">My Profile</a></li>
+                            <li><a href="bookings.php">My Bookings</a></li>
+                            <li><a href="logout.php">Logout</a></li>
+                        <?php } ?>
+                    </ul>
+                </div>
             </div>
             <div class="logo">
                 PCC HOME SUITE HOME
             </div>
-            <?php if (! $user_id) {
-                    echo '
+            <?php if (!$user_id) {
+                echo '
                 <div class="login-button">
                 <a href="login.php"><i class="fas fa-user"></i> Login</a>
                 </div>
                     ';
-                } else {
+            } else {
                 ?>
                 <div class="user-container">
                     <span><?php echo $_SESSION['username']; ?></span>
                 </div>
-            <?php }?>
+            <?php } ?>
 
         </div>
     </header>
@@ -74,7 +84,8 @@
         <section class="travel-options">
             <h2>Exceptional Stays Await You</h2>
             <div class="booking-cta">
-                <p>Discover the epitome of luxury accommodations at PCC Home Suite Home. Our meticulously designed rooms and suites offer unparalleled comfort and elegance for your perfect getaway.</p>
+                <p>Discover the epitome of luxury accommodations at PCC Home Suite Home. Our meticulously designed rooms
+                    and suites offer unparalleled comfort and elegance for your perfect getaway.</p>
             </div>
         </section>
 

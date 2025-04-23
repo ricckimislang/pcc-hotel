@@ -49,8 +49,8 @@
         </li>
 
         <li class="menu-header">Booking Management</li>
-        <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'bookings.php' ? 'active' : ''; ?>">
-            <a href="../pages/bookings.php">
+        <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'manage_bookings.php' ? 'active' : ''; ?>">
+            <a href="../pages/manage_bookings.php">
                 <i class="fas fa-calendar-check"></i>
                 <span>Bookings</span>
             </a>

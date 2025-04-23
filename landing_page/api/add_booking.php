@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $check_out = $_POST['check_out_date'];
     $guests_count = $_POST['guests_count'];
     $special_requests = $_POST['special_requests'];
+    $reservation_fee = 500;
 
     // Get room_type_id
     $type = "SELECT room_type_id FROM rooms WHERE room_id = $room_id";
@@ -41,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $total_price = $nights * $base_price;
 
     // Insert booking
-    $stmt = $conn->prepare("INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, guests_count, total_price, special_requests) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("iissids", $user_id, $room_id, $check_in, $check_out, $guests_count, $total_price, $special_requests);
+    $stmt = $conn->prepare("INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, guests_count, total_price, reservation_fee, special_requests) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iissidsd", $user_id, $room_id, $check_in, $check_out, $guests_count, $total_price, $reservation_fee, $special_requests);
 
     if ($stmt->execute()) {
         echo json_encode(["status" => true, "message" => "Booking successful. Check your bookings for payment and confirmation!"]);

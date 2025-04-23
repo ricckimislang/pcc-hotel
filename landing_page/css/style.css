@@ -67,6 +67,67 @@ header {
   transform: translateY(-2px);
 }
 
+/* Dropdown menu styles */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  margin-top: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-menu ul li {
+  padding: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-menu ul li:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu ul li a {
+  display: block;
+  padding: 15px 25px;
+  color: var(--dark-text);
+  text-decoration: none;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-menu ul li a:hover {
+  background-color: rgba(200, 169, 126, 0.15);
+  color: var(--primary-color);
+  padding-left: 30px;
+}
+
+/* Position relative for menu-button to contain the dropdown */
+.menu-button {
+  position: relative;
+}
+
 .logo {
   display: flex;
   align-items: center;

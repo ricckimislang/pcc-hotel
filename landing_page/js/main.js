@@ -1,6 +1,25 @@
 // Main JavaScript for StayScope landing page
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Dropdown menu functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const navDropdown = document.getElementById('navDropdown');
+    
+    if (menuToggle && navDropdown) {
+        // Add a click event handler to close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.menu-button') && navDropdown.classList.contains('show')) {
+                navDropdown.classList.remove('show');
+            }
+        });
+        
+        // Toggle the dropdown when clicking the menu button
+        menuToggle.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent the document click from immediately closing it
+            navDropdown.classList.toggle('show');
+        });
+    }
+    
     // Handle header transparency on scroll
     const header = document.querySelector('header');
     
