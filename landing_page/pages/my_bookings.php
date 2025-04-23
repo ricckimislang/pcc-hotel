@@ -93,10 +93,7 @@ if ($user_id) {
                             </div>
                             <div class="booking-actions">
                                 <p class="booking-price">₱<?php echo number_format($booking['total_price'], 2); ?></p>
-                                <?php if ($booking['booking_status'] === 'confirmed' && strtotime($booking['check_in_date']) > time()): ?>
-                                    <button class="btn-cancel" data-booking-id="<?php echo $booking['booking_id']; ?>">Cancel
-                                        Booking</button>
-                                <?php elseif ($booking['booking_status'] === 'completed'): ?>
+                                <?php if ($booking['booking_status'] === 'completed'): ?>
                                     <button class="btn-review" data-booking-id="<?php echo $booking['booking_id']; ?>">Write
                                         Review</button>
                                 <?php endif; ?>

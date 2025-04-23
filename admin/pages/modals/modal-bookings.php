@@ -98,7 +98,45 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="cancelBookingBtn">Cancel Booking</button>
                 <button type="button" class="btn btn-success" id="confirmBookingBtn" disabled>Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Policy Modal for Admin -->
+<div id="adminPolicyModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Booking Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Important Notice:</strong> Once a booking is confirmed, it cannot be cancelled.
+                </div>
+
+                <div class="mb-3">
+                    <p>Please review the following booking policies before proceeding:</p>
+                    <ul>
+                        <li>Confirmed bookings are final and non-refundable</li>
+                        <li>Payments are processed immediately upon confirmation</li>
+                        <li>Changes to confirmed bookings are not permitted</li>
+                    </ul>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" id="adminPolicyAgreement" class="form-check-input" required>
+                    <label for="adminPolicyAgreement" class="form-check-label">I have read and agree to the booking
+                        policy</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Decline</button>
+                <button type="button" class="btn btn-danger" id="adminPolicyAccept" disabled>Accept & Continue</button>
             </div>
         </div>
     </div>
@@ -230,3 +268,100 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Policy agreement checkbox handler
+        const adminPolicyAgreement = document.getElementById('adminPolicyAgreement');
+        const adminPolicyAccept = document.getElementById('adminPolicyAccept');
+        const adminPolicyModal = document.getElementById('adminPolicyModal');
+        const cancelBookingBtn = document.getElementById('cancelBookingBtn');
+        let currentBookingId = null;
+
+        // Enable/disable accept button based on checkbox
+        if (adminPolicyAgreement) {
+            adminPolicyAgreement.addEventListener('change', function () {
+                adminPolicyAccept.disabled = !this.checked;
+            });
+        }
+
+        // Show policy modal when cancel button is clicked
+        if (cancelBookingBtn) {
+            cancelBookingBtn.addEventListener('click', function () {
+                // Store the booking ID from the modal data
+                currentBookingId = this.getAttribute('data-booking-id');
+
+                // Reset the checkbox state
+                if (adminPolicyAgreement) {
+                    adminPolicyAgreement.checked = false;
+                }
+                if (adminPolicyAccept) {
+                    adminPolicyAccept.disabled = true;
+                }
+
+                // Show the policy modal
+                const policyModalInstance = new bootstrap.Modal(adminPolicyModal);
+                policyModalInstance.show();
+            });
+        }
+
+        // Process cancellation when policy is accepted
+        if (adminPolicyAccept) {
+            adminPolicyAccept.addEventListener('click', function () {
+                // Hide the policy modal
+                bootstrap.Modal.getInstance(adminPolicyModal).hide();
+
+                // Proceed with cancellation
+                proceedWithAdminCancellation(currentBookingId);
+            });
+        }
+
+        // Function to handle the actual cancellation
+        function proceedWithAdminCancellation(bookingId) {
+            // Confirm again with standard confirmation dialog
+            if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+                // Send AJAX request to cancel the booking
+                fetch('../api/cancel_booking.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ booking_id: bookingId, admin_cancel: true })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Booking successfully cancelled');
+                            // Refresh the bookings table or close the modal and reload
+                            bootstrap.Modal.getInstance(document.getElementById('viewBookingModal')).hide();
+                            if (typeof loadBookings === 'function') {
+                                loadBookings(); // Reload the bookings table if function exists
+                            } else {
+                                location.reload(); // Otherwise reload the page
+                            }
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while cancelling the booking');
+                    });
+            }
+        }
+
+        // Set booking ID when opening the modal
+        $('#viewBookingModal').on('show.bs.modal', function (e) {
+            const bookingId = $(e.relatedTarget).data('booking-id');
+            $('#cancelBookingBtn').attr('data-booking-id', bookingId);
+
+            // Only show cancel button for appropriate booking statuses
+            const bookingStatus = $('.booking-status').text().trim().toLowerCase();
+            if (bookingStatus === 'confirmed' || bookingStatus === 'pending') {
+                $('#cancelBookingBtn').show();
+            } else {
+                $('#cancelBookingBtn').hide();
+            }
+        });
+    });
+</script>

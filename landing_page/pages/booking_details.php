@@ -142,14 +142,14 @@ $nights = $check_in->diff($check_out)->days;
                 </div>
             <?php endif; ?>
 
-            <?php if ($booking['booking_status'] === 'confirmed' && strtotime($booking['check_in_date']) > time()): ?>
+            <?php if ($booking['booking_status'] === 'confirmed'): ?>
                 <div class="booking-actions-section">
                     <button id="cancelBooking" class="btn-cancel" data-booking-id="<?php echo $booking_id; ?>">Cancel
                         Booking</button>
                 </div>
             <?php endif; ?>
 
-            <?php if ($booking['payment_status'] === 'pending' || $booking['payment_status'] === 'partial'): ?>
+            <?php if ($booking['payment_status'] === 'pending'): ?>
                 <div class="booking-actions-section">
                     <button id="payBooking" class="btn-pay">Pay Now</button>
                 </div>
@@ -212,6 +212,40 @@ $nights = $check_in->diff($check_out)->days;
         </div>
     </div>
 
+    <!-- Policy Modal -->
+    <div id="policyModal" class="payment-modal">
+        <div class="payment-modal-content">
+            <span class="policy-close">&times;</span>
+            <h2>Booking Policy</h2>
+
+            <div class="policy-content">
+                <div class="policy-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p><strong>Important Notice:</strong> Once a booking is confirmed, it cannot be cancelled.</p>
+                </div>
+
+                <div class="policy-details">
+                    <p>Please review the following booking policies before proceeding:</p>
+                    <ul>
+                        <li>Confirmed bookings are final and non-refundable</li>
+                        <li>Payments are processed immediately upon confirmation</li>
+                        <li>Changes to confirmed bookings are not permitted</li>
+                    </ul>
+                </div>
+
+                <div class="policy-agreement">
+                    <input type="checkbox" id="policyAgreement" required>
+                    <label for="policyAgreement">I have read and agree to the booking policy</label>
+                </div>
+
+                <div class="policy-actions">
+                    <button id="policyDecline" class="btn-cancel">Decline</button>
+                    <button id="policyAccept" class="btn-submit" disabled>Accept & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Dropdown menu functionality
         const menuToggle = document.getElementById('menuToggle');
@@ -232,61 +266,6 @@ $nights = $check_in->diff($check_out)->days;
             });
         }
 
-        // Cancel booking functionality
-        const cancelButton = document.getElementById('cancelBooking');
-        if (cancelButton) {
-            cancelButton.addEventListener('click', function () {
-                const bookingId = this.getAttribute('data-booking-id');
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You want to cancel this booking?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, cancel it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Send cancellation request
-                        fetch('../api/cancel_booking.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ booking_id: bookingId })
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire(
-                                        'Cancelled!',
-                                        'Your booking has been cancelled.',
-                                        'success'
-                                    ).then(() => {
-                                        window.location.href = 'my_bookings.php';
-                                    });
-                                } else {
-                                    Swal.fire(
-                                        'Error!',
-                                        data.message,
-                                        'error'
-                                    );
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                Swal.fire(
-                                    'Error!',
-                                    'An error occurred while cancelling the booking',
-                                    'error'
-                                );
-                            });
-                    }
-                });
-            });
-        }
-
         // Payment modal functionality
         const payButton = document.getElementById('payBooking');
         const paymentModal = document.getElementById('paymentModal');
@@ -295,15 +274,119 @@ $nights = $check_in->diff($check_out)->days;
         const screenshotInput = document.getElementById('paymentScreenshot');
         const screenshotPreview = document.getElementById('screenshotPreview');
 
-        if (payButton) {
-            payButton.addEventListener('click', function () {
-                paymentModal.style.display = 'block';
+        // Policy modal elements
+        const policyModal = document.getElementById('policyModal');
+        const closePolicyModal = document.querySelector('.policy-close');
+        const policyAgreement = document.getElementById('policyAgreement');
+        const policyAccept = document.getElementById('policyAccept');
+        const policyDecline = document.getElementById('policyDecline');
+        let currentAction = ''; // Track whether we're proceeding with 'payment' or 'cancellation'
+
+        // Policy agreement checkbox handler
+        if (policyAgreement) {
+            policyAgreement.addEventListener('change', function () {
+                policyAccept.disabled = !this.checked;
             });
         }
 
-        if (closePaymentModal) {
-            closePaymentModal.addEventListener('click', function () {
-                paymentModal.style.display = 'none';
+        // Close policy modal
+        if (closePolicyModal) {
+            closePolicyModal.addEventListener('click', function () {
+                policyModal.style.display = 'none';
+            });
+        }
+
+        // Policy decline button
+        if (policyDecline) {
+            policyDecline.addEventListener('click', function () {
+                policyModal.style.display = 'none';
+            });
+        }
+
+        // Policy accept button
+        if (policyAccept) {
+            policyAccept.addEventListener('click', function () {
+                policyModal.style.display = 'none';
+
+                if (currentAction === 'payment') {
+                    paymentModal.style.display = 'block';
+                } else if (currentAction === 'cancellation') {
+                    proceedWithCancellation();
+                }
+            });
+        }
+
+        if (payButton) {
+            payButton.addEventListener('click', function () {
+                // Show policy modal first
+                currentAction = 'payment';
+                policyModal.style.display = 'block';
+                policyAgreement.checked = false;
+                policyAccept.disabled = true;
+            });
+        }
+
+        // Cancel booking functionality
+        const cancelButton = document.getElementById('cancelBooking');
+        if (cancelButton) {
+            cancelButton.addEventListener('click', function () {
+                // Show policy modal first
+                currentAction = 'cancellation';
+                policyModal.style.display = 'block';
+                policyAgreement.checked = false;
+                policyAccept.disabled = true;
+            });
+        }
+
+        // Function to proceed with cancellation after policy acceptance
+        function proceedWithCancellation() {
+            const bookingId = cancelButton.getAttribute('data-booking-id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to cancel this booking?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send cancellation request
+                    fetch('../api/cancel_booking.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ booking_id: bookingId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Cancelled!',
+                                    'Your booking has been cancelled.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.href = 'my_bookings.php';
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    data.message,
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire(
+                                'Error!',
+                                'An error occurred while cancelling the booking',
+                                'error'
+                            );
+                        });
+                }
             });
         }
 
@@ -311,6 +394,9 @@ $nights = $check_in->diff($check_out)->days;
         window.addEventListener('click', function (event) {
             if (event.target === paymentModal) {
                 paymentModal.style.display = 'none';
+            }
+            if (event.target === policyModal) {
+                policyModal.style.display = 'none';
             }
         });
 
