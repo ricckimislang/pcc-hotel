@@ -162,7 +162,7 @@ $nights = $check_in->diff($check_out)->days;
         <div class="payment-modal-content">
             <span class="payment-close">&times;</span>
             <h2>Payment Details</h2>
-            
+
             <div class="payment-info">
                 <h3>GCash Payment Information</h3>
                 <div class="gcash-details">
@@ -180,28 +180,31 @@ $nights = $check_in->diff($check_out)->days;
                     </ol>
                 </div>
             </div>
-            
+
             <form id="paymentForm" enctype="multipart/form-data">
                 <input type="hidden" name="booking_id" value="<?php echo $booking_id; ?>">
-                
+
                 <div class="form-group">
                     <label for="referenceNumber">GCash Reference Number</label>
                     <input type="text" id="referenceNumber" name="reference_number" class="form-control" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="paymentScreenshot">Payment Screenshot</label>
-                    <input type="file" id="paymentScreenshot" name="payment_screenshot" accept="image/*" class="form-control" required>
+                    <input type="file" id="paymentScreenshot" name="payment_screenshot" accept="image/*"
+                        class="form-control" required>
                     <div class="file-preview-container">
-                        <img id="screenshotPreview" src="#" alt="Preview" style="display: none; max-width: 100%; max-height: 200px; margin-top: 10px;">
+                        <img id="screenshotPreview" src="#" alt="Preview"
+                            style="display: none; max-width: 100%; max-height: 200px; margin-top: 10px;">
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="paymentAmount">Payment Amount</label>
-                    <input type="number" id="paymentAmount" name="payment_amount" class="form-control" value="<?php echo $booking['total_price']; ?>" step="0.01" min="0" required>
+                    <input type="number" id="paymentAmount" name="payment_amount" class="form-control"
+                        value="<?php echo $booking['total_price']; ?>" step="0.01" min="0" required>
                 </div>
-                
+
                 <div class="form-group">
                     <button type="submit" class="btn-submit">Submit Payment</button>
                 </div>
@@ -234,104 +237,153 @@ $nights = $check_in->diff($check_out)->days;
         if (cancelButton) {
             cancelButton.addEventListener('click', function () {
                 const bookingId = this.getAttribute('data-booking-id');
-                if (confirm('Are you sure you want to cancel this booking?')) {
-                    // Send cancellation request
-                    fetch('../api/cancel_booking.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ booking_id: bookingId })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Booking cancelled successfully');
-                                window.location.href = 'my_bookings.php';
-                            } else {
-                                alert('Error: ' + data.message);
-                            }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to cancel this booking?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, cancel it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Send cancellation request
+                        fetch('../api/cancel_booking.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ booking_id: bookingId })
                         })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while cancelling the booking');
-                        });
-                }
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Cancelled!',
+                                        'Your booking has been cancelled.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.href = 'my_bookings.php';
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        data.message,
+                                        'error'
+                                    );
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire(
+                                    'Error!',
+                                    'An error occurred while cancelling the booking',
+                                    'error'
+                                );
+                            });
+                    }
+                });
             });
         }
 
-        // Payment Modal Functionality
+        // Payment modal functionality
         const payButton = document.getElementById('payBooking');
         const paymentModal = document.getElementById('paymentModal');
-        const closeButton = document.querySelector('.payment-close');
+        const closePaymentModal = document.querySelector('.payment-close');
         const paymentForm = document.getElementById('paymentForm');
-        const fileInput = document.getElementById('paymentScreenshot');
-        const filePreview = document.getElementById('screenshotPreview');
+        const screenshotInput = document.getElementById('paymentScreenshot');
+        const screenshotPreview = document.getElementById('screenshotPreview');
 
-        // Open modal when pay button is clicked
         if (payButton) {
-            payButton.addEventListener('click', function() {
+            payButton.addEventListener('click', function () {
                 paymentModal.style.display = 'block';
             });
         }
 
-        // Close modal when close button is clicked
-        if (closeButton) {
-            closeButton.addEventListener('click', function() {
+        if (closePaymentModal) {
+            closePaymentModal.addEventListener('click', function () {
                 paymentModal.style.display = 'none';
             });
         }
 
         // Close modal when clicking outside the modal content
-        window.addEventListener('click', function(event) {
+        window.addEventListener('click', function (event) {
             if (event.target === paymentModal) {
                 paymentModal.style.display = 'none';
             }
         });
 
-        // Preview uploaded image
-        if (fileInput) {
-            fileInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
+        // Preview payment screenshot when selected
+        if (screenshotInput) {
+            screenshotInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
                     const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        filePreview.style.display = 'block';
-                        filePreview.src = e.target.result;
+                    reader.onload = function (e) {
+                        screenshotPreview.src = e.target.result;
+                        screenshotPreview.style.display = 'block';
+                        document.querySelector('.file-preview-container').classList.add('has-preview');
                     }
-                    
-                    reader.readAsDataURL(this.files[0]);
-                } else {
-                    filePreview.style.display = 'none';
+                    reader.readAsDataURL(file);
+
+                    // Update the file input label with filename
+                    const fileLabel = this.nextElementSibling;
+                    if (fileLabel) {
+                        fileLabel.textContent = file.name;
+                    }
                 }
             });
         }
 
-        // Handle form submission
+        // Handle payment form submission
         if (paymentForm) {
-            paymentForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                
+            paymentForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Processing...';
+
                 const formData = new FormData(this);
-                
-                // Submit payment form via AJAX
+
                 fetch('../api/submit_payment.php', {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Payment submitted successfully!');
-                        window.location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while submitting payment');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: data.message,
+                                confirmButtonColor: '#3085d6'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: data.message,
+                                confirmButtonColor: '#3085d6'
+                            });
+                            submitButton.disabled = false;
+                            submitButton.textContent = 'Submit Payment';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'An error occurred while processing your payment',
+                            confirmButtonColor: '#3085d6'
+                        });
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Submit Payment';
+                    });
             });
         }
     </script>
