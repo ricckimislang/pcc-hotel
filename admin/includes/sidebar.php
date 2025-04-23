@@ -56,7 +56,7 @@
             </a>
         </li>
         <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'payments.php' ? 'active' : ''; ?>">
-            <a href="../pages/payments.php">
+            <a href="../pages/payment_history.php">
                 <i class="fas fa-money-bill-wave"></i>
                 <span>Payments</span>
             </a>

@@ -13,6 +13,79 @@
     --header-height: 60px;
 }
 
+/* Print Media Query to reset problematic styles */
+@media print {
+    body {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+        background: none !important;
+        font-size: 12pt !important;
+    }
+
+    .sidebar {
+        display: none !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+    }
+
+    .card-body {
+        padding: 0 !important;
+    }
+
+    .table-responsive {
+        overflow-x: visible !important;
+    }
+
+    /* Reset table styles for print */
+    .data-table,
+    .table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin: 0 !important;
+    }
+
+    .data-table th,
+    .data-table td,
+    .table th,
+    .table td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+        text-align: left !important;
+    }
+
+    /* Hide unnecessary elements */
+    .btn,
+    .sidebar-toggle,
+    .page-header,
+    .form-group,
+    .stats-container,
+    .no-print {
+        display: none !important;
+    }
+
+    /* Ensure background colors print */
+    .badge {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        padding: 3px 8px !important;
+        border-radius: 3px !important;
+        font-size: 10pt !important;
+    }
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f7fa;
