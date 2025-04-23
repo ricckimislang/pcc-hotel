@@ -1,6 +1,17 @@
 $(document).ready(function () {
   // Initialize DataTable
-  const table = $("#bookingsTable").DataTable({
+  const table = initializeDataTable();
+
+  // Initialize event handlers
+  initializeEventHandlers(table);
+
+  // Initialize modal handlers
+  initializeModalHandlers();
+});
+
+// DataTable initialization
+function initializeDataTable() {
+  return $("#bookingsTable").DataTable({
     dom: "Bfrtip",
     buttons: [
       {
@@ -27,32 +38,92 @@ $(document).ready(function () {
       },
     },
   });
+}
 
-  // Refresh table button
+// Event Handlers
+function initializeEventHandlers(table) {
+  // Refresh table
   $("#refreshTable").on("click", function () {
     table.ajax.reload();
   });
 
-  // View booking details
+  // View booking
   $(".view-btn").on("click", function () {
-    const bookingId = $(this).data("booking-id");
-    showBookingDetails(bookingId);
+    showBookingDetails($(this).data("booking-id"));
   });
 
   // Edit booking
   $(".edit-btn").on("click", function () {
     const bookingId = $(this).data("booking-id");
+    if (!bookingId) {
+      console.error("No booking ID found on edit button");
+      return;
+    }
+    $("#editBookingModal").data("booking-id", bookingId);
     showEditBookingModal(bookingId);
   });
 
-  // Confirm booking button click handler
+  // Confirm booking
   $(document).on("click", "#confirmBookingBtn", function () {
-    const bookingId = $(this).data("booking-id");
-    confirmBooking(bookingId);
+    console.log("Confirm booking button clicked", $(this).data("booking-id"));
+    confirmBooking($(this).data("booking-id"));
   });
-});
 
+  // Save booking changes
+  $("#saveBookingChanges").on("click", saveBookingChanges);
+}
+
+// Modal Handlers
+function initializeModalHandlers() {
+  // View Booking Modal
+  $("#viewBookingModal").on("show.bs.modal", function (e) {
+    // Get booking ID from either relatedTarget or the cancel button
+    const bookingId =
+      $(e.relatedTarget)?.data("booking-id") ||
+      $("#cancelBookingBtn").data("booking-id");
+    console.log("View modal opened, booking ID:", bookingId);
+
+    if (!bookingId) {
+      console.error("No booking ID found when opening view modal");
+      return;
+    }
+
+    // Ensure cancel button has the booking ID
+    $("#cancelBookingBtn").data("booking-id", bookingId);
+    // Also set the booking ID on the confirm button
+    $("#confirmBookingBtn").data("booking-id", bookingId);
+    toggleCancelButtonVisibility();
+  });
+
+  // Edit Booking Modal
+  $("#editBookingModal").on("show.bs.modal", function (e) {
+    const bookingId = e.relatedTarget
+      ? $(e.relatedTarget).data("booking-id")
+      : $(this).data("booking-id");
+
+    if (!bookingId) {
+      console.error("No booking ID found for edit modal");
+      $(this).modal("hide");
+      return;
+    }
+
+    $(this).data("booking-id", bookingId);
+    loadBookingDetails(bookingId);
+  });
+
+  // Policy Modal
+  initializePolicyModal();
+}
+
+// Booking Functions
 function showBookingDetails(bookingId) {
+  console.log("Showing booking details for ID:", bookingId);
+  if (!bookingId) {
+    console.error("No booking ID provided for showing details");
+    showError("No booking ID provided");
+    return;
+  }
+
   $.ajax({
     url: "../api/bookings/get_booking_details.php",
     method: "POST",
@@ -60,113 +131,18 @@ function showBookingDetails(bookingId) {
     dataType: "json",
     success: function (response) {
       if (response.success) {
-        const data = response.data;
-
-        // Populate guest information
-        $(".guest-name").text(data.guest.name);
-        $(".guest-email").text(data.guest.email);
-        $(".guest-phone").text(data.guest.phone);
-
-        // Populate room details
-        $(".room-number").text(data.room.number);
-        $(".room-type").text(data.room.type);
-        $(".room-floor").text(data.room.floor);
-
-        // Populate booking information
-        $(".check-in-date").text(data.booking.check_in);
-        $(".check-out-date").text(data.booking.check_out);
-        $(".total-amount").text("₱" + data.booking.total_price);
-        $(".booking-status")
-          .text(data.booking.status)
-          .removeClass("text-success text-warning text-danger")
-          .addClass(function () {
-            switch (data.booking.status.toLowerCase()) {
-              case "confirmed":
-                return "text-success";
-              case "pending":
-                return "text-warning";
-              case "cancelled":
-                return "text-danger";
-              default:
-                return "";
-            }
-          });
-        $(".payment-status")
-          .text(data.booking.payment_status)
-          .removeClass("text-success text-warning text-danger")
-          .addClass(function () {
-            switch (data.booking.payment_status.toLowerCase()) {
-              case "paid":
-                return "text-success";
-              case "partial":
-                return "text-warning";
-              case "pending":
-              case "refunded":
-                return "text-danger";
-              default:
-                return "";
-            }
-          });
-        $(".reference-no").text(data.payment.reference_no);
-        const paymentScreenshotPath = "../../public/" + data.payment.payment_screenshot;
-        $(".payment-proof").attr("src", paymentScreenshotPath);
-        $(".payment-proof-link").attr("href", paymentScreenshotPath);
-        $(".total-guests").text(data.booking.guests_count + " guests");
-
-        // Enable/disable confirm booking button based on payment status and booking status
-        $("#confirmBookingBtn").prop(
-          "disabled",
-          data.booking.payment_status.toLowerCase() !== "paid" ||
-            data.booking.status.toLowerCase() === "confirmed"
-        );
-        // Store booking ID for confirm button
-        $("#confirmBookingBtn").data("booking-id", bookingId);
-
-        // Show special requests if any
-        if (data.booking.special_requests) {
-          $(".special-requests").text(data.booking.special_requests).show();
-        } else {
-          $(".special-requests").hide();
-        }
-
-        // Show the modal using Bootstrap's modal method
-        const viewBookingModal = new bootstrap.Modal(
-          document.getElementById("viewBookingModal")
-        );
-        viewBookingModal.show();
+        populateBookingDetails(response.data);
+        // Set the booking ID on the cancel button before showing modal
+        $("#cancelBookingBtn").data("booking-id", bookingId);
+        showModal("viewBookingModal");
       } else {
-        alert(response.message || "Error loading booking details");
+        showError(response.message || "Error loading booking details");
       }
     },
     error: function () {
-      alert("Error loading booking details");
+      showError("Error loading booking details");
     },
   });
-}
-
-function updateBookingStatus(bookingId, status) {
-  if (confirm(`Are you sure you want to ${status} this booking?`)) {
-    $.ajax({
-      url: "update_booking_status.php",
-      method: "POST",
-      data: {
-        booking_id: bookingId,
-        status: status,
-      },
-      success: function (response) {
-        const result = JSON.parse(response);
-        if (result.success) {
-          alert(`Booking ${status} successfully!`);
-          location.reload();
-        } else {
-          alert("Error updating booking status");
-        }
-      },
-      error: function () {
-        alert("Error updating booking status");
-      },
-    });
-  }
 }
 
 function showEditBookingModal(bookingId) {
@@ -177,74 +153,18 @@ function showEditBookingModal(bookingId) {
     dataType: "json",
     success: function (response) {
       if (response.success) {
-        const data = response.data;
-
-        // Set booking ID
-        $("#edit_booking_id").val(bookingId);
-
-        // Populate read-only guest information
-        $(".edit-guest-name").text(data.guest.name);
-        $(".edit-guest-email").text(data.guest.email);
-        $(".edit-guest-phone").text(data.guest.phone);
-
-        // Populate read-only room information
-        $(".edit-room-number").text(data.room.number);
-        $(".edit-room-type").text(data.room.type);
-        $(".edit-room-floor").text(data.room.floor);
-
-        // Populate editable fields
-        $("#edit_check_in").val(data.booking.check_in.split(" ")[0]);
-        $("#edit_check_out").val(data.booking.check_out.split(" ")[0]);
-        $("#edit_guests_count").val(data.booking.guests_count);
-        $("#edit_special_requests").val(data.booking.special_requests);
-        $("#edit_booking_status").val(data.booking.status);
-        $("#edit_payment_status").val(data.booking.payment_status);
-
-        // Show the modal
-        const editBookingModal = new bootstrap.Modal(
-          document.getElementById("editBookingModal")
-        );
-        editBookingModal.show();
+        populateEditForm(response.data);
+        showModal("editBookingModal");
       } else {
-        alert(response.message || "Error loading booking details");
+        showError(response.message || "Error loading booking details");
       }
     },
     error: function () {
-      alert("Error loading booking details");
+      showError("Error loading booking details");
     },
   });
 }
 
-// Save booking changes
-$("#saveBookingChanges").on("click", function () {
-  const formData = $("#editBookingForm").serialize();
-
-  $.ajax({
-    url: "../api/bookings/update_booking.php",
-    method: "POST",
-    data: formData,
-    dataType: "json",
-    success: function (response) {
-      if (response.success) {
-        alert("Booking updated successfully!");
-        // Close the modal
-        const editBookingModal = bootstrap.Modal.getInstance(
-          document.getElementById("editBookingModal")
-        );
-        editBookingModal.hide();
-        // Refresh the table
-        table.ajax.reload();
-      } else {
-        alert(response.message || "Error updating booking");
-      }
-    },
-    error: function () {
-      alert("Error updating booking");
-    },
-  });
-});
-
-// Confirm booking function
 function confirmBooking(bookingId) {
   if (confirm("Are you sure you want to confirm this booking?")) {
     $.ajax({
@@ -254,21 +174,246 @@ function confirmBooking(bookingId) {
       dataType: "json",
       success: function (response) {
         if (response.success) {
-          alert("Booking confirmed successfully!");
-          // Close the modal
-          const viewBookingModal = bootstrap.Modal.getInstance(
-            document.getElementById("viewBookingModal")
-          );
-          viewBookingModal.hide();
-          // Refresh the table
+          showSuccess("Booking confirmed successfully!");
+          hideModal("viewBookingModal");
           location.reload();
         } else {
-          alert(response.message || "Error confirming booking");
+          showError(response.message || "Error confirming booking");
         }
       },
       error: function () {
-        alert("Error confirming booking");
+        showError("Error confirming booking");
       },
     });
   }
+}
+
+// Form Population Functions
+function populateBookingDetails(data) {
+  // Guest information
+  $(".guest-name").text(data.guest.name);
+  $(".guest-email").text(data.guest.email);
+  $(".guest-phone").text(data.guest.phone);
+
+  // Room details
+  $(".room-number").text(data.room.number);
+  $(".room-type").text(data.room.type);
+  $(".room-floor").text(data.room.floor);
+
+  // Booking information
+  $(".check-in-date").text(data.booking.check_in);
+  $(".check-out-date").text(data.booking.check_out);
+  $(".total-amount").text("₱" + data.booking.total_price);
+  updateStatusClasses(".booking-status", data.booking.status);
+  updateStatusClasses(".payment-status", data.booking.payment_status);
+
+  // Payment information
+  $(".reference-no").text(data.payment.reference_no);
+  const paymentScreenshotPath =
+    "../../public/" + data.payment.payment_screenshot;
+  $(".payment-proof").attr("src", paymentScreenshotPath);
+  $(".payment-proof-link").attr("href", paymentScreenshotPath);
+  $(".total-guests").text(data.booking.guests_count + " guests");
+
+  // Special requests
+  if (data.booking.special_requests) {
+    $(".special-requests").text(data.booking.special_requests).show();
+  } else {
+    $(".special-requests").hide();
+  }
+
+  // Update confirm button state
+  $("#confirmBookingBtn")
+    .prop(
+      "disabled",
+      data.booking.payment_status.toLowerCase() !== "paid" ||
+        data.booking.status.toLowerCase() === "confirmed" ||
+        data.booking.status.toLowerCase() === "cancelled"
+    )
+    .data("booking-id", data.booking.booking_id);
+}
+
+function populateEditForm(data) {
+  // Set hidden fields
+  $("#edit_booking_id").val(data.booking.booking_id);
+  $("#original_check_in").val(data.booking.check_in);
+  $("#original_check_out").val(data.booking.check_out);
+  $("#original_total").val(data.booking.total_price);
+  $("#room_base_price").val(data.room.base_price);
+
+  // Guest information
+  $(".edit-guest-name").text(data.guest.name);
+  $(".edit-guest-email").text(data.guest.email);
+  $(".edit-guest-phone").text(data.guest.phone);
+
+  // Room information
+  $(".edit-room-number").text(data.room.number);
+  $(".edit-room-type").text(data.room.type);
+  $(".edit-room-floor").text(data.room.floor);
+
+  // Booking information
+  $("#edit_check_in").val(data.booking.check_in.split(" ")[0]);
+  $("#edit_check_out").val(data.booking.check_out.split(" ")[0]);
+  $("#edit_guests_count").val(data.booking.guests_count);
+  $("#edit_special_requests").val(data.booking.special_requests);
+  $("#edit_booking_status").val(data.booking.status);
+  $("#edit_payment_status").val(data.booking.payment_status);
+
+  // Hide extension calculation initially
+  $("#extensionCalculation, #additionalPaymentSection").hide();
+}
+
+// Utility Functions
+function updateStatusClasses(selector, status) {
+  $(selector)
+    .text(status)
+    .removeClass("text-success text-warning text-danger")
+    .addClass(getStatusClass(status.toLowerCase()));
+}
+
+function getStatusClass(status) {
+  switch (status) {
+    case "confirmed":
+    case "paid":
+      return "text-success";
+    case "pending":
+    case "partial":
+      return "text-warning";
+    case "cancelled":
+    case "refunded":
+      return "text-danger";
+    default:
+      return "";
+  }
+}
+
+function showModal(modalId) {
+  new bootstrap.Modal(document.getElementById(modalId)).show();
+}
+
+function hideModal(modalId) {
+  bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
+}
+
+function showSuccess(message) {
+  alert(message);
+}
+
+function showError(message) {
+  alert(message);
+}
+
+function toggleCancelButtonVisibility() {
+  const bookingStatus = $(".booking-status").text().trim().toLowerCase();
+  $("#cancelBookingBtn").toggle(
+    bookingStatus === "confirmed" || bookingStatus === "pending"
+  );
+}
+
+function formatDateForDisplay(dateString) {
+  return new Date(dateString).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+// Policy Modal Functions
+function initializePolicyModal() {
+  const adminPolicyAgreement = $("#adminPolicyAgreement");
+  const adminPolicyAccept = $("#adminPolicyAccept");
+  const cancelBookingBtn = $("#cancelBookingBtn");
+  let currentBookingId = null;
+
+  adminPolicyAgreement.on("change", function () {
+    adminPolicyAccept.prop("disabled", !this.checked);
+  });
+
+  cancelBookingBtn.on("click", function () {
+    currentBookingId = $(this).data("booking-id");
+    console.log("Cancel button clicked, booking ID:", currentBookingId);
+    if (!currentBookingId) {
+      console.error("No booking ID found on cancel button");
+      showError("No booking ID found");
+      return;
+    }
+    adminPolicyAgreement.prop("checked", false);
+    adminPolicyAccept.prop("disabled", true);
+    showModal("adminPolicyModal");
+  });
+
+  adminPolicyAccept.on("click", function () {
+    console.log(
+      "Policy accepted, proceeding with cancellation for booking ID:",
+      currentBookingId
+    );
+    if (!currentBookingId) {
+      console.error("No booking ID found when accepting policy");
+      showError("No booking ID found");
+      return;
+    }
+    hideModal("adminPolicyModal");
+    proceedWithAdminCancellation(currentBookingId);
+  });
+}
+
+function proceedWithAdminCancellation(bookingId) {
+  console.log("Attempting to cancel booking with ID:", bookingId);
+
+  if (!bookingId) {
+    console.error("No booking ID provided for cancellation");
+    showError("No booking ID provided");
+    return;
+  }
+
+  if (
+    confirm(
+      "Are you sure you want to cancel this booking? This action cannot be undone."
+    )
+  ) {
+    console.log("Sending cancellation request for booking ID:", bookingId);
+    $.ajax({
+      url: "../api/bookings/cancel_booking.php",
+      method: "POST",
+      data: { booking_id: bookingId },
+      dataType: "json",
+      success: function (data) {
+        console.log("Cancellation response:", data);
+        if (data.success) {
+          showSuccess("Booking successfully cancelled");
+          hideModal("viewBookingModal");
+          location.reload();
+        } else {
+          showError("Error: " + data.message);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error("Cancellation error:", error);
+        console.error("Status:", status);
+        console.error("Response:", xhr.responseText);
+        showError("An error occurred while cancelling the booking");
+      },
+    });
+  }
+}
+
+function loadBookingDetails(bookingId) {
+  $.ajax({
+    url: "../api/bookings/get_booking_details.php",
+    method: "POST",
+    data: { booking_id: bookingId },
+    dataType: "json",
+    success: function (response) {
+      if (response.success) {
+        populateEditForm(response.data);
+      } else {
+        showError(response.message || "Error loading booking details");
+        $("#editBookingModal").modal("hide");
+      }
+    },
+    error: function () {
+      showError("Error loading booking details");
+      $("#editBookingModal").modal("hide");
+    },
+  });
 }

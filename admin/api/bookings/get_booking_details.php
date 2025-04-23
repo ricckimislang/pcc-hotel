@@ -56,6 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
                     'id' => $booking['booking_id'],
                     'check_in' => $check_in_formatted,
                     'check_out' => $check_out_formatted,
+                    'edit_check_in' => $booking['check_in_date'],
+                    'edit_check_out' => $booking['check_out_date'],
                     'booking_date' => $booking_date_formatted,
                     'total_nights' => $nights,
                     'guests_count' => $booking['guests_count'],
