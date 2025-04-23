@@ -105,13 +105,17 @@ require_once '../api/bookings/get_checkin_table.php';
                                             <span class="status-badge confirmed">
                                                 Checked In
                                             </span>
-                                        <?php elseif($booking['booking_status'] == 'confirmed'): ?>
+                                        <?php elseif ($booking['booking_status'] == 'confirmed'): ?>
                                             <span class="status-badge completed">
                                                 Confirmed
                                             </span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="actions">
+                                        <button class="action-btn view-btn"
+                                            data-booking-id="<?php echo $booking['booking_id']; ?>">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                         <?php if ($booking['booking_status'] == 'confirmed'): ?>
                                             <button class="action-btn check-in-btn"
                                                 data-booking-id="<?php echo $booking['booking_id']; ?>">

@@ -65,11 +65,25 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   `reference_no` text,
   `payment_screenshot` text,
   `amount` int NOT NULL,
-  `extra_payment` int DEFAULT 0,
+  `extra_pay` decimal(10,2) DEFAULT 0.00,
   `receipt_no` text NOT NULL,
   `created_at` timestamp NOT NULL,
   PRIMARY KEY (`transaction_id`),
-  UNIQUE KEY `room_id` (`room_id`),
-  KEY `booking_id` (`booking_id`),
+  UNIQUE KEY `booking_id` (`booking_id`),
+  KEY `room_id` (`room_id`),
   KEY `user_id` (`user_id`)
+);
+
+-- Additional Items table for checkout charges
+CREATE TABLE `additional_items` (
+  `item_id` int NOT NULL AUTO_INCREMENT,
+  `transaction_id` int NOT NULL,
+  `item_name` varchar(100) NOT NULL,
+  `item_price` decimal(10,2) NOT NULL,
+  `quantity` int NOT NULL DEFAULT 1,
+  `subtotal` decimal(10,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`item_id`),
+  KEY `transaction_id` (`transaction_id`),
+  CONSTRAINT `additional_items_ibfk_1` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`transaction_id`) ON DELETE CASCADE
 );

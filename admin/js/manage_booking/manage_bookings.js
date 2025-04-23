@@ -248,14 +248,16 @@ function populateBookingDetails(data) {
   }
 
   // Update confirm button state
-  $("#confirmBookingBtn")
-    .prop(
-      "disabled",
-      data.booking.payment_status.toLowerCase() !== "paid" ||
-        data.booking.status.toLowerCase() === "confirmed" ||
-        data.booking.status.toLowerCase() === "cancelled"
-    )
-    .data("booking-id", data.booking.booking_id);
+  $("#confirmBookingBtn").css(
+    "display",
+    (data.booking.payment_status.toLowerCase() !== "paid" ||
+      data.booking.status.toLowerCase() === "confirmed" ||
+      data.booking.status.toLowerCase() === "cancelled" ||
+      data.booking.status.toLowerCase() === "checked_in")
+      ? "none"
+      : "block"
+  );
+  $("#confirmBookingBtn").data("booking-id", data.booking.booking_id);
 }
 
 function populateEditForm(data) {

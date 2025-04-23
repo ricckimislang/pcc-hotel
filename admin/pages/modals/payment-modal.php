@@ -3,12 +3,13 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Process Payment</h5>
+                <h5 class="modal-title">Process Check-out</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="processPaymentForm">
                     <input type="hidden" id="payment_booking_id" name="booking_id">
+                    <input type="hidden" id="payment_amount" name="payment_amount" value="0.01">
                     
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
@@ -41,7 +42,7 @@
                                         <dt class="col-sm-6">Room Total:</dt>
                                         <dd class="col-sm-6 room-total"></dd>
                                         <dt class="col-sm-6">Additional Fees:</dt>
-                                        <dd class="col-sm-6 additional-fees">$0.00</dd>
+                                        <dd class="col-sm-6 additional-fees">₱0.00</dd>
                                         <dt class="col-sm-6">Total Amount:</dt>
                                         <dd class="col-sm-6 total-amount"></dd>
                                         <dt class="col-sm-6">Amount Paid:</dt>
@@ -54,8 +55,8 @@
                         </div>
                     </div>
                     
-                    <div class="row g-3">
-                        <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-12">
                             <div class="card mb-3">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">Additional Fees</h6>
@@ -81,7 +82,7 @@
                                             <tfoot>
                                                 <tr>
                                                     <th colspan="3" class="text-end">Total Additional Fees:</th>
-                                                    <th id="totalAdditionalFees">$0.00</th>
+                                                    <th id="totalAdditionalFees">₱0.00</th>
                                                     <th></th>
                                                 </tr>
                                             </tfoot>
@@ -92,47 +93,13 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="payment_amount" class="form-label">Payment Amount</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" step="0.01" class="form-control" id="payment_amount" name="payment_amount" required>
-                                </div>
-                            </div>
-                            
-                            <!-- Only cash payment method, hidden field -->
-                            <input type="hidden" id="payment_method" name="payment_method" value="cash">
-                            
                         </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                <label for="transaction_id" class="form-label">Receipt/Reference Number</label>
-                                <input type="text" class="form-control" id="transaction_id" name="transaction_id">
-                            </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="payment_date" class="form-label">Payment Date</label>
-                                <input type="date" class="form-control" id="payment_date" name="payment_date" value="<?php echo date('Y-m-d'); ?>" required>
-                            </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="payment_notes" class="form-label">Notes</label>
-                                <textarea class="form-control" id="payment_notes" name="payment_notes" rows="4"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        <label for="payment_receipt" class="form-label">Upload Receipt/Proof (optional)</label>
-                        <input type="file" class="form-control" id="payment_receipt" name="payment_receipt">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="processPaymentForm" class="btn btn-primary">Process Payment</button>
+                <button type="submit" form="processPaymentForm" class="btn btn-primary" id="processPaymentBtn">Complete Check-out</button>
             </div>
         </div>
     </div>
@@ -172,7 +139,7 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="fee_item_price" class="form-label">Item Price ($)</label>
+                        <label for="fee_item_price" class="form-label">Item Price (₱)</label>
                         <input type="number" step="0.01" class="form-control" id="fee_item_price" required>
                     </div>
                     

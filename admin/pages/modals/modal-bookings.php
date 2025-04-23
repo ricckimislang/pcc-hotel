@@ -99,7 +99,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-danger" id="cancelBookingBtn">Cancel Booking</button>
-                <button type="button" class="btn btn-success" id="confirmBookingBtn" disabled>Confirm Booking</button>
+                <button type="button" class="btn btn-success" id="confirmBookingBtn">Confirm Booking</button>
             </div>
         </div>
     </div>
