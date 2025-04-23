@@ -1,16 +1,17 @@
 $(document).ready(function () {
   // Initialize DataTable
-  const table = initializeDataTable();
+  const bookingsTable = initializeBookingsDataTable();
+  const checkInOutTable = initializeCheckInOutDataTable();
 
   // Initialize event handlers
-  initializeEventHandlers(table);
+  initializeEventHandlers(bookingsTable);
 
   // Initialize modal handlers
   initializeModalHandlers();
 });
 
 // DataTable initialization
-function initializeDataTable() {
+function initializeBookingsDataTable() {
   return $("#bookingsTable").DataTable({
     dom: "Bfrtip",
     buttons: [
@@ -39,14 +40,38 @@ function initializeDataTable() {
     },
   });
 }
+function initializeCheckInOutDataTable() {
+  return $("#checkInOutTable").DataTable({
+    dom: "Bfrtip",
+    buttons: [
+      {
+        extend: "print",
+        text: '<i class="fas fa-print"></i> Print',
+        className: "btn btn-primary",
+      },
+    ],
+    pageLength: 10,
+    order: [[0, "desc"]],
+    responsive: true,
+    language: {
+      search: "_INPUT_",
+      searchPlaceholder: "Search Confirmed Bookings...",
+      lengthMenu: "Show _MENU_ entries",
+      info: "Showing _START_ to _END_ of _TOTAL_ entries",
+      infoEmpty: "Showing 0 to 0 of 0 entries",
+      infoFiltered: "(filtered from _MAX_ total entries)",
+      paginate: {
+        first: "First",
+        last: "Last",
+        next: "Next",
+        previous: "Previous",
+      },
+    },
+  });
+}
 
 // Event Handlers
-function initializeEventHandlers(table) {
-  // Refresh table
-  $("#refreshTable").on("click", function () {
-    table.ajax.reload();
-  });
-
+function initializeEventHandlers(bookingsTable) {
   // View booking
   $(".view-btn").on("click", function () {
     showBookingDetails($(this).data("booking-id"));

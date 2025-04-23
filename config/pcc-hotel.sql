@@ -49,7 +49,7 @@ CREATE TABLE bookings (
     reservation_fee DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     special_requests TEXT,
     booking_status ENUM('pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled') DEFAULT 'pending',
-    payment_status ENUM('pending', 'partial', 'paid', 'refunded') DEFAULT 'pending',
+    payment_status ENUM('pending', 'paid') DEFAULT 'pending',
     booking_source VARCHAR(50) DEFAULT 'website',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (room_id) REFERENCES rooms(room_id)

@@ -59,12 +59,14 @@
   overflow-x: auto;
 }
 
-#bookingsTable {
+#bookingsTable,
+#checkInOutTable {
   width: 100%;
   border-collapse: collapse;
 }
 
-#bookingsTable thead th {
+#bookingsTable thead th,
+#checkInOutTable thead th {
   background: var(--light-bg);
   color: var(--secondary-color);
   padding: 1rem;
@@ -72,7 +74,8 @@
   font-weight: 600;
 }
 
-#bookingsTable tbody td {
+#bookingsTable tbody td,
+#checkInOutTable tbody td {
   padding: 1rem;
   border-bottom: 1px solid #e2e8f0;
   vertical-align: middle;
@@ -141,7 +144,10 @@
   background: #2ecc71;
   color: white;
 }
-
+.check-in-btn {
+  background: #2ecc71;
+  color: white;
+}
 .cancel-btn {
   background: #e74c3c;
   color: white;
@@ -157,17 +163,17 @@
 }
 
 /* Make table cells have consistent height */
-#bookingsTable td {
+#bookingsTable td,
+#checkInOutTable td {
   height: 60px; /* Set a fixed height for table cells */
   vertical-align: middle;
   padding: 0.5rem;
 }
 
-#bookingsTable td.actions {
+#bookingsTable td.actions,
+#checkInOutTable td.actions {
   min-width: 200px; /* Ensure enough space for all buttons */
 }
-
-
 
 /* DataTables Customization */
 .dataTables_wrapper .dataTables_length,

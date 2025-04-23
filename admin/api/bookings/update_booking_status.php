@@ -1,5 +1,5 @@
 <?php
-require_once '../../config/db.php';
+require_once '../../../config/db.php';
 
 header('Content-Type: application/json');
 
@@ -8,30 +8,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id']) && isse
     $status = $_POST['status'];
 
     // Validate status
-    $valid_statuses = ['pending', 'confirmed', 'cancelled', 'completed'];
+    $valid_statuses = ['checked_in', 'checked_out'];
     if (!in_array($status, $valid_statuses)) {
         echo json_encode(['success' => false, 'message' => 'Invalid status']);
         exit;
     }
 
     // Update booking status
-    $query = "UPDATE bookings SET status = ? WHERE booking_id = ?";
+    $query = "UPDATE bookings SET booking_status = ? WHERE booking_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("si", $status, $booking_id);
-    
+
     if ($stmt->execute()) {
-        // If status is cancelled, make the room available again
-        if ($status === 'cancelled') {
-            $room_query = "UPDATE rooms r 
-                          JOIN bookings b ON r.room_id = b.room_id 
-                          SET r.status = 'available' 
-                          WHERE b.booking_id = ?";
-            $room_stmt = $conn->prepare($room_query);
-            $room_stmt->bind_param("i", $booking_id);
-            $room_stmt->execute();
-            $room_stmt->close();
-        }
-        
+
+        $getRoomId = "SELECT room_id FROM bookings WHERE booking_id = ?";
+        $stmtRoom = $conn->prepare($getRoomId);
+        $stmtRoom->bind_param("i", $booking_id);
+        $stmtRoom->execute();
+        $result = $stmtRoom->get_result();
+        $row = $result->fetch_assoc();
+        $room_id = $row['room_id'];
+
+        $roomStatus = $status === 'checked_in' ? 'occupied' : 'available';
+        $updateRoomStatus = "UPDATE rooms SET status = ? WHERE room_id = ?";
+        $stmtRoom = $conn->prepare($updateRoomStatus);
+        $stmtRoom->bind_param("si", $roomStatus, $room_id);
+        $stmtRoom->execute();
+        $stmtRoom->close();
+
         echo json_encode(['success' => true, 'message' => 'Booking status updated successfully']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Error updating booking status']);
@@ -43,4 +47,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id']) && isse
 }
 
 $conn->close();
-?> 
+?>

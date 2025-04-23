@@ -1,15 +1,7 @@
 <?php
 require_once '../../config/db.php';
-
-// Get all bookings with room and guest details
-$query = "SELECT b.*, r.room_number, rt.type_name, u.first_name, u.last_name, u.email FROM bookings b JOIN rooms r ON b.room_id = r.room_id JOIN room_types rt ON r.room_type_id = rt.room_type_id JOIN users u ON b.user_id = u.user_id";
-
-$stmt = $conn->prepare($query);
-$stmt->execute();
-$result = $stmt->get_result();
-$bookings = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
-$conn->close();
+require_once '../api/bookings/get_booking_table.php';
+require_once '../api/bookings/get_checkin_table.php';
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +23,8 @@ $conn->close();
                 </div>
             </div>
 
-            <div class="bookings-table-container">
+            <div class="bookings-table-container mb-4">
+                <h3>Confirm Bookings</h3>
                 <table id="bookingsTable" class="table table-striped" width="100%">
                     <thead>
                         <tr>
@@ -77,11 +70,58 @@ $conn->close();
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-            </div>
-        </div>
 
-        <?php include_once 'modals/modal-bookings.php'; ?>
-        <script src="../js/manage_booking/manage_bookings.js"></script>
+            </div>
+            <div class="bookings-table-container">
+                <h3>Check In</h3>
+                <table id="checkInOutTable" class="table table-striped" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Guest Name</th>
+                            <th>Room</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($checkInBookings as $booking): ?>
+                            <?php if ($booking['booking_status'] == 'confirmed' || $booking['booking_status'] == 'checked_in'): ?>
+                                <tr>
+                                    <td>
+                                        <?php echo $booking['first_name'] . ' ' . $booking['last_name']; ?>
+                                        <br>
+                                    </td>
+                                    <td>
+                                        Room <?php echo $booking['room_number']; ?>
+                                        <br>
+                                        <small><?php echo $booking['type_name']; ?></small>
+                                    </td>
+                                    <td><?php echo date('M d, Y', strtotime($booking['check_in_date'])); ?></td>
+                                    <td><?php echo date('M d, Y', strtotime($booking['check_out_date'])); ?></td>
+                                    <td>
+                                        <span class="status-badge <?php echo strtolower($booking['booking_status']); ?>">
+                                            <?php echo ucfirst($booking['booking_status']); ?>
+                                        </span>
+                                    </td>
+                                    <td class="actions">
+                                        <button class="action-btn check-in-btn"
+                                            data-booking-id="<?php echo $booking['booking_id']; ?>">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <?php include_once 'modals/modal-bookings.php'; ?>
+            <script src="../js/manage_booking/manage_bookings.js"></script>
+            <script src="../js/manage_booking/manage_check-in.js"></script>
 </body>
 
 </html>
