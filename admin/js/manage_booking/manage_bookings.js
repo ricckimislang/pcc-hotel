@@ -45,16 +45,10 @@ $(document).ready(function () {
     showEditBookingModal(bookingId);
   });
 
-  // Confirm booking
-  $(".confirm-btn").on("click", function () {
+  // Confirm booking button click handler
+  $(document).on("click", "#confirmBookingBtn", function () {
     const bookingId = $(this).data("booking-id");
-    updateBookingStatus(bookingId, "confirmed");
-  });
-
-  // Cancel booking
-  $(".cancel-btn").on("click", function () {
-    const bookingId = $(this).data("booking-id");
-    updateBookingStatus(bookingId, "cancelled");
+    confirmBooking(bookingId);
   });
 });
 
@@ -82,10 +76,51 @@ function showBookingDetails(bookingId) {
         $(".check-in-date").text(data.booking.check_in);
         $(".check-out-date").text(data.booking.check_out);
         $(".total-amount").text("₱" + data.booking.total_price);
-        $(".booking-status").text(data.booking.status);
-        $(".reservation-fee").text("₱" + data.booking.reservation_fee);
-        $(".payment-status").text(data.booking.payment_status);
+        $(".booking-status")
+          .text(data.booking.status)
+          .removeClass("text-success text-warning text-danger")
+          .addClass(function () {
+            switch (data.booking.status.toLowerCase()) {
+              case "confirmed":
+                return "text-success";
+              case "pending":
+                return "text-warning";
+              case "cancelled":
+                return "text-danger";
+              default:
+                return "";
+            }
+          });
+        $(".payment-status")
+          .text(data.booking.payment_status)
+          .removeClass("text-success text-warning text-danger")
+          .addClass(function () {
+            switch (data.booking.payment_status.toLowerCase()) {
+              case "paid":
+                return "text-success";
+              case "partial":
+                return "text-warning";
+              case "pending":
+              case "refunded":
+                return "text-danger";
+              default:
+                return "";
+            }
+          });
+        $(".reference-no").text(data.payment.reference_no);
+        const paymentScreenshotPath = "../../public/" + data.payment.payment_screenshot;
+        $(".payment-proof").attr("src", paymentScreenshotPath);
+        $(".payment-proof-link").attr("href", paymentScreenshotPath);
         $(".total-guests").text(data.booking.guests_count + " guests");
+
+        // Enable/disable confirm booking button based on payment status and booking status
+        $("#confirmBookingBtn").prop(
+          "disabled",
+          data.booking.payment_status.toLowerCase() !== "paid" ||
+            data.booking.status.toLowerCase() === "confirmed"
+        );
+        // Store booking ID for confirm button
+        $("#confirmBookingBtn").data("booking-id", bookingId);
 
         // Show special requests if any
         if (data.booking.special_requests) {
@@ -208,3 +243,32 @@ $("#saveBookingChanges").on("click", function () {
     },
   });
 });
+
+// Confirm booking function
+function confirmBooking(bookingId) {
+  if (confirm("Are you sure you want to confirm this booking?")) {
+    $.ajax({
+      url: "../api/bookings/confirm_booking.php",
+      method: "POST",
+      data: { booking_id: bookingId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          alert("Booking confirmed successfully!");
+          // Close the modal
+          const viewBookingModal = bootstrap.Modal.getInstance(
+            document.getElementById("viewBookingModal")
+          );
+          viewBookingModal.hide();
+          // Refresh the table
+          location.reload();
+        } else {
+          alert(response.message || "Error confirming booking");
+        }
+      },
+      error: function () {
+        alert("Error confirming booking");
+      },
+    });
+  }
+}

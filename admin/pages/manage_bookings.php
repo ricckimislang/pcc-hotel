@@ -72,14 +72,6 @@ $conn->close();
                                         data-booking-id="<?php echo $booking['booking_id']; ?>">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="action-btn confirm-btn"
-                                        data-booking-id="<?php echo $booking['booking_id']; ?>">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="action-btn cancel-btn"
-                                        data-booking-id="<?php echo $booking['booking_id']; ?>">
-                                        <i class="fas fa-times"></i>
-                                    </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -89,7 +81,7 @@ $conn->close();
         </div>
 
         <?php include_once 'modals/modal-bookings.php'; ?>
-        <script src="../js/manage_bookings.js"></script>
+        <script src="../js/manage_booking/manage_bookings.js"></script>
 </body>
 
 </html>

@@ -35,9 +35,9 @@
                                 <div class="card-body">
                                     <dl class="row mb-0 small">
                                         <dt class="col-sm-5">Room Number:</dt>
-                                        <dd class="col-sm-4 room-number"></dd>
-                                        <dt class="col-sm-8">Room Type:</dt>
-                                        <dd class="col-sm-4 room-type"></dd>
+                                        <dd class="col-sm-7 room-number"></dd>
+                                        <dt class="col-sm-4">Room Type:</dt>
+                                        <dd class="col-sm-8 room-type"></dd>
                                         <dt class="col-sm-4">Floor:</dt>
                                         <dd class="col-sm-8 room-floor"></dd>
                                     </dl>
@@ -74,18 +74,31 @@
                                 </div>
                                 <div class="card-body">
                                     <dl class="row mb-0 small">
-                                        <dt class="col-sm-6">Reservation Fee:</dt>
-                                        <dd class="col-sm-6 reservation-fee"></dd>
                                         <dt class="col-sm-4">Payment Status:</dt>
                                         <dd class="col-sm-8 payment-status"></dd>
-                                        <dt class="col-sm-4">Transaction ID:</dt>
-                                        <dd class="col-sm-8 transaction-id"></dd>
+                                        <dt class="col-sm-4">Reference No:</dt>
+                                        <dd class="col-sm-8 reference-no"></dd>
+                                        <dt class="col-sm-4">Payment Proof:</dt>
+                                        <dd class="col-sm-8">
+                                            <div class="d-flex flex-column">
+                                                <img src="" alt="Payment Screenshot"
+                                                    class="payment-proof img-fluid mb-2" style="max-width: 200px;">
+                                                <a href="" class="payment-proof-link btn btn-sm btn-primary"
+                                                    target="_blank">
+                                                    <i class="bi bi-eye"></i> View Full Image
+                                                </a>
+                                            </div>
+                                        </dd>
                                     </dl>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="confirmBookingBtn" disabled>Confirm Booking</button>
             </div>
         </div>
     </div>

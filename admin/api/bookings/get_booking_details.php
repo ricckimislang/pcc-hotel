@@ -8,11 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
     $query = "SELECT b.*, 
                      u.first_name, u.last_name, u.email, u.phone_number,
                      r.room_number, r.floor, r.status as room_status,
-                     rt.type_name, rt.base_price, rt.capacity
+                     rt.type_name, rt.base_price, rt.capacity,
+                     t.reference_no, t.payment_screenshot
               FROM bookings b
               JOIN users u ON b.user_id = u.user_id
               JOIN rooms r ON b.room_id = r.room_id
               JOIN room_types rt ON r.room_type_id = rt.room_type_id
+              JOIN transactions t ON b.booking_id = t.booking_id
               WHERE b.booking_id = ?";
 
     $stmt = $conn->prepare($query);
@@ -58,11 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
                     'total_nights' => $nights,
                     'guests_count' => $booking['guests_count'],
                     'total_price' => number_format($booking['total_price'], 2),
-                    'reservation_fee' => number_format($booking['reservation_fee'], 2),
                     'status' => $booking['booking_status'],
                     'payment_status' => $booking['payment_status'],
                     'special_requests' => $booking['special_requests'],
                     'source' => $booking['booking_source']
+                ],
+                'payment' => [
+                    'reference_no' => $booking['reference_no'],
+                    'payment_screenshot' => $booking['payment_screenshot']
                 ]
             ]
         ];
