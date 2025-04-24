@@ -15,7 +15,7 @@
 
         <div class="summary-section mb-4">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="summary-card bg-primary text-white">
                         <div class="summary-icon"><i class="fas fa-bed"></i></div>
                         <div class="summary-info">
@@ -24,7 +24,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="summary-card bg-success text-white">
                         <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
                         <div class="summary-info">
@@ -33,21 +33,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="summary-card bg-danger text-white">
                         <div class="summary-icon"><i class="fas fa-door-closed"></i></div>
                         <div class="summary-info">
                             <h3 id="occupiedRooms">0</h3>
                             <span>Occupied Rooms</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="summary-card bg-info text-white">
-                        <div class="summary-icon"><i class="fas fa-broom"></i></div>
-                        <div class="summary-info">
-                            <h3 id="maintenanceRooms">0</h3>
-                            <span>Under Maintenance</span>
                         </div>
                     </div>
                 </div>

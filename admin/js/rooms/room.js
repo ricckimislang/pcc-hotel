@@ -270,8 +270,6 @@ function updateRoomSummary(roomsData) {
     statusCounts.available || 0;
   document.getElementById("occupiedRooms").textContent =
     (statusCounts.occupied || 0) + (statusCounts.reserved || 0);
-  document.getElementById("maintenanceRooms").textContent =
-    statusCounts.maintenance || 0;
 }
 
 // get the room detailed if occupied
