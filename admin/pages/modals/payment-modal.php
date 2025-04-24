@@ -99,7 +99,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="processPaymentForm" class="btn btn-primary" id="processPaymentBtn">Complete Check-out</button>
+                <button type="button" form="processPaymentForm" class="btn btn-primary" id="processPaymentBtn"></button>
             </div>
         </div>
     </div>
@@ -237,6 +237,32 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <a href="" class="btn btn-primary download-receipt" download>Download</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check-out Confirmation Modal -->
+<div class="modal fade" id="checkoutConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">Confirm Check-out</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <p>Are you sure you want to check out guest <strong class="guest-name-confirm"></strong> from <strong class="room-number-confirm"></strong>?</p>
+                <p>Please make sure all charges have been added before proceeding with check-out.</p>
+                <div class="alert alert-info small">
+                    <i class="fas fa-info-circle"></i> Once you proceed, you will be able to add any additional charges before finalizing the check-out.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="confirmCheckoutBtn">Proceed with Check-out</button>
             </div>
         </div>
     </div>

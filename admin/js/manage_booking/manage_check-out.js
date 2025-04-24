@@ -51,10 +51,10 @@ document.addEventListener("DOMContentLoaded", function () {
           // Instead, set payment amount to 0 or hide it
           $("#payment_amount").val("0.00");
           // Hide container but don't disable the field so it's still submitted
-          $(".payment-amount-container").addClass('d-none');
+          $(".payment-amount-container").addClass("d-none");
 
           // Change the Process Payment button text
-          $("#processPaymentBtn").text('Process Check-out');
+          $("#processPaymentBtn").text("Process Check-out");
 
           // Show the modal
           $("#processPaymentModal").modal("show");
@@ -81,9 +81,9 @@ document.addEventListener("DOMContentLoaded", function () {
     updateTotalAmount();
 
     // Reset UI elements
-    $(".payment-amount-container").removeClass('d-none');
-    $("#payment_amount").prop('disabled', false);
-    $("#processPaymentBtn").text('Process Payment');
+    $(".payment-amount-container").removeClass("d-none");
+    $("#payment_amount").prop("disabled", false);
+    $("#processPaymentBtn").text("Process Check-out");
   }
 
   // Initialize UI components for additional fees
@@ -335,8 +335,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // JavaScript code related to payment form submission
-  $("#processPaymentForm").submit(function (e) {
+  $("#processPaymentBtn").on("click", function (e) {
     e.preventDefault();
+    $("#checkoutConfirmModal").modal("show");
+  });
+
+  $("#confirmCheckoutBtn").on("click", function (e) {
+    e.preventDefault();
+    $("#checkoutConfirmModal").modal("hide");
+
+    // Grab the form element
+    const form = document.getElementById("processPaymentForm");
 
     // Collect additional items data
     const additionalItems = [];
@@ -350,12 +359,12 @@ document.addEventListener("DOMContentLoaded", function () {
       additionalItems.push(item);
     });
 
-    // Create FormData for submission
-    const formData = new FormData(this);
+    // ✅ Use actual form element
+    const formData = new FormData(form);
     formData.append("additional_items", JSON.stringify(additionalItems));
 
-    // Show loading state
-    const submitBtn = $(this).find('button[type="submit"]');
+    // ✅ Target the submit button correctly
+    const submitBtn = $("#processPaymentBtn");
     const originalBtnText = submitBtn.html();
     submitBtn.html(
       '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...'
@@ -377,14 +386,10 @@ document.addEventListener("DOMContentLoaded", function () {
           // If this is the final payment and checkout is complete
           if (response.checkout_complete) {
             showToast("success", "Check-out completed successfully");
-
-            // Refresh the bookings table after a short delay
-            setTimeout(function () {
-              window.location.reload();
-            }, 1500);
           } else {
             // Just close the modal
             $("#processPaymentModal").modal("hide");
+            // Refresh the bookings table after a short delay
           }
         } else {
           showToast("error", "Error processing payment: " + response.message);
