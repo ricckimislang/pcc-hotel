@@ -98,7 +98,7 @@ function initRoomsTable() {
         render: function (data, type, row) {
           return `
           <div class="btn-group" role="group"></div>
-            <button type="button" class="btn btn-primary view-btn" data-id="${data.id}">View</button>
+            <!-- <button type="button" class="btn btn-primary view-btn" data-id="${data.id}">View</button> -->
             <button type="button" class="btn btn-warning edit-btn" data-id="${data.id}" onClick="openEditModal(${data.id})">Edit</button>
             <button type="button" class="btn btn-danger delete-btn" data-id="${data.id}">Delete</button>
           </div>
@@ -248,27 +248,30 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Function to update room summary statistics 
+// Function to update room summary statistics
 function updateRoomSummary(roomsData) {
   if (!Array.isArray(roomsData) || roomsData.length === 0) {
     return;
   }
-  
+
   // Count total rooms
   const totalRooms = roomsData.length;
-  
+
   // Count rooms by status
   const statusCounts = roomsData.reduce((counts, room) => {
-    const status = room.status ? room.status.toLowerCase() : 'unknown';
+    const status = room.status ? room.status.toLowerCase() : "unknown";
     counts[status] = (counts[status] || 0) + 1;
     return counts;
   }, {});
-  
+
   // Update the summary cards
-  document.getElementById('totalRooms').textContent = totalRooms;
-  document.getElementById('availableRooms').textContent = statusCounts.available || 0;
-  document.getElementById('occupiedRooms').textContent = (statusCounts.occupied || 0) + (statusCounts.reserved || 0);
-  document.getElementById('maintenanceRooms').textContent = statusCounts.maintenance || 0;
+  document.getElementById("totalRooms").textContent = totalRooms;
+  document.getElementById("availableRooms").textContent =
+    statusCounts.available || 0;
+  document.getElementById("occupiedRooms").textContent =
+    (statusCounts.occupied || 0) + (statusCounts.reserved || 0);
+  document.getElementById("maintenanceRooms").textContent =
+    statusCounts.maintenance || 0;
 }
 
 // get the room detailed if occupied
@@ -281,10 +284,14 @@ document.addEventListener("click", function (e) {
       .then((data) => {
         if (data.status) {
           const details = data.details;
-          $("#guestName").text(details.fullname);
-          $("#guestContact").text(details.bookingDate);
-          $("#checkInDate").text(details.check_in_date);
-          $("#checkOutDate").text(details.check_out_date);
+          $("#roomNumber").text(details.room_number);
+          $("#roomType").text(details.room_type);
+          $("#floor").text(details.floor);
+          $("#status").text(details.status);
+          $("#guestName").val(details.fullname);
+          $("#guestContact").val(details.bookingDate);
+          $("#checkInDate").val(details.check_in_date);
+          $("#checkOutDate").val(details.check_out_date);
           $("#viewGuestModal").modal("show");
         } else {
           alert("No guest information found");

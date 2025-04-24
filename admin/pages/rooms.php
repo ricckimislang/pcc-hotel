@@ -1,5 +1,5 @@
 <?php
-require_once '../includes/head.php';
+    require_once '../includes/head.php';
 ?>
 
 <body>
@@ -87,7 +87,7 @@ require_once '../includes/head.php';
         </div>
     </div>
 
-    <?php include 'modals/modal-rooms.php' ?>
+    <?php include 'modals/modal-rooms.php'?>
 
     <script src="../js/rooms/room.js"></script>
 </body>

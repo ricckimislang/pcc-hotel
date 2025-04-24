@@ -21,7 +21,9 @@ document.addEventListener("DOMContentLoaded", function () {
             confirmButtonText: "OK",
           });
           bookingForm.reset();
-          window.location.href = "../pages/index.php";
+          setTimeout(() => {
+            window.location.href = "../pages/index.php";
+          }, 2000);
         } else {
           Swal.fire({
             title: "Booking Failed!",

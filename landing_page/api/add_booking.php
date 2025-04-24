@@ -45,6 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("iissids", $user_id, $room_id, $check_in, $check_out, $guests_count, $total_price, $special_requests);
 
     if ($stmt->execute()) {
+        $roomUpdate = $conn->prepare("UPDATE rooms SET status = 'reserved' WHERE room_id = ?");
+        $roomUpdate->bind_param("i", $room_id);
+        $roomUpdate->execute();
+
         echo json_encode(["status" => true, "message" => "Booking successful. Check your bookings for payment and confirmation!"]);
     } else {
         echo json_encode(["status" => false, "message" => "Booking failed", "error" => $stmt->error]);
