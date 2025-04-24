@@ -386,6 +386,8 @@ document.addEventListener("DOMContentLoaded", function () {
           // If this is the final payment and checkout is complete
           if (response.checkout_complete) {
             showToast("success", "Check-out completed successfully");
+            window.location.reload();
+            
           } else {
             // Just close the modal
             $("#processPaymentModal").modal("hide");

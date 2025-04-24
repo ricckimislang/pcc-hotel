@@ -138,12 +138,12 @@ try {
         $stmt->execute();
         
         // Update room status to available
-        $query = "UPDATE rooms SET status = 'available'
+        $updateroom = "UPDATE rooms SET status = 'available'
                   WHERE room_id = ?";
         
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('i', $booking['room_id']);
-        $stmt->execute();
+        $stmtroom = $conn->prepare($updateroom);
+        $stmtroom->bind_param('i', $booking['room_id']);
+        $stmtroom->execute();
         
         $checkout_complete = true;
     }
