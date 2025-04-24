@@ -24,6 +24,7 @@ function initRoomsTable() {
             return [];
           }
           loadRoomTypes(json.room_types);
+          updateRoomSummary(json.rooms);
           return json.rooms;
         } catch (e) {
           console.error("Error during post-processing:", e);
@@ -246,6 +247,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+// Function to update room summary statistics 
+function updateRoomSummary(roomsData) {
+  if (!Array.isArray(roomsData) || roomsData.length === 0) {
+    return;
+  }
+  
+  // Count total rooms
+  const totalRooms = roomsData.length;
+  
+  // Count rooms by status
+  const statusCounts = roomsData.reduce((counts, room) => {
+    const status = room.status ? room.status.toLowerCase() : 'unknown';
+    counts[status] = (counts[status] || 0) + 1;
+    return counts;
+  }, {});
+  
+  // Update the summary cards
+  document.getElementById('totalRooms').textContent = totalRooms;
+  document.getElementById('availableRooms').textContent = statusCounts.available || 0;
+  document.getElementById('occupiedRooms').textContent = (statusCounts.occupied || 0) + (statusCounts.reserved || 0);
+  document.getElementById('maintenanceRooms').textContent = statusCounts.maintenance || 0;
+}
 
 // get the room detailed if occupied
 

@@ -22,15 +22,16 @@ require_once '../includes/functions.php';
     <div class="main-content">
         <div class="dashboard-container">
             <div class="row mb-4">
-                <div class="col-12">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="text-muted">Real-time occupancy reports and hotel performance</p>
-                </div>
+
             </div>
 
             <!-- Filters -->
             <div class="filters-container">
                 <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="text-muted">Real-time occupancy reports and hotel performance</p>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="period-filter">Time Period</label>

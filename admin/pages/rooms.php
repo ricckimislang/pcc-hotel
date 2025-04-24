@@ -1,5 +1,5 @@
 <?php
-    require_once '../includes/head.php';
+require_once '../includes/head.php';
 ?>
 
 <body>
@@ -11,6 +11,47 @@
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">
                 <i class="fas fa-plus"></i> Add Room
             </button>
+        </div>
+
+        <div class="summary-section mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="summary-card bg-primary text-white">
+                        <div class="summary-icon"><i class="fas fa-bed"></i></div>
+                        <div class="summary-info">
+                            <h3 id="totalRooms">0</h3>
+                            <span>Total Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-success text-white">
+                        <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="summary-info">
+                            <h3 id="availableRooms">0</h3>
+                            <span>Available Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-danger text-white">
+                        <div class="summary-icon"><i class="fas fa-door-closed"></i></div>
+                        <div class="summary-info">
+                            <h3 id="occupiedRooms">0</h3>
+                            <span>Occupied Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-info text-white">
+                        <div class="summary-icon"><i class="fas fa-broom"></i></div>
+                        <div class="summary-info">
+                            <h3 id="maintenanceRooms">0</h3>
+                            <span>Under Maintenance</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card">
@@ -46,7 +87,7 @@
         </div>
     </div>
 
-    <?php include 'modals/modal-rooms.php'?>
+    <?php include 'modals/modal-rooms.php' ?>
 
     <script src="../js/rooms/room.js"></script>
 </body>
