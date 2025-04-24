@@ -20,22 +20,24 @@ require_once '../includes/functions.php';
     <?php include_once '../includes/sidebar.php'; ?>
 
     <div class="main-content">
-        <div class="dashboard-container">
-            <div class="row mb-4">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+            <button id="refresh-data" class="btn btn-outline-secondary">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
 
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Overview Filters</h2>
             </div>
-
-            <!-- Filters -->
-            <div class="filters-container">
+            <div class="card-body">
                 <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="page-title">Dashboard</h1>
-                        <p class="text-muted">Real-time occupancy reports and hotel performance</p>
-                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="period-filter">Time Period</label>
-                            <select id="period-filter" class="form-control">
+                            <select id="period-filter" class="form-select">
                                 <option value="today">Today</option>
                                 <option value="week">This Week</option>
                                 <option value="month">This Month</option>
@@ -44,7 +46,7 @@ require_once '../includes/functions.php';
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-7">
+                    <div class="col-md-9">
                         <div id="date-range-container" class="row d-none">
                             <div class="col-md-5">
                                 <div class="form-group">
@@ -64,99 +66,115 @@ require_once '../includes/functions.php';
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button id="refresh-data" class="btn btn-outline-secondary w-100">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="summary-section mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="summary-card bg-primary text-white">
+                        <div class="summary-icon"><i class="fas fa-door-open"></i></div>
+                        <div class="summary-info">
+                            <h3 id="total-rooms">0</h3>
+                            <span>Total Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-success text-white">
+                        <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="summary-info">
+                            <h3 id="available-rooms">0</h3>
+                            <span>Available Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-danger text-white">
+                        <div class="summary-icon"><i class="fas fa-bed"></i></div>
+                        <div class="summary-info">
+                            <h3 id="occupied-rooms">0</h3>
+                            <span>Occupied Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-info text-white">
+                        <div class="summary-icon"><i class="fas fa-percentage"></i></div>
+                        <div class="summary-info">
+                            <h3 id="occupancy-rate">0%</h3>
+                            <span>Occupancy Rate</span>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Stats Cards -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(52, 152, 219, 0.2); color: #3498db;">
-                        <i class="fas fa-door-open"></i>
+        <!-- Booking Status Row -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Booking Status</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="status-card">
+                            <div class="status-icon pending">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                            <div class="status-info">
+                                <h3 id="pending-bookings">0</h3>
+                                <span>Pending</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3 id="total-rooms">0</h3>
-                        <p>Total Rooms</p>
+                    <div class="col-md-3">
+                        <div class="status-card">
+                            <div class="status-icon confirmed">
+                                <i class="fas fa-calendar-alt fa-2x"></i>
+                            </div>
+                            <div class="status-info">
+                                <h3 id="confirmed-bookings">0</h3>
+                                <span>Confirmed</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(231, 76, 60, 0.2); color: #e74c3c;">
-                        <i class="fas fa-bed"></i>
+                    <div class="col-md-3">
+                        <div class="status-card">
+                            <div class="status-icon checked-in">
+                                <i class="fas fa-sign-in-alt fa-2x"></i>
+                            </div>
+                            <div class="status-info">
+                                <h3 id="checked-in-bookings">0</h3>
+                                <span>Checked In</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3 id="occupied-rooms">0</h3>
-                        <p>Occupied Rooms</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(46, 204, 113, 0.2); color: #2ecc71;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="available-rooms">0</h3>
-                        <p>Available Rooms</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(241, 196, 15, 0.2); color: #f1c40f;">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="occupancy-rate">0%</h3>
-                        <p>Occupancy Rate</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(155, 89, 182, 0.2); color: #9b59b6;">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="total-bookings">0</h3>
-                        <p>Total Bookings</p>
+                    <div class="col-md-3">
+                        <div class="status-card">
+                            <div class="status-icon checked-out">
+                                <i class="fas fa-sign-out-alt fa-2x"></i>
+                            </div>
+                            <div class="status-info">
+                                <h3 id="checked-out-bookings">0</h3>
+                                <span>Checked Out</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Booking Status Cards -->
-            <div class="booking-status-container">
-                <div class="booking-status-card">
-                    <i class="fas fa-clock fa-2x pending mb-2"></i>
-                    <h3 id="pending-bookings" class="pending">0</h3>
-                    <p>Pending</p>
-                </div>
-
-                <div class="booking-status-card">
-                    <i class="fas fa-calendar-alt fa-2x confirmed mb-2"></i>
-                    <h3 id="confirmed-bookings" class="confirmed">0</h3>
-                    <p>Confirmed</p>
-                </div>
-
-                <div class="booking-status-card">
-                    <i class="fas fa-sign-in-alt fa-2x checked-in mb-2"></i>
-                    <h3 id="checked-in-bookings" class="checked-in">0</h3>
-                    <p>Checked In</p>
-                </div>
-
-                <div class="booking-status-card">
-                    <i class="fas fa-sign-out-alt fa-2x checked-out mb-2"></i>
-                    <h3 id="checked-out-bookings" class="checked-out">0</h3>
-                    <p>Checked Out</p>
-                </div>
-            </div>
-
-            <!-- Charts Row 1 -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="chart-container">
-                        <div class="chart-title">Room Occupancy Status</div>
+        <!-- Charts Row 1 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Room Occupancy Status</h2>
+                    </div>
+                    <div class="card-body">
                         <div class="chart-wrapper">
                             <div class="chart-loading">
                                 <div class="spinner-border text-primary" role="status">
@@ -167,10 +185,14 @@ require_once '../includes/functions.php';
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-md-6">
-                    <div class="chart-container">
-                        <div class="chart-title">Booking Status Distribution</div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Booking Status Distribution</h2>
+                    </div>
+                    <div class="card-body">
                         <div class="chart-wrapper">
                             <div class="chart-loading">
                                 <div class="spinner-border text-primary" role="status">
@@ -182,12 +204,17 @@ require_once '../includes/functions.php';
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Charts Row 2 -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="chart-container">
-                        <div class="chart-title">Daily Check-ins and Check-outs (Last 30 Days)</div>
+        <!-- Charts Row 2 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Daily Check-ins and Check-outs</h2>
+                        <small class="text-muted">Last 30 Days</small>
+                    </div>
+                    <div class="card-body">
                         <div class="chart-wrapper">
                             <div class="chart-loading">
                                 <div class="spinner-border text-primary" role="status">
@@ -198,11 +225,14 @@ require_once '../includes/functions.php';
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Charts Row 3 -->
-                <div class="col-md-6">
-                    <div class="chart-container">
-                        <div class="chart-title">Room Type Distribution and Occupancy</div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Room Type Distribution</h2>
+                    </div>
+                    <div class="card-body">
                         <div class="chart-wrapper">
                             <div class="chart-loading">
                                 <div class="spinner-border text-primary" role="status">
