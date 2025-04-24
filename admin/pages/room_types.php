@@ -1,5 +1,5 @@
 <?php
-require_once '../includes/head.php';
+    require_once '../includes/head.php';
 ?>
 <link rel="stylesheet" href="../css/room_types.css">
 
@@ -40,7 +40,7 @@ require_once '../includes/head.php';
         </div>
     </div>
 
-    <?php include_once 'modals/room-types-modal.php' ?>
+    <?php include_once 'modals/room-types-modal.php'?>
 
     <link rel="stylesheet" href="../css/room_types.css">
     <script src="../js/room_types/room_types.js"></script>
