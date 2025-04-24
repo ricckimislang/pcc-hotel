@@ -19,11 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
             text: "Please view your booking and payment details for confirmation",
             icon: "success",
             confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "../pages/index.php";
+            }
           });
           bookingForm.reset();
-          setTimeout(() => {
-            window.location.href = "../pages/index.php";
-          }, 2000);
         } else {
           Swal.fire({
             title: "Booking Failed!",
