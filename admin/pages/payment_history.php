@@ -449,114 +449,124 @@ try {
 
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize DataTables
-            $('#transactionsTable').DataTable({
-                responsive: true,
-                pageLength: 10,
-                lengthMenu: [
-                    [10, 25, 50, 100, -1],
-                    [10, 25, 50, 100, 'All Records']
-                ],
-                order: [[1, 'desc']], // Sort by date column descending
-                language: {
-                    search: "Search transactions:",
-                    lengthMenu: "_MENU_ records per page",
-                    info: "Showing _START_ to _END_ of _TOTAL_ transactions",
-                    emptyTable: "No transactions found",
-                    infoEmpty: "No transactions available",
-                    zeroRecords: "No matching transactions found"
-                },
-                columnDefs: [
-                    { orderable: false, targets: 7 } // Disable sorting on actions column
-                ],
-                dom: '<"row mb-3"<"col-md-6"l><"col-md-6 text-end"<"export-buttons"B>f>>rt<"row"<"col-md-6"i><"col-md-6"p>>',
-                buttons: [
-                    {
-                        extend: 'excel',
-                        text: '<i class="fas fa-file-excel"></i> Excel',
-                        className: 'btn btn-sm btn-success',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
-                        },
-                        title: 'Payment History - ' + new Date().toLocaleDateString()
+            const transactionsTable = $('#transactionsTable');
+            
+            // Check if there are actual data rows in the table (not just the "no transactions" row)
+            const hasTransactions = transactionsTable.find('tbody tr td:first-child').text() !== 'No transactions found';
+            
+            if (hasTransactions) {
+                transactionsTable.DataTable({
+                    responsive: true,
+                    pageLength: 10,
+                    lengthMenu: [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, 'All Records']
+                    ],
+                    order: [[1, 'desc']], // Sort by date column descending
+                    language: {
+                        search: "Search transactions:",
+                        lengthMenu: "_MENU_ records per page",
+                        info: "Showing _START_ to _END_ of _TOTAL_ transactions",
+                        emptyTable: "No transactions found",
+                        infoEmpty: "No transactions available",
+                        zeroRecords: "No matching transactions found"
                     },
-                    {
-                        extend: 'pdf',
-                        text: '<i class="fas fa-file-pdf"></i> PDF',
-                        className: 'btn btn-sm btn-danger',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
+                    columnDefs: [
+                        { orderable: false, targets: 7 } // Disable sorting on actions column
+                    ],
+                    dom: '<"row mb-3"<"col-md-6"l><"col-md-6 text-end"<"export-buttons"B>f>>rt<"row"<"col-md-6"i><"col-md-6"p>>',
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            text: '<i class="fas fa-file-excel"></i> Excel',
+                            className: 'btn btn-sm btn-success',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6]
+                            },
+                            title: 'Payment History - ' + new Date().toLocaleDateString()
                         },
-                        title: 'Payment History - ' + new Date().toLocaleDateString(),
-                        customize: function (doc) {
-                            // Formatting PDF
-                            doc.pageMargins = [20, 20, 20, 20];
-                            doc.defaultStyle.fontSize = 10;
-                            doc.styles.tableHeader.fontSize = 11;
-                            doc.styles.tableHeader.alignment = 'left';
-                            doc.styles.title.fontSize = 14;
-                            doc.styles.title.bold = true;
-                            doc.styles.title.alignment = 'center';
+                        {
+                            extend: 'pdf',
+                            text: '<i class="fas fa-file-pdf"></i> PDF',
+                            className: 'btn btn-sm btn-danger',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6]
+                            },
+                            title: 'Payment History - ' + new Date().toLocaleDateString(),
+                            customize: function (doc) {
+                                // Formatting PDF
+                                doc.pageMargins = [20, 20, 20, 20];
+                                doc.defaultStyle.fontSize = 10;
+                                doc.styles.tableHeader.fontSize = 11;
+                                doc.styles.tableHeader.alignment = 'left';
+                                doc.styles.title.fontSize = 14;
+                                doc.styles.title.bold = true;
+                                doc.styles.title.alignment = 'center';
 
-                            // Add hotel name
-                            doc.content.splice(0, 1, {
-                                text: 'PCC Hotel - Payment History',
-                                style: 'title',
-                                margin: [0, 0, 0, 10]
-                            });
+                                // Add hotel name
+                                doc.content.splice(0, 1, {
+                                    text: 'PCC Hotel - Payment History',
+                                    style: 'title',
+                                    margin: [0, 0, 0, 10]
+                                });
 
-                            // Add date
-                            doc.content.splice(1, 0, {
-                                text: 'Generated on: ' + new Date().toLocaleDateString(),
-                                style: 'subheader',
-                                margin: [0, 0, 0, 15]
-                            });
+                                // Add date
+                                doc.content.splice(1, 0, {
+                                    text: 'Generated on: ' + new Date().toLocaleDateString(),
+                                    style: 'subheader',
+                                    margin: [0, 0, 0, 15]
+                                });
 
-                            // Style the table
-                            doc.content[2].table.widths = ['10%', '15%', '15%', '10%', '10%', '15%', '15%'];
-                            doc.content[2].layout = {
-                                hLineWidth: function (i, node) { return 0.5; },
-                                vLineWidth: function (i, node) { return 0.5; },
-                                hLineColor: function (i, node) { return '#aaa'; },
-                                vLineColor: function (i, node) { return '#aaa'; },
-                                paddingLeft: function (i, node) { return 5; },
-                                paddingRight: function (i, node) { return 5; },
-                                paddingTop: function (i, node) { return 5; },
-                                paddingBottom: function (i, node) { return 5; }
-                            };
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: '<i class="fas fa-print"></i> Print',
-                        className: 'btn btn-sm btn-primary',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
+                                // Style the table
+                                doc.content[2].table.widths = ['10%', '15%', '15%', '10%', '10%', '15%', '15%'];
+                                doc.content[2].layout = {
+                                    hLineWidth: function (i, node) { return 0.5; },
+                                    vLineWidth: function (i, node) { return 0.5; },
+                                    hLineColor: function (i, node) { return '#aaa'; },
+                                    vLineColor: function (i, node) { return '#aaa'; },
+                                    paddingLeft: function (i, node) { return 5; },
+                                    paddingRight: function (i, node) { return 5; },
+                                    paddingTop: function (i, node) { return 5; },
+                                    paddingBottom: function (i, node) { return 5; }
+                                };
+                            }
                         },
-                        title: '<h3 style="text-align: center; margin-bottom: 10px;">PCC Hotel - Payment History</h3>' +
-                            '<p style="text-align: center; font-size: 12px; margin-bottom: 20px;">Generated on: ' +
-                            new Date().toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            }) + '</p>',
-                        customize: function (win) {
-                            // Let the print stylesheet handle most of the styling
-                            $(win.document.body).find('table').addClass('dataTable');
+                        {
+                            extend: 'print',
+                            text: '<i class="fas fa-print"></i> Print',
+                            className: 'btn btn-sm btn-primary',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6]
+                            },
+                            title: '<h3 style="text-align: center; margin-bottom: 10px;">PCC Hotel - Payment History</h3>' +
+                                '<p style="text-align: center; font-size: 12px; margin-bottom: 20px;">Generated on: ' +
+                                new Date().toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) + '</p>',
+                            customize: function (win) {
+                                // Let the print stylesheet handle most of the styling
+                                $(win.document.body).find('table').addClass('dataTable');
 
-                            // Format amounts
-                            $(win.document.body).find('td:nth-child(5)').each(function () {
-                                const amount = parseFloat($(this).text().replace(/[^\d.]/g, ''));
-                                $(this).text('₱' + amount.toLocaleString('en-US', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                }));
-                            });
+                                // Format amounts
+                                $(win.document.body).find('td:nth-child(5)').each(function () {
+                                    const amount = parseFloat($(this).text().replace(/[^\d.]/g, ''));
+                                    $(this).text('₱' + amount.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    }));
+                                });
+                            }
                         }
-                    }
-                ]
-            });
+                    ]
+                });
+            } else {
+                // If no transactions, hide the export buttons container and add a simple message
+                $('.export-buttons').hide();
+            }
 
             // Initialize date pickers
             flatpickr('#start_date', {
