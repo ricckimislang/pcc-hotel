@@ -104,28 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Pre-fill prices when selecting standard items
-  $("#fee_item_name").change(function () {
-    const priceGuide = {
-      Towel: 5.0,
-      Soap: 2.0,
-      Shampoo: 3.0,
-      Toothbrush: 2.5,
-      Toothpaste: 2.5,
-      Slippers: 4.0,
-      "Extra Bed": 15.0,
-      Laundry: 10.0,
-      "Room Service": 8.0,
-      "Late Checkout": 20.0,
-    };
-
-    const selectedItem = $(this).val();
-    if (priceGuide[selectedItem]) {
-      $("#fee_item_price").val(priceGuide[selectedItem].toFixed(2));
-    } else {
-      $("#fee_item_price").val("");
-    }
-  });
 
   // Add fee button in the modal
   $("#confirmAddFeeBtn").click(function () {
