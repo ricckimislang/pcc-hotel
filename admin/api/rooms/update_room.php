@@ -9,13 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $room_id = $_POST['edit_room_id'];
         $room_number = $_POST['edit_room_number'];
         $room_type_id = $_POST['edit_room_type_id'];
-        $floor = $_POST['edit_floor'];
         $status = $_POST['edit_status'];
         $description = $_POST['edit_description'];
 
         // Update the room in the database
-        $stmt = $conn->prepare('UPDATE rooms SET room_number = ?, room_type_id = ?, floor = ?, description = ?, status = ? WHERE room_id = ?');
-        $stmt->bind_param('sisssi', $room_number, $room_type_id, $floor, $description, $status, $room_id);
+        $stmt = $conn->prepare('UPDATE rooms SET room_number = ?, room_type_id = ?, description = ?, status = ? WHERE room_id = ?');
+        $stmt->bind_param('ssssi', $room_number, $room_type_id, $description, $status, $room_id);
         $stmt->execute();
         $stmt->close();
 

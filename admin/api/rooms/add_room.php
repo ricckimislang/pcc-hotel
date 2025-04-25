@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // insert to table
         $stmt = $conn->prepare('INSERT INTO rooms (room_number, room_type_id, description, status) VALUES (?, ?, ?, ?)');
-        $stmt->bind_param('isss', $room_number, $room_type_id, $description, $status);
+        $stmt->bind_param('ssss', $room_number, $room_type_id, $description, $status);
         $stmt->execute();
         $stmt->close();
 

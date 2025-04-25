@@ -47,22 +47,13 @@
                             <h6 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Location & Status</h6>
                         </div>
                         <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="floor" class="form-label small text-muted mb-1">FLOOR</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-level-up-alt"></i></span>
-                                            <input type="number" class="form-control" id="floor" name="floor">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="status" class="form-label small text-muted mb-1">STATUS</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
-                                            <select class="form-control" id="status" name="status" required>
+                                            <select class="form-control" id="status" name="status" readonly>
                                                 <option value="available">Available</option>
                                             </select>
                                         </div>
@@ -107,7 +98,7 @@
             <div class="modal-body p-4">
                 <form id="editRoomForm">
                     <input type="hidden" id="edit_room_id" name="edit_room_id">
-                    
+
                     <!-- Room Details Card -->
                     <div class="card mb-4 border-0 shadow-sm">
                         <div class="card-header bg-light">
@@ -146,15 +137,6 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="edit_floor" class="form-label small text-muted mb-1">FLOOR</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-level-up-alt"></i></span>
-                                            <input type="number" class="form-control" id="edit_floor" name="edit_floor">
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="edit_status" class="form-label small text-muted mb-1">STATUS</label>

@@ -1,55 +1,55 @@
 <?php
-    require_once '../../config/db.php';
+require_once '../../config/db.php';
 
-    // Get room type ID from URL parameter
-    $room_type_id = $_GET['room_type_id'];
+// Get room type ID from URL parameter
+$room_type_id = $_GET['room_type_id'];
 
-    // First get room type details
-    $type_query = "SELECT * FROM room_types WHERE room_type_id = ?";
-    $type_stmt  = $conn->prepare($type_query);
-    $type_stmt->bind_param("i", $room_type_id);
-    $type_stmt->execute();
-    $type_result = $type_stmt->get_result();
-    $room_type   = $type_result->fetch_assoc();
-    $type_stmt->close();
+// First get room type details
+$type_query = "SELECT * FROM room_types WHERE room_type_id = ?";
+$type_stmt  = $conn->prepare($type_query);
+$type_stmt->bind_param("i", $room_type_id);
+$type_stmt->execute();
+$type_result = $type_stmt->get_result();
+$room_type   = $type_result->fetch_assoc();
+$type_stmt->close();
 
-    // Then get available rooms of this type
-    $rooms_query = "SELECT * FROM rooms WHERE status = 'available' AND room_type_id = $room_type_id";
-    $rooms_stmt  = $conn->prepare($rooms_query);
-    $rooms_stmt->execute();
-    $rooms_result    = $rooms_stmt->get_result();
-    $available_rooms = [];
-    while ($room = $rooms_result->fetch_assoc()) {
-        $available_rooms[] = $room;
-    }
-    $rooms_stmt->close();
-    $conn->close();
+// Then get available rooms of this type
+$rooms_query = "SELECT r.*, rt.floor_type FROM rooms r LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id WHERE r.status = 'available' AND r.room_type_id = $room_type_id";
+$rooms_stmt  = $conn->prepare($rooms_query);
+$rooms_stmt->execute();
+$rooms_result    = $rooms_stmt->get_result();
+$available_rooms = [];
+while ($room = $rooms_result->fetch_assoc()) {
+    $available_rooms[] = $room;
+}
+$rooms_stmt->close();
+$conn->close();
 
-    // Check if room type data is available
-    if ($room_type) {
-        $type_name   = $room_type['type_name'];
-        $description = $room_type['description'];
-        $base_price  = $room_type['base_price'];
-        $capacity    = $room_type['capacity'];
-        $amenities   = $room_type['amenities'];
+// Check if room type data is available
+if ($room_type) {
+    $type_name   = $room_type['type_name'];
+    $description = $room_type['description'];
+    $base_price  = $room_type['base_price'];
+    $capacity    = $room_type['capacity'];
+    $amenities   = $room_type['amenities'];
 
-        // Get first available room details if any exist
-        if (! empty($available_rooms)) {
-            $room        = $available_rooms[0];
-            $room_id     = $room['room_id'];
-            $room_number = $room['room_number'];
-            $floor       = $room['floor'];
-            $status      = $room['status'];
-        } else {
-            $room_id     = null;
-            $room_number = 'N/A';
-            $floor       = 'N/A';
-            $status      = 'No rooms available';
-        }
+    // Get first available room details if any exist
+    if (! empty($available_rooms)) {
+        $room        = $available_rooms[0];
+        $room_id     = $room['room_id'];
+        $room_number = $room['room_number'];
+        $floor       = $room['floor_type'];
+        $status      = $room['status'];
     } else {
-        echo "Room type not found.";
-        exit;
+        $room_id     = null;
+        $room_number = 'N/A';
+        $floor       = 'N/A';
+        $status      = 'No rooms available';
     }
+} else {
+    echo "Room type not found.";
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -79,7 +79,7 @@
 
             <p class="room-description"><?php echo $description; ?></p>
 
-            <div class="available-rooms" >
+            <div class="available-rooms">
                 <h2>Available Rooms</h2>
                 <?php if (! empty($available_rooms)): ?>
                     <div class="rooms-grid">
@@ -88,11 +88,12 @@
                                 <div class="room-card-header">
                                     <div class="room-number">
                                         <i class="fas fa-door-open"></i>
-                                        <h3>Room                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $room['room_number']; ?></h3>
+                                        <h3>Room <?php echo $room['room_number']; ?></h3>
                                     </div>
                                     <div class="room-floor">
                                         <i class="fas fa-building"></i>
-                                        <span class="floor-badge">Floor                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <?php echo $room['floor']; ?></span>
+                                        <span class="floor-badge">Floor</span>
+                                        <?php echo $room['floor_type']; ?></span>
                                     </div>
                                 </div>
                                 <div class="room-card-body">
@@ -145,25 +146,25 @@
             <h2 class="section-title">Room Amenities</h2>
             <div class="amenities-grid">
                 <?php
-                    $amenities_array = explode(',', $amenities);
-                    $amenity_icons   = [
-                        'WiFi'             => 'fa-wifi',
-                        'TV'               => 'fa-tv',
-                        'Air Conditioning' => 'fa-snowflake',
-                        'Mini Bar'         => 'fa-wine-glass',
-                        'Safe'             => 'fa-vault',
-                        'Room Service'     => 'fa-concierge-bell',
-                        'Coffee Maker'     => 'fa-mug-hot',
-                        'Hair Dryer'       => 'fa-wind',
-                    ];
-                    foreach ($amenities_array as $amenity) {
-                        $amenity = trim($amenity);
-                        $icon    = isset($amenity_icons[$amenity]) ? $amenity_icons[$amenity] : 'fa-check';
-                        echo "<div class='amenity-item'>";
-                        echo "<i class='fas {$icon} amenity-icon'></i>";
-                        echo "<span class='amenity-text'>{$amenity}</span>";
-                        echo "</div>";
-                    }
+                $amenities_array = explode(',', $amenities);
+                $amenity_icons   = [
+                    'WiFi'             => 'fa-wifi',
+                    'TV'               => 'fa-tv',
+                    'Air Conditioning' => 'fa-snowflake',
+                    'Mini Bar'         => 'fa-wine-glass',
+                    'Safe'             => 'fa-vault',
+                    'Room Service'     => 'fa-concierge-bell',
+                    'Coffee Maker'     => 'fa-mug-hot',
+                    'Hair Dryer'       => 'fa-wind',
+                ];
+                foreach ($amenities_array as $amenity) {
+                    $amenity = trim($amenity);
+                    $icon    = isset($amenity_icons[$amenity]) ? $amenity_icons[$amenity] : 'fa-check';
+                    echo "<div class='amenity-item'>";
+                    echo "<i class='fas {$icon} amenity-icon'></i>";
+                    echo "<span class='amenity-text'>{$amenity}</span>";
+                    echo "</div>";
+                }
                 ?>
             </div>
         </div>

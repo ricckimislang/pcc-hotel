@@ -24,7 +24,6 @@ switch ($action) {
             // Validate input
             $room_number = trim($_POST['room_number'] ?? '');
             $room_type_id = intval($_POST['room_type_id'] ?? 0);
-            $floor = trim($_POST['floor'] ?? '');
             $description = trim($_POST['description'] ?? '');
             $status = trim($_POST['status'] ?? 'available');
             
