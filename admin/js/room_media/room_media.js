@@ -144,9 +144,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.panorama_image) {
                         // Initialize or update panorama viewer
                         if (panoramaViewer) {
-                            panoramaViewer.setPanorama(`../uploads/panoramas/${data.panorama_image}`);
+                            panoramaViewer.setPanorama(`../public/panoramas/${data.panorama_image}`);
                         } else {
-                            initPanoramaViewer(`../uploads/panoramas/${data.panorama_image}`);
+                            initPanoramaViewer(`../public/panoramas/${data.panorama_image}`);
                         }
                         panoramaContainer.classList.remove('d-none');
                     } else {
@@ -231,8 +231,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            if (panoramaFile.size > 10 * 1024 * 1024) { // 10MB
-                alert('Panorama file size should not exceed 10MB.');
+            if (panoramaFile.size > 20 * 1024 * 1024) { // 20MB
+                alert('Panorama file size should not exceed 20MB.');
                 return;
             }
             
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     modalPanoramaViewer = new PhotoSphereViewer.Viewer({
                         container: modalPanoramaView,
-                        panorama: `../uploads/panoramas/${data.panorama_image}`,
+                        panorama: `../public/panoramas/${data.panorama_image}`,
                         size: {
                             width: '100%',
                             height: '100%'

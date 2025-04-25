@@ -17,7 +17,7 @@ async function getRooms() {
 
         roomCard.innerHTML = `
           <div class="activity-image">
-            <img src="${roomImg}" alt="${room.type_name}">
+            <img src="../../${roomImg}" alt="${room.type_name}">
           </div>
           <div class="activity-info">
             <h3>${room.type_name}</h3>

@@ -26,4 +26,3 @@ try {
     echo "Error: " . $e->getMessage();
 }
 $conn->close();
-?>

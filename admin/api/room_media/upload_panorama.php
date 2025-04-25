@@ -31,14 +31,14 @@ if (!in_array($file['type'], $allowed_types)) {
 }
 
 // Validate file size (max 10MB)
-$max_size = 10 * 1024 * 1024; // 10MB in bytes
+$max_size = 30 * 1024 * 1024; // 10MB in bytes
 if ($file['size'] > $max_size) {
     echo json_encode(['success' => false, 'message' => 'File size exceeds the limit of 10MB']);
     exit;
 }
 
 // Create upload directory if it doesn't exist
-$upload_dir = '../../uploads/panoramas/';
+$upload_dir = '../../../public/panoramas/';
 if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0755, true);
 }

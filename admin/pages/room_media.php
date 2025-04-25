@@ -1,5 +1,5 @@
 <?php
-    require_once '../includes/head.php';
+require_once '../includes/head.php';
 ?>
 <link rel="stylesheet" href="../css/room_media.css">
 
@@ -26,12 +26,12 @@
                                 <!-- Rooms will be populated dynamically -->
                             </select>
                         </div>
-                        
+
                         <div id="cardImageContainer" class="text-center mb-3 d-none">
                             <img id="currentCardImage" src="" alt="Current Room Card Image" class="img-fluid mb-2 rounded shadow-sm">
                             <p class="text-muted">Current card image</p>
                         </div>
-                        
+
                         <div class="upload-area" id="cardImageUploadArea">
                             <div class="upload-icon">
                                 <i class="fas fa-cloud-upload-alt"></i>
@@ -42,11 +42,11 @@
                             <input type="file" id="cardImageUpload" accept="image/*" class="d-none">
                             <p class="text-muted mt-2">Recommended size: 800x600px, Max: 5MB</p>
                         </div>
-                        
+
                         <div class="progress mt-3 d-none" id="cardImageProgress">
                             <div class="progress-bar" role="progressbar" style="width: 0%"></div>
                         </div>
-                        
+
                         <div class="text-end mt-3">
                             <button class="btn btn-success d-none" id="saveCardImageBtn">
                                 <i class="fas fa-save"></i> Save Card Image
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
@@ -70,12 +70,12 @@
                                 <!-- Rooms will be populated dynamically -->
                             </select>
                         </div>
-                        
+
                         <div id="panoramaContainer" class="text-center mb-3 d-none">
                             <div id="panoramaPreview" class="panorama-preview"></div>
                             <p class="text-muted">Current 360° panorama</p>
                         </div>
-                        
+
                         <div class="upload-area" id="panoramaUploadArea">
                             <div class="upload-icon">
                                 <i class="fas fa-panorama"></i>
@@ -84,13 +84,13 @@
                             <p>or</p>
                             <label for="panoramaUpload" class="btn btn-primary">Browse Files</label>
                             <input type="file" id="panoramaUpload" accept="image/*" class="d-none">
-                            <p class="text-muted mt-2">Equirectangular format recommended, Max: 10MB</p>
+                            <p class="text-muted mt-2">Equirectangular format recommended, Max: 30MB</p>
                         </div>
-                        
+
                         <div class="progress mt-3 d-none" id="panoramaProgress">
                             <div class="progress-bar" role="progressbar" style="width: 0%"></div>
                         </div>
-                        
+
                         <div class="text-end mt-3">
                             <button class="btn btn-success d-none" id="savePanoramaBtn">
                                 <i class="fas fa-save"></i> Save 360° Image
@@ -100,7 +100,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card">
             <div class="card-header">
                 <h2>Room Media Gallery</h2>
@@ -177,7 +177,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uevent@2/browser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4.6.0/dist/photo-sphere-viewer.min.js"></script>
-    
+
     <!-- Load the room media management JS -->
     <script src="../js/room_media/room_media.js"></script>
 </body>

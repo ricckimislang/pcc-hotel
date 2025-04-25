@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $target_path = $upload_dir . $filename;
             
             if(move_uploaded_file($_FILES['room_image']['tmp_name'], $target_path)) {
-                $image_path = '/public/room_images/' . $filename;
+                $image_path = 'public/room_images/' . $filename;
             } else {
                 $response['message'] = 'Failed to upload image. Please try again.';
                 echo json_encode($response);

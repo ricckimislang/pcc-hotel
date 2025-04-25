@@ -14,11 +14,12 @@ $room_type   = $type_result->fetch_assoc();
 $type_stmt->close();
 
 // Then get available rooms of this type
-$rooms_query = "SELECT r.*, rt.floor_type FROM rooms r LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id WHERE r.status = 'available' AND r.room_type_id = $room_type_id";
+$rooms_query = "SELECT r.*, rt.floor_type, rm.* FROM rooms r LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id LEFT JOIN room_media rm ON r.room_id = rm.room_id WHERE r.status = 'available' AND r.room_type_id = $room_type_id";
 $rooms_stmt  = $conn->prepare($rooms_query);
 $rooms_stmt->execute();
 $rooms_result    = $rooms_stmt->get_result();
 $available_rooms = [];
+
 while ($room = $rooms_result->fetch_assoc()) {
     $available_rooms[] = $room;
 }
@@ -40,11 +41,15 @@ if ($room_type) {
         $room_number = $room['room_number'];
         $floor       = $room['floor_type'];
         $status      = $room['status'];
+        $card_image  = $room['card_image'];
+        $panorama_image = $room['panorama_image'];
     } else {
         $room_id     = null;
         $room_number = 'N/A';
         $floor       = 'N/A';
         $status      = 'No rooms available';
+        $card_image  = null;
+        $panorama_image = null;
     }
 } else {
     echo "Room type not found.";
@@ -54,8 +59,11 @@ if ($room_type) {
 
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="../css/room_details.css">
-<?php include_once '../includes/head.php'; ?>
+<head>
+    <?php include_once '../includes/head.php'; ?>
+    <link rel="stylesheet" href="../css/room_details.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
 
 <body>
     <div class="room-details">
@@ -136,24 +144,43 @@ if ($room_type) {
             <p class="section-subtitle">Explore our luxurious accommodations</p>
             <div class="photos-grid">
                 <div class="photo-item">
-                    <img src="../assets/images/gallery/room1.svg" alt="Luxury Room - Bedroom View">
+                    <img src="../assets/images/room-gallery-1.jpg" alt="Luxury Room - Bedroom View">
                     <div class="photo-overlay">
                         <span>Bedroom</span>
                     </div>
                 </div>
                 <div class="photo-item">
-                    <img src="../assets/images/gallery/room2.svg" alt="Luxury Room - Bathroom View">
+                    <img src="../assets/images/room-gallery-2.jpg" alt="Luxury Room - Bathroom View">
                     <div class="photo-overlay">
                         <span>Bathroom</span>
                     </div>
                 </div>
                 <div class="photo-item">
-                    <img src="../assets/images/gallery/room3.svg" alt="Luxury Room - Living Space">
+                    <img src="../assets/images/room-gallery-3.jpg" alt="Luxury Room - Living Space">
                     <div class="photo-overlay">
                         <span>Living Area</span>
                     </div>
                 </div>
             </div>
+            <!-- Panorama Image Section -->
+            <?php if (!empty($panorama_image)): ?>
+                <div class="panorama-section">
+                    <h2 class="section-title">360° Room View</h2>
+                    <p class="section-subtitle">Experience the room in immersive 360°</p>
+                    <div class="panorama-container">
+                        <a href="panorama_viewer.php?room_id=<?php echo $room_id; ?>" class="panorama-link">
+                            <img src="../../public/panoramas/<?php echo htmlspecialchars($panorama_image); ?>" alt="360° view of <?php echo htmlspecialchars($type_name); ?>" class="panorama-image">
+                            <div class="panorama-overlay">
+                                <span class="panorama-hint"><i class="fas fa-vr-cardboard"></i> View in 360°</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="no-panorama-message">
+                    <p><i class="fas fa-exclamation-triangle"></i> No panorama image available for this room.</p>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="amenities-section">
@@ -184,9 +211,54 @@ if ($room_type) {
         </div>
 
         <div class="book-now-container">
-            <a href="#available-rooms" style="text-decoration: none;" class="book-now">Book Now</a>
+            <a href="#available-rooms" class="book-now">Book Now</a>
         </div>
     </div>
-</body>
 
+    <style>
+        /* Add styles for panorama link */
+        .panorama-link {
+            display: block;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .panorama-hint {
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            transition: transform 0.3s ease;
+        }
+        
+        .panorama-hint i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .panorama-link:hover .panorama-hint {
+            transform: scale(1.05);
+        }
+        
+        .panorama-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            transition: background 0.3s ease;
+        }
+        
+        .panorama-link:hover .panorama-overlay {
+            background: rgba(0,0,0,0.4);
+        }
+    </style>
+</body>
 </html>

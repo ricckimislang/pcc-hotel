@@ -38,7 +38,7 @@ if ($file['size'] > $max_size) {
 }
 
 // Create upload directory if it doesn't exist
-$upload_dir = '../../uploads/room_images/';
+$upload_dir = '../../../public/room_images_details/';
 if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0755, true);
 }
@@ -55,11 +55,11 @@ if (move_uploaded_file($file['tmp_name'], $target_path)) {
     $stmt->execute();
     $result = $stmt->get_result();
     $old_image = null;
-    
+
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $old_image = $row['card_image'];
-        
+
         // Update the record with new card image
         $stmt = $conn->prepare("UPDATE room_media SET card_image = ?, last_updated = NOW() WHERE room_id = ?");
         $stmt->bind_param("si", $filename, $room_id);
@@ -68,24 +68,23 @@ if (move_uploaded_file($file['tmp_name'], $target_path)) {
         $stmt = $conn->prepare("INSERT INTO room_media (room_id, card_image, last_updated) VALUES (?, ?, NOW())");
         $stmt->bind_param("is", $room_id, $filename);
     }
-    
+
     if ($stmt->execute()) {
         // Delete the old image if it exists
         if ($old_image && file_exists($upload_dir . $old_image)) {
             unlink($upload_dir . $old_image);
         }
-        
+
         echo json_encode(['success' => true, 'message' => 'Card image uploaded successfully', 'filename' => $filename]);
     } else {
         // Delete the uploaded file if database operation fails
         unlink($target_path);
         echo json_encode(['success' => false, 'message' => 'Failed to update database: ' . $conn->error]);
     }
-    
+
     $stmt->close();
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file']);
 }
 
 $conn->close();
-?> 
