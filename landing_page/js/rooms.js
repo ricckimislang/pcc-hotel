@@ -10,16 +10,10 @@ async function getRooms() {
         roomCard.className = "activity-card";
         roomCard.dataset.roomId = room.room_type_id;
 
-        // Get a room image based on room type (using room type id as a simple hash)
-        const roomImgId = (room.room_type_id % 5) + 1; // This will cycle between 1-5
-        const roomImages = [
-          "../assets/images/luxury-twin.jpg",
-          "../assets/images/luxury-twin.jpg",
-          "../assets/images/luxury-twin.jpg",
-          "../assets/images/luxury-twin.jpg",
-          "../assets/images/luxury-twin.jpg",
-        ];
-        const roomImg = roomImages[roomImgId - 1] || roomImages[0];
+        // Use the room's image if available, otherwise use a default image
+        const roomImg = room.image_path 
+          ? room.image_path 
+          : "../assets/images/luxury-twin.jpg";
 
         roomCard.innerHTML = `
           <div class="activity-image">

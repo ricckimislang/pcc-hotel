@@ -44,6 +44,7 @@ try {
         'description' => $row['description'],
         'capacity' => $row['capacity'],
         'amenities' => $row['amenities'],
+        'image_path' => $row['image_path'],
     ];
 
     echo json_encode([

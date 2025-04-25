@@ -8,7 +8,7 @@
                     aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="addRoomTypeForm">
+                <form id="addRoomTypeForm" enctype="multipart/form-data">
 
                     <!-- Basic Info Card -->
                     <div class="card mb-4 border-0 shadow-sm">
@@ -35,6 +35,23 @@
                                                 name="base_price" required>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Room Image Card -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-image me-2"></i>Room Image</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="room_image" class="form-label small text-muted mb-1">UPLOAD ROOM IMAGE</label>
+                                <input type="file" class="form-control" id="room_image" name="room_image" accept="image/*">
+                                <small class="form-text text-muted">Upload a high-quality image of the room (JPEG, PNG, WebP). Recommended size: 1200x800px.</small>
+                                <div class="mt-3 current-image-preview rounded bg-light d-flex justify-content-center" style="display:none;">
+                                    <img id="add_image_preview" src="" alt="Room image preview" class="img-fluid rounded" style="max-height: 200px;">
                                 </div>
                             </div>
                         </div>
@@ -131,7 +148,7 @@
                     aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="editRoomTypeForm" action="../api/room_types/update_room_type.php" method="post">
+                <form id="editRoomTypeForm" action="../api/room_types/update_room_type.php" method="post" enctype="multipart/form-data">
                     <input type="hidden" id="edit_room_type_id" name="room_type_id">
                     <input type="hidden" name="action" value="update">
 
@@ -161,6 +178,26 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Room Image Card -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-image me-2"></i>Room Image</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="mb-3" id="current_image_container">
+                                    <label class="form-label small text-muted mb-1">CURRENT IMAGE</label>
+                                    <div class="current-image-preview rounded bg-light d-flex justify-content-center mb-2">
+                                        <img id="edit_current_image" src="" alt="Current room image" class="img-fluid rounded" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                                <label for="edit_room_image" class="form-label small text-muted mb-1">CHANGE ROOM IMAGE</label>
+                                <input type="file" class="form-control" id="edit_room_image" name="room_image" accept="image/*">
+                                <small class="form-text text-muted">Upload a new image to replace the current one (JPEG, PNG, WebP). Leave blank to keep the existing image.</small>
                             </div>
                         </div>
                     </div>
@@ -258,6 +295,18 @@
                                     <h5 id="view_base_price" class="mb-0 fw-bold text-primary"></h5>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room Image Card -->
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="fas fa-image me-2"></i>Room Image</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <div id="view_room_image_container" class="mb-0">
+                            <img id="view_room_image" src="" alt="Room image" class="img-fluid rounded shadow-sm" style="max-height: 300px;">
                         </div>
                     </div>
                 </div>

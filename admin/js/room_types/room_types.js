@@ -180,6 +180,15 @@ $(function () {
             );
           }
 
+          // Display room image if available
+          if (roomType.image_path) {
+            $("#view_room_image").attr("src", "../../" + roomType.image_path).show();
+            $("#view_room_image_container").show();
+          } else {
+            $("#view_room_image").attr("src", "../assets/images/no-image.jpg");
+            $("#view_room_image_container").show();
+          }
+
           // Handle amenities with better formatting
           if (roomType.amenities && roomType.amenities.trim().length > 0) {
             const amenitiesArray = roomType.amenities
@@ -291,6 +300,15 @@ $(function () {
           $("#edit_capacity").val(roomType.capacity);
           $("#edit_description").val(roomType.description);
           $("#edit_amenities").val(roomType.amenities);
+          
+          // Display current image if available
+          if (roomType.image_path) {
+            $("#edit_current_image").attr("src", "../../" + roomType.image_path);
+            $("#current_image_container").show();
+          } else {
+            $("#edit_current_image").attr("src", "../assets/images/no-image.jpg");
+            $("#current_image_container").show();
+          }
         } else {
           $("#editRoomTypeModal").modal("hide");
           alert(
@@ -422,4 +440,27 @@ $(function () {
       },
     });
   });
+
+  // Preview image when a new file is selected
+  $(document).on("change", "#room_image", function() {
+    previewImage(this, "#add_image_preview");
+  });
+
+  $(document).on("change", "#edit_room_image", function() {
+    previewImage(this, "#edit_current_image");
+  });
+
+  // Function to preview the selected image
+  function previewImage(input, previewSelector) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        $(previewSelector).attr('src', e.target.result);
+        $(previewSelector).closest('.current-image-preview').show();
+      }
+      
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
 });

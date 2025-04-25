@@ -126,19 +126,17 @@ INSERT INTO `rooms` (`room_id`, `room_number`, `room_type_id`, `description`, `s
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `room_media`
---
-
 DROP TABLE IF EXISTS `room_media`;
 CREATE TABLE IF NOT EXISTS `room_media` (
-  `room_media_id` int NOT NULL AUTO_INCREMENT,
-  `room_type_id` int NOT NULL,
-  `media_path` text NOT NULL,
-  `created_at` timestamp NOT NULL,
-  PRIMARY KEY (`room_media_id`),
-  KEY `room_type_id` (`room_type_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `media_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `room_id` INT(11) NOT NULL,
+  `card_image` VARCHAR(255) DEFAULT NULL,
+  `panorama_image` VARCHAR(255) DEFAULT NULL,
+  `last_updated` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`media_id`),
+  KEY `room_id` (`room_id`)  -- Index for room_id to optimize queries
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- --------------------------------------------------------
 

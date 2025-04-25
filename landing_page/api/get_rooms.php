@@ -16,8 +16,11 @@ try {
             'base_price' => $row['base_price'],
             'capacity' => $row['capacity'],
             'amenities' => $row['amenities'],
+            'image_path' => $row['image_path'],
         ];
     }
+
+    // get room media
     echo json_encode(["status" => true, "message" => "Room retrieved successfully", "data" => $rooms]);
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
