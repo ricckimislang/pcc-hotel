@@ -33,6 +33,7 @@ require_once '../api/bookings/get_checkin_table.php';
                             <th>Check In</th>
                             <th>Check Out</th>
                             <th>Booking Status</th>
+                            <th>Payment Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -54,6 +55,11 @@ require_once '../api/bookings/get_checkin_table.php';
                                 <td>
                                     <span class="status-badge <?php echo strtolower($booking['booking_status']); ?>">
                                         <?php echo ucfirst($booking['booking_status']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge <?php echo strtolower($booking['payment_status']) === 'paid' ? 'confirmed' : 'pending'; ?>">
+                                        <?php echo ucfirst($booking['payment_status']); ?>
                                     </span>
                                 </td>
                                 <td class="actions">

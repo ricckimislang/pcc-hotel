@@ -23,7 +23,7 @@ $booking_id = $_GET['id'];
 $stmt = $conn->prepare("SELECT b.*, 
                               r.type_name, r.description, r.base_price, r.capacity, r.amenities,
                               u.username, u.email, u.phone_number,
-                              rm.room_number, rm.floor
+                              rm.room_number, r.floor_type
                        FROM bookings b
                        JOIN rooms rm ON b.room_id = rm.room_id
                        JOIN room_types r ON rm.room_type_id = r.room_type_id
@@ -111,6 +111,10 @@ $nights = $check_in->diff($check_out)->days;
                     <div class="detail-item">
                         <div class="detail-label"><i class="fas fa-user-friends"></i> Guests</div>
                         <div class="detail-value"><?php echo $booking['guests_count']; ?></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-building"></i> Floor</div>
+                        <div class="detail-value"><?php echo $booking['floor_type']; ?></div>
                     </div>
                 </div>
             </div>

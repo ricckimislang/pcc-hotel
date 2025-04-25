@@ -223,7 +223,9 @@ function populateBookingDetails(data) {
   // Room details
   $(".room-number").text(data.room.number);
   $(".room-type").text(data.room.type);
-  $(".room-floor").text(data.room.floor);
+  $(".room-floor").text(
+    data.room.floor === 1 ? "Ground Floor" : "Second Floor"
+  );
 
   // Booking information
   $(".check-in-date").text(data.booking.check_in);
@@ -250,10 +252,10 @@ function populateBookingDetails(data) {
   // Update confirm button state
   $("#confirmBookingBtn").css(
     "display",
-    (data.booking.payment_status.toLowerCase() !== "paid" ||
+    data.booking.payment_status.toLowerCase() !== "paid" ||
       data.booking.status.toLowerCase() === "confirmed" ||
       data.booking.status.toLowerCase() === "cancelled" ||
-      data.booking.status.toLowerCase() === "checked_in")
+      data.booking.status.toLowerCase() === "checked_in"
       ? "none"
       : "block"
   );
@@ -262,7 +264,7 @@ function populateBookingDetails(data) {
 
 function populateEditForm(data) {
   // Set hidden fields
-  $("#edit_booking_id").val(data.booking.booking_id);
+  $("#edit_booking_id").val(data.booking.id);
   $("#original_check_in").val(data.booking.check_in);
   $("#original_check_out").val(data.booking.check_out);
   $("#original_total").val(data.booking.total_price);
@@ -281,7 +283,7 @@ function populateEditForm(data) {
   // Booking information
   $("#edit_check_in").val(data.booking.check_in.split(" ")[0]);
   $("#edit_check_out").val(data.booking.check_out.split(" ")[0]);
-  $("#edit_guests_count").val(data.booking.guests_count);
+  $("#edit_guests_count").text(data.booking.guests_count);
   $("#edit_special_requests").val(data.booking.special_requests);
   $("#edit_booking_status").val(data.booking.status);
   $("#edit_payment_status").val(data.booking.payment_status);
@@ -444,3 +446,90 @@ function loadBookingDetails(bookingId) {
     },
   });
 }
+
+function saveBookingChanges() {
+  const bookingId = $("#edit_booking_id").val();
+  const specialRequests = $("#edit_special_requests").val();
+  const bookingStatus = $("#edit_booking_status").val();
+  const paymentStatus = $("#edit_payment_status").val();
+
+  // Basic validation
+  if (!bookingId) {
+    showError("Missing booking ID");
+    return;
+  }
+
+  // Prepare data for sending
+  const formData = {
+    booking_id: bookingId,
+    special_requests: specialRequests,
+    booking_status: bookingStatus,
+    payment_status: paymentStatus
+  };
+
+  // Send update request
+  $.ajax({
+    url: "../api/bookings/update_booking.php",
+    method: "POST",
+    data: formData,
+    dataType: "json",
+    success: function(response) {
+      if (response.success) {
+        showSuccess("Booking updated successfully");
+        hideModal("editBookingModal");
+        location.reload();
+      } else {
+        showError(response.message || "Error updating booking");
+      }
+    },
+    error: function() {
+      showError("Error connecting to the server");
+    }
+  });
+}
+// Function to calculate price difference when dates change
+function calculatePriceDifference() {
+  const checkIn = new Date($("#edit_check_in").val());
+  const checkOut = new Date($("#edit_check_out").val());
+  const originalCheckIn = new Date($("#original_check_in").val());
+  const originalCheckOut = new Date($("#original_check_out").val());
+  const roomBasePrice = parseFloat($("#room_base_price").val());
+  const originalTotal = parseFloat($("#original_total").val());
+
+  // Only calculate if dates are valid and have changed
+  if (
+    isNaN(checkIn.getTime()) || 
+    isNaN(checkOut.getTime()) || 
+    checkIn >= checkOut ||
+    (checkIn.getTime() === originalCheckIn.getTime() && 
+     checkOut.getTime() === originalCheckOut.getTime())
+  ) {
+    $("#extensionCalculation, #additionalPaymentSection").hide();
+    return;
+  }
+
+  // Calculate nights for both date ranges
+  const originalNights = Math.floor((originalCheckOut - originalCheckIn) / (1000 * 60 * 60 * 24));
+  const newNights = Math.floor((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+  const nightDifference = newNights - originalNights;
+
+  // Calculate price difference
+  const priceDifference = nightDifference * roomBasePrice;
+
+  // Update UI to show calculation
+  if (nightDifference !== 0) {
+    $("#extensionCalculation").show();
+    $("#nightDifference").text(nightDifference > 0 ? `+${nightDifference}` : nightDifference);
+    $("#priceDifference").text(`₱${priceDifference.toFixed(2)}`);
+    $("#additionalPaymentSection").toggle(nightDifference > 0);
+    $("#additional_payment").val(priceDifference > 0 ? priceDifference.toFixed(2) : 0);
+  } else {
+    $("#extensionCalculation, #additionalPaymentSection").hide();
+  }
+}
+
+// Add date change event handlers
+function initializeDateChangeHandlers() {
+  $("#edit_check_in, #edit_check_out").on("change", calculatePriceDifference);
+}
+

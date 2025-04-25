@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
     // Get detailed booking information using all relevant tables
     $query = "SELECT b.*, 
                      u.first_name, u.last_name, u.email, u.phone_number,
-                     r.room_number, r.floor, r.status as room_status,
+                     r.room_number, rt.floor_type, r.status as room_status,
                      rt.type_name, rt.base_price, rt.capacity,
                      t.reference_no, t.payment_screenshot
               FROM bookings b
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_id'])) {
                 'room' => [
                     'number' => $booking['room_number'],
                     'type' => $booking['type_name'],
-                    'floor' => $booking['floor'],
+                    'floor' => $booking['floor_type'],
                     'status' => $booking['room_status'],
                     'capacity' => $booking['capacity']
                 ],

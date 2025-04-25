@@ -201,25 +201,15 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
-                                            <label for="edit_check_in" class="form-label">Check In Date</label>
-                                            <input type="date" class="form-control" id="edit_check_in"
-                                                name="check_in_date" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="edit_check_out" class="form-label">Check Out Date</label>
-                                            <input type="date" class="form-control" id="edit_check_out"
-                                                name="check_out_date" required>
-                                        </div>
-                                        <div class="mb-3">
                                             <label for="edit_guests_count" class="form-label">Number of Guests</label>
-                                            <input type="number" class="form-control" id="edit_guests_count"
+                                            <span class="form-control" id="edit_guests_count"
                                                 name="guests_count" min="1" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="edit_special_requests" class="form-label">Special
                                                 Requests</label>
                                             <textarea class="form-control" id="edit_special_requests"
-                                                name="special_requests" rows="3"></textarea>
+                                                name="special_requests" rows="3" readonly></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -238,8 +228,6 @@
                                                 required>
                                                 <option value="pending">Pending</option>
                                                 <option value="confirmed">Confirmed</option>
-                                                <option value="checked_in">Checked In</option>
-                                                <option value="checked_out">Checked Out</option>
                                                 <option value="cancelled">Cancelled</option>
                                             </select>
                                         </div>
@@ -250,7 +238,6 @@
                                                 <option value="pending">Pending</option>
                                                 <option value="partial">Partial</option>
                                                 <option value="paid">Paid</option>
-                                                <option value="refunded">Refunded</option>
                                             </select>
                                         </div>
                                     </div>
