@@ -27,6 +27,13 @@ if ($user_id) {
 
 <body>
     <div class="booking-container">
+        <div class="back-button" style="margin-bottom: 20px;">
+            <a href="index.php"
+                style="text-decoration: none; color: var(--dark-text); display: flex; align-items: center; width: fit-content;">
+                <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+                Back to Home
+            </a>
+        </div>
         <div class="booking-header">
             <h1>Book Your Luxury Stay</h1>
             <p>Complete the form below to reserve your perfect accommodation</p>
@@ -99,7 +106,7 @@ if ($user_id) {
                             <input type="date" id="check_out_date" name="check_out_date" min="" class="form-control"
                                 required onchange="validateDates()">
                             <script>
-                                document.getElementById('check_in_date').addEventListener('change', function () {
+                                document.getElementById('check_in_date').addEventListener('change', function() {
                                     validateDates();
                                 });
 
@@ -130,10 +137,17 @@ if ($user_id) {
                             <label for="guests_count">Number of Guests</label>
                             <select id="guests_count" name="guests_count" class="form-control" required>
                                 <option value="">Select number of guests</option>
-                                <option value="1">1 Guest</option>
-                                <option value="2">2 Guests</option>
-                                <option value="3">3 Guests</option>
-                                <option value="4">4 Guests</option>
+                                <?php $query = "SELECT r.room_type_id ,rt.capacity FROM rooms r LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id WHERE r.room_id = ?";
+                                $stmt = $conn->prepare($query);
+                                $stmt->bind_param('i', $room_id);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+                                $row = $result->fetch_assoc();
+                                $capacity = $row['capacity'];
+                                ?>
+                                <?php for ($i = 1; $i <= $capacity; $i++): ?>
+                                    <option value="<?php echo $i; ?>"><?php echo $i; ?> Guests</option>
+                                <?php endfor; ?>
                             </select>
                         </div>
                     </div>

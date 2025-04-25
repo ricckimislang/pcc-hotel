@@ -14,12 +14,12 @@ $user_id = isset($_SESSION['user_id'])
         <div class="header-container">
             <div class="menu-button">
                 <button id="menuToggle"><i class="fas fa-bars"></i> Menu</button>
+                <span class="notification-dot" style="display: none;"></span>
                 <div class="dropdown-menu" id="navDropdown">
                     <ul>
-                        <li><a href="my_bookings.php">My Bookings</a></li>
                         <?php if ($user_id) { ?>
                             <li><a href="profile.php">My Profile</a></li>
-                            <li><a href="bookings.php">My Bookings</a></li>
+                            <li><a href="my_bookings.php">My Bookings</a></li>
                             <li><a href="logout.php">Logout</a></li>
                         <?php } ?>
                     </ul>
@@ -35,7 +35,7 @@ $user_id = isset($_SESSION['user_id'])
                 </div>
                     ';
             } else {
-                ?>
+            ?>
                 <div class="user-container">
                     <span><?php echo $_SESSION['username']; ?></span>
                 </div>

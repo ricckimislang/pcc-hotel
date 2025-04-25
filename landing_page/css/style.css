@@ -128,6 +128,23 @@ header {
   position: relative;
 }
 
+/* Notification dot styling */
+.notification-dot {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: #ff4141;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 65, 65, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.menu-button button:hover + .notification-dot {
+  transform: translateY(-2px);
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -150,7 +167,7 @@ header {
   box-shadow: 0 0 15px rgba(200, 169, 126, 0.6);
 }
 
-.user-container{
+.user-container {
   background-color: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   color: var(--white);
