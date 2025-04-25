@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.status) {
           Swal.fire({
             title: "Booking Successful!",
-            text: "Please view your booking and payment details for confirmation",
-            icon: "success",
+            text: "Please pay your reservation immediately or it will be canceled in two hours. View your booking and payment details for confirmation.",
+            icon: "warning",
             confirmButtonText: "OK",
           }).then((result) => {
             if (result.isConfirmed) {
