@@ -9,7 +9,14 @@
     cursor: pointer;
 }
 
-.upload-area:hover, .upload-area.dragover {
+.upload-area.disabled {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.upload-area:hover:not(.disabled), .upload-area.dragover:not(.disabled) {
     border-color: #007bff;
     background-color: rgba(0, 123, 255, 0.05);
 }
@@ -20,7 +27,7 @@
     margin-bottom: 15px;
 }
 
-.upload-area:hover .upload-icon {
+.upload-area:hover:not(.disabled) .upload-icon {
     color: #007bff;
 }
 
@@ -37,10 +44,33 @@
     height: 400px;
 }
 
-#cardImageContainer img {
-    max-height: 200px;
-    width: auto;
+.gallery-preview {
+    margin: 0 -8px;
+}
+
+.gallery-preview .card {
     border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.gallery-preview .card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+}
+
+.gallery-preview .card-img-top {
+    height: 120px;
+    object-fit: cover;
+}
+
+.gallery-badge {
+    background-color: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    display: inline-block;
 }
 
 .table img.thumbnail {
@@ -94,6 +124,26 @@
     background-color: #f8f9fa;
 }
 
+/* Gallery modal styles */
+.gallery-modal-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px;
+}
+
+.gallery-modal-images img {
+    max-width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.gallery-modal-images img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
 /* Responsive adjustments */
 @media (max-width: 767px) {
     .panorama-preview, .panorama-viewer, #modalPanoramaView {
@@ -102,6 +152,10 @@
     
     .modal-xl .modal-dialog {
         max-width: 95%;
+    }
+    
+    .gallery-preview .card-img-top {
+        height: 100px;
     }
 }
 

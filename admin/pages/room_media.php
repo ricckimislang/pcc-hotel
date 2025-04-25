@@ -15,8 +15,8 @@ require_once '../includes/head.php';
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Room Card Images</h2>
-                        <p class="text-muted">Upload images that will appear on room cards in the landing page</p>
+                        <h2>Room Gallery Images</h2>
+                        <p class="text-muted">Upload up to 3 images for the room gallery</p>
                     </div>
                     <div class="card-body">
                         <div class="form-group mb-3">
@@ -27,27 +27,29 @@ require_once '../includes/head.php';
                             </select>
                         </div>
 
-                        <div id="cardImageContainer" class="text-center mb-3 d-none">
-                            <img id="currentCardImage" src="" alt="Current Room Card Image" class="img-fluid mb-2 rounded shadow-sm">
-                            <p class="text-muted">Current card image</p>
-                        </div>
-
-                        <div class="upload-area" id="cardImageUploadArea">
-                            <div class="upload-icon">
-                                <i class="fas fa-cloud-upload-alt"></i>
+                        <div id="galleryImagesContainer" class="text-center mb-3 d-none">
+                            <div class="row gallery-preview" id="galleryPreview">
+                                <!-- Gallery images will be displayed here -->
                             </div>
-                            <h3>Drag & Drop Card Image</h3>
-                            <input type="file" id="cardImageUpload" accept="image/*" class="d-none">
-                            <p class="text-muted mt-2">Recommended size: 800x600px, Max: 5MB</p>
+                            <p class="text-muted mt-2">Current gallery images (<span id="imageCounter">0</span>/3)</p>
                         </div>
 
-                        <div class="progress mt-3 d-none" id="cardImageProgress">
+                        <div class="upload-area" id="galleryImageUploadArea">
+                            <div class="upload-icon">
+                                <i class="fas fa-images"></i>
+                            </div>
+                            <h3>Drag & Drop Gallery Images</h3>
+                            <input type="file" id="galleryImageUpload" accept="image/*" multiple class="d-none">
+                            <p class="text-muted mt-2">Up to 3 images, Recommended size: 800x600px, Max: 5MB each</p>
+                        </div>
+
+                        <div class="progress mt-3 d-none" id="galleryImageProgress">
                             <div class="progress-bar" role="progressbar" style="width: 0%"></div>
                         </div>
 
                         <div class="text-end mt-3">
-                            <button class="btn btn-success d-none" id="saveCardImageBtn">
-                                <i class="fas fa-save"></i> Save Card Image
+                            <button class="btn btn-success d-none" id="saveGalleryImagesBtn">
+                                <i class="fas fa-save"></i> Save Gallery Images
                             </button>
                         </div>
                     </div>
@@ -134,16 +136,17 @@ require_once '../includes/head.php';
                 <div class="modal-body">
                     <ul class="nav nav-tabs" id="mediaTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-tab-pane" type="button" role="tab">Card Image</button>
+                            <button class="nav-link active" id="gallery-tab" data-bs-toggle="tab" data-bs-target="#gallery-tab-pane" type="button" role="tab">Gallery Images</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="panorama-tab" data-bs-toggle="tab" data-bs-target="#panorama-tab-pane" type="button" role="tab">360° View</button>
                         </li>
                     </ul>
                     <div class="tab-content" id="mediaTabContent">
-                        <div class="tab-pane fade show active p-3" id="card-tab-pane" role="tabpanel" aria-labelledby="card-tab" tabindex="0">
-                            <div class="text-center">
-                                <img id="modalCardImage" src="" alt="Room Card Image" class="img-fluid rounded">
+                        <div class="tab-pane fade show active p-3" id="gallery-tab-pane" role="tabpanel" aria-labelledby="gallery-tab" tabindex="0">
+                            <div id="galleryImagesModal" class="gallery-modal-images">
+                                <!-- Gallery images will be loaded here -->
+                                <p class="text-muted text-center w-100 py-5 d-none" id="noGalleryImages">No gallery images available for this room</p>
                             </div>
                         </div>
                         <div class="tab-pane fade p-3" id="panorama-tab-pane" role="tabpanel" aria-labelledby="panorama-tab" tabindex="0">

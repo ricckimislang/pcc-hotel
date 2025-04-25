@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize variables
   let selectedRoom = null;
   let selectedRoom360 = null;
-  let cardImageFile = null;
+  let galleryImages = [];
   let panoramaFile = null;
   let panoramaViewer = null;
   let modalPanoramaViewer = null;
@@ -15,19 +15,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // DOM Elements
   const roomSelect = document.getElementById("roomSelect");
   const roomSelect360 = document.getElementById("roomSelect360");
-  const cardImageUpload = document.getElementById("cardImageUpload");
+  const galleryImageUpload = document.getElementById("galleryImageUpload");
   const panoramaUpload = document.getElementById("panoramaUpload");
-  const cardImageUploadArea = document.getElementById("cardImageUploadArea");
+  const galleryImageUploadArea = document.getElementById(
+    "galleryImageUploadArea"
+  );
   const panoramaUploadArea = document.getElementById("panoramaUploadArea");
-  const cardImageProgress = document.getElementById("cardImageProgress");
+  const galleryImageProgress = document.getElementById("galleryImageProgress");
   const panoramaProgress = document.getElementById("panoramaProgress");
-  const saveCardImageBtn = document.getElementById("saveCardImageBtn");
+  const saveGalleryImagesBtn = document.getElementById("saveGalleryImagesBtn");
   const savePanoramaBtn = document.getElementById("savePanoramaBtn");
-  const cardImageContainer = document.getElementById("cardImageContainer");
-  const currentCardImage = document.getElementById("currentCardImage");
+  const galleryImagesContainer = document.getElementById(
+    "galleryImagesContainer"
+  );
+  const galleryPreview = document.getElementById("galleryPreview");
+  const imageCounter = document.getElementById("imageCounter");
   const panoramaContainer = document.getElementById("panoramaContainer");
   const panoramaPreview = document.getElementById("panoramaPreview");
   const roomMediaTable = document.getElementById("roomMediaTable");
+  const modalPanoramaView = document.getElementById("modalPanoramaView");
+  const galleryImagesModal = document.getElementById("galleryImagesModal");
+  const noGalleryImages = document.getElementById("noGalleryImages");
+
+  if (!modalPanoramaView || !galleryImagesModal || !noGalleryImages) {
+    console.error("Required modal elements not found in DOM.");
+    alert("Media modal structure is incomplete.");
+    return;
+  }
 
   // Initialize DataTable
   const mediaTable = $(roomMediaTable).DataTable({
@@ -40,12 +54,12 @@ document.addEventListener("DOMContentLoaded", function () {
       { data: "room_number" },
       { data: "room_type" },
       {
-        data: "card_image",
+        data: "gallery_images",
         render: function (data) {
-          if (data) {
-            return `<img src="../../public/room_images_details/${data}" class="thumbnail" alt="Card Image">`;
+          if (data && data.length > 0) {
+            return `<span class="gallery-badge">${data.length} Images</span>`;
           } else {
-            return '<span class="no-image-badge">No Image</span>';
+            return '<span class="no-image-badge">No Images</span>';
           }
         },
       },
@@ -106,32 +120,86 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize room selects
   loadRooms();
 
-  // Room select change event for card image
+  // Room select change event for gallery images
   roomSelect.addEventListener("change", function () {
     selectedRoom = this.value;
+    galleryImages = [];
+
     if (selectedRoom) {
-      // Fetch existing card image if any
+      // Fetch existing gallery images if any
       fetch(`../api/room_media/get_room_media.php?room_id=${selectedRoom}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data.card_image) {
-            currentCardImage.src = `../uploads/room_images/${data.card_image}`;
-            cardImageContainer.classList.remove("d-none");
+          if (data.gallery_images && data.gallery_images.length > 0) {
+            // Display existing gallery images
+            displayGalleryImages(data.gallery_images);
+            galleryImagesContainer.classList.remove("d-none");
           } else {
-            cardImageContainer.classList.add("d-none");
+            galleryImagesContainer.classList.add("d-none");
+            galleryPreview.innerHTML = "";
+            updateImageCounter(0);
           }
 
           // Reset file input and progress bar
-          cardImageUpload.value = "";
-          cardImageFile = null;
-          cardImageProgress.classList.add("d-none");
-          saveCardImageBtn.classList.add("d-none");
+          galleryImageUpload.value = "";
+          galleryImageProgress.classList.add("d-none");
+          saveGalleryImagesBtn.classList.add("d-none");
         })
         .catch((error) => {
           console.error("Error fetching room media:", error);
         });
     }
   });
+
+  // Function to display gallery images
+  function displayGalleryImages(images) {
+    galleryPreview.innerHTML = "";
+    galleryImages = Array.isArray(images) ? images : [];
+
+    galleryImages.forEach((image, index) => {
+      const imageCol = document.createElement("div");
+      imageCol.className = "col-md-4 mb-2";
+
+      const imageCard = document.createElement("div");
+      imageCard.className = "card h-100";
+
+      const img = document.createElement("img");
+      img.src = `../uploads/room_images/${image}`;
+      img.className = "card-img-top";
+      img.alt = "Gallery Image";
+
+      const cardBody = document.createElement("div");
+      cardBody.className = "card-body p-2";
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "btn btn-sm btn-danger w-100";
+      removeBtn.innerHTML = '<i class="fas fa-trash"></i> Remove';
+      removeBtn.onclick = function () {
+        galleryImages.splice(index, 1);
+        displayGalleryImages(galleryImages);
+      };
+
+      cardBody.appendChild(removeBtn);
+      imageCard.appendChild(img);
+      imageCard.appendChild(cardBody);
+      imageCol.appendChild(imageCard);
+      galleryPreview.appendChild(imageCol);
+    });
+
+    updateImageCounter(galleryImages.length);
+  }
+
+  // Update image counter
+  function updateImageCounter(count) {
+    imageCounter.textContent = count;
+
+    // Disable upload if we already have 3 images
+    if (count >= 3) {
+      galleryImageUploadArea.classList.add("disabled");
+    } else {
+      galleryImageUploadArea.classList.remove("disabled");
+    }
+  }
 
   // Room select change event for 360° image
   roomSelect360.addEventListener("change", function () {
@@ -185,9 +253,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Card Image Upload Area - Click event
-  cardImageUploadArea.addEventListener("click", function () {
-    cardImageUpload.click();
+  // Gallery Image Upload Area - Click event
+  galleryImageUploadArea.addEventListener("click", function () {
+    // Only allow click if we don't already have 3 images
+    if (galleryImages.length < 3) {
+      galleryImageUpload.click();
+    } else {
+      alert("You can only upload a maximum of 3 images per room.");
+    }
   });
 
   // Panorama Upload Area - Click event
@@ -195,31 +268,60 @@ document.addEventListener("DOMContentLoaded", function () {
     panoramaUpload.click();
   });
 
-  // Card Image Upload - Change event
-  cardImageUpload.addEventListener("change", function (e) {
+  // Gallery Image Upload - Change event
+  galleryImageUpload.addEventListener("change", function (e) {
+    // Only process if we don't already have 3 images
+    if (galleryImages.length >= 3) {
+      alert("You can only upload a maximum of 3 images per room.");
+      return;
+    }
+
     if (this.files.length > 0) {
-      cardImageFile = this.files[0];
+      const newFiles = Array.from(this.files);
 
-      // Validate file type and size
-      if (!cardImageFile.type.match("image.*")) {
-        alert("Please select an image file.");
+      // Check if adding these files would exceed the limit
+      if (galleryImages.length + newFiles.length > 3) {
+        alert(
+          `You can only have a maximum of 3 images. You can add ${3 - galleryImages.length
+          } more.`
+        );
         return;
       }
 
-      if (cardImageFile.size > 5 * 1024 * 1024) {
-        // 5MB
-        alert("Image file size should not exceed 5MB.");
-        return;
-      }
+      // Process each file
+      newFiles.forEach((file) => {
+        // Validate file type and size
+        if (!file.type.match("image.*")) {
+          alert("Please select image files only.");
+          return;
+        }
 
-      // Preview the image
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        currentCardImage.src = e.target.result;
-        cardImageContainer.classList.remove("d-none");
-        saveCardImageBtn.classList.remove("d-none");
-      };
-      reader.readAsDataURL(cardImageFile);
+        if (file.size > 5 * 1024 * 1024) {
+          // 5MB
+          alert("Image file size should not exceed 5MB.");
+          return;
+        }
+
+        // Add file to temporary array for preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          // Create a temporary preview object
+          const tempImage = {
+            file: file,
+            preview: e.target.result,
+            isNew: true,
+          };
+
+          // Add to gallery images array
+          galleryImages.push(tempImage);
+
+          // Update the preview
+          displayGalleryImages(galleryImages);
+          galleryImagesContainer.classList.remove("d-none");
+          saveGalleryImagesBtn.classList.remove("d-none");
+        };
+        reader.readAsDataURL(file);
+      });
     }
   });
 
@@ -234,9 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      if (panoramaFile.size > 20 * 1024 * 1024) {
-        // 20MB
-        alert("Panorama file size should not exceed 20MB.");
+      if (panoramaFile.size > 30 * 1024 * 1024) {
+        // 30MB
+        alert("Panorama file size should not exceed 30MB.");
         return;
       }
 
@@ -265,25 +367,101 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Save Card Image Button
-  saveCardImageBtn.addEventListener("click", function () {
-    if (!selectedRoom || !cardImageFile) {
-      alert("Please select a room and an image file.");
+  // Handle drag and drop for gallery image uploads
+  galleryImageUploadArea.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (galleryImages.length < 3) {
+      this.classList.add("dragover");
+    }
+  });
+
+  galleryImageUploadArea.addEventListener("dragleave", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.remove("dragover");
+  });
+
+  galleryImageUploadArea.addEventListener("drop", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.remove("dragover");
+
+    // Only process if we don't already have 3 images
+    if (galleryImages.length >= 3) {
+      alert("You can only upload a maximum of 3 images per room.");
+      return;
+    }
+
+    if (e.dataTransfer.files.length > 0) {
+      galleryImageUpload.files = e.dataTransfer.files;
+      // Trigger the change event manually
+      const event = new Event("change");
+      galleryImageUpload.dispatchEvent(event);
+    }
+  });
+
+  // Handle drag and drop for panorama uploads
+  panoramaUploadArea.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.add("dragover");
+  });
+
+  panoramaUploadArea.addEventListener("dragleave", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.remove("dragover");
+  });
+
+  panoramaUploadArea.addEventListener("drop", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.remove("dragover");
+
+    if (e.dataTransfer.files.length > 0) {
+      panoramaUpload.files = e.dataTransfer.files;
+      // Trigger the change event manually
+      const event = new Event("change");
+      panoramaUpload.dispatchEvent(event);
+    }
+  });
+
+  // Save Gallery Images Button
+  saveGalleryImagesBtn.addEventListener("click", function () {
+    if (!selectedRoom || galleryImages.length === 0) {
+      alert("Please select a room and at least one image.");
       return;
     }
 
     const formData = new FormData();
     formData.append("room_id", selectedRoom);
-    formData.append("card_image", cardImageFile);
+
+    // Add files to formData
+    let newFileCount = 0;
+    galleryImages.forEach((image, index) => {
+      if (image.isNew) {
+        formData.append(`gallery_image_${index}`, image.file);
+        newFileCount++;
+      } else {
+        formData.append(`existing_image_${index}`, image);
+      }
+    });
+
+    // If no new files, just update the existing ones
+    if (newFileCount === 0) {
+      formData.append("update_only", "true");
+    }
 
     // Show progress bar
-    cardImageProgress.classList.remove("d-none");
-    const progressBar = cardImageProgress.querySelector(".progress-bar");
+    galleryImageProgress.classList.remove("d-none");
+    const progressBar = galleryImageProgress.querySelector(".progress-bar");
     progressBar.style.width = "0%";
 
     // Create and configure XHR for upload with progress
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "../api/room_media/upload_card_image.php", true);
+    xhr.open("POST", "../api/room_media/upload_gallery_images.php", true);
 
     xhr.upload.onprogress = function (e) {
       if (e.lengthComputable) {
@@ -297,7 +475,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           const response = JSON.parse(xhr.responseText);
           if (response.success) {
-            alert("Card image uploaded successfully!");
+            alert("Gallery images saved successfully!");
             // Refresh the table
             mediaTable.ajax.reload();
           } else {
@@ -312,14 +490,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Hide progress bar
       setTimeout(() => {
-        cardImageProgress.classList.add("d-none");
-        saveCardImageBtn.classList.add("d-none");
+        galleryImageProgress.classList.add("d-none");
+        saveGalleryImagesBtn.classList.add("d-none");
       }, 1000);
     };
 
     xhr.onerror = function () {
       alert("An error occurred during the upload. Please try again.");
-      cardImageProgress.classList.add("d-none");
+      galleryImageProgress.classList.add("d-none");
     };
 
     xhr.send(formData);
@@ -385,58 +563,6 @@ document.addEventListener("DOMContentLoaded", function () {
     xhr.send(formData);
   });
 
-  // Handle drag and drop for card image uploads
-  cardImageUploadArea.addEventListener("dragover", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.add("dragover");
-  });
-
-  cardImageUploadArea.addEventListener("dragleave", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.remove("dragover");
-  });
-
-  cardImageUploadArea.addEventListener("drop", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.remove("dragover");
-
-    if (e.dataTransfer.files.length > 0) {
-      cardImageUpload.files = e.dataTransfer.files;
-      // Trigger the change event manually
-      const event = new Event("change");
-      cardImageUpload.dispatchEvent(event);
-    }
-  });
-
-  // Handle drag and drop for panorama uploads
-  panoramaUploadArea.addEventListener("dragover", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.add("dragover");
-  });
-
-  panoramaUploadArea.addEventListener("dragleave", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.remove("dragover");
-  });
-
-  panoramaUploadArea.addEventListener("drop", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.remove("dragover");
-
-    if (e.dataTransfer.files.length > 0) {
-      panoramaUpload.files = e.dataTransfer.files;
-      // Trigger the change event manually
-      const event = new Event("change");
-      panoramaUpload.dispatchEvent(event);
-    }
-  });
-
   // View Media button click
   $(roomMediaTable).on("click", ".view-media", function () {
     const roomId = $(this).data("id");
@@ -445,33 +571,45 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(`../api/room_media/get_room_media.php?room_id=${roomId}`)
       .then((response) => response.json())
       .then((data) => {
-        const modalCardImage = document.getElementById("modalCardImage");
-        const modalPanoramaView = document.getElementById("modalPanoramaView");
+        // Show gallery images if available
+        galleryImagesModal.innerHTML = "";
+        if (data.gallery_images && data.gallery_images.length > 0) {
+          noGalleryImages.classList.add("d-none");
 
-        // Show card image if available
-        if (data.card_image) {
-          modalCardImage.src = `../../public/room_images_details/${data.card_image}`;
-          document.getElementById("card-tab").classList.remove("disabled");
+          data.gallery_images.forEach((image) => {
+            const img = document.createElement("img");
+            img.src = `../../public/room_images/${image}`;
+            img.alt = "Room Gallery Image";
+            img.className = "img-fluid mb-2 col-md-5";
+            galleryImagesModal.appendChild(img);
+          });
+
+          document.getElementById("gallery-tab").classList.remove("disabled");
         } else {
-          modalCardImage.src = "../assets/img/no-image.png";
+          noGalleryImages.classList.remove("d-none");
+          document.getElementById("gallery-tab").classList.add("disabled");
         }
 
         // Initialize 360° viewer if panorama available
         if (data.panorama_image) {
-          if (modalPanoramaViewer) {
+          if (typeof modalPanoramaViewer !== 'undefined' && modalPanoramaViewer) {
             modalPanoramaViewer.destroy();
           }
 
-          modalPanoramaViewer = new PhotoSphereViewer.Viewer({
-            container: modalPanoramaView,
-            panorama: `../../public/panoramas/${data.panorama_image}`,
-            size: {
-              width: "100%",
-              height: "400px",
-            },
-            navbar: ["autorotate", "zoom", "fullscreen"],
-            defaultZoomLvl: 0,
-          });
+          try {
+            modalPanoramaViewer = new PhotoSphereViewer.Viewer({
+              container: modalPanoramaView,
+              panorama: `../../public/panoramas/${data.panorama_image}`,
+              size: {
+                width: "100%",
+                height: "400px",
+              },
+              navbar: ["autorotate", "zoom", "fullscreen"],
+              defaultZoomLvl: 0,
+            });
+          } catch (e) {
+            console.error("Failed to init panorama viewer:", e);
+          }
 
           document.getElementById("panorama-tab").classList.remove("disabled");
         } else {
@@ -480,9 +618,7 @@ document.addEventListener("DOMContentLoaded", function () {
             modalPanoramaViewer = null;
           }
 
-          modalPanoramaView.innerHTML =
-            '<div class="text-center p-5"><p>No 360° image available</p></div>';
-          document.getElementById("panorama-tab").classList.add("disabled");
+          modalPanoramaView.innerHTML = ''; // ✅ important cleanup
         }
 
         // Show the modal
@@ -491,16 +627,18 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         viewMediaModal.show();
 
-        // Force resize when modal is shown
-        document
-          .getElementById("viewMediaModal")
-          .addEventListener("shown.bs.modal", function () {
+        const viewMediaModalEl = document.getElementById("viewMediaModal");
+        if (!viewMediaModalEl.dataset.resizeAttached) {
+          viewMediaModalEl.addEventListener("shown.bs.modal", function () {
             if (modalPanoramaViewer) {
               setTimeout(() => {
                 modalPanoramaViewer.resize();
               }, 200);
             }
           });
+          viewMediaModalEl.dataset.resizeAttached = "true";
+        }
+
       })
       .catch((error) => {
         console.error("Error fetching room media details:", error);
