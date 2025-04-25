@@ -17,7 +17,7 @@ if (!isset($_POST['room_id']) || empty($_POST['room_id'])) {
 $room_id = $_POST['room_id'];
 
 // Create upload directory if it doesn't exist
-$upload_dir = '../../../public/room_images/';
+$upload_dir = '../../../public/room_images_details/';
 if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0755, true);
 }

@@ -164,7 +164,12 @@ document.addEventListener("DOMContentLoaded", function () {
       imageCard.className = "card h-100";
 
       const img = document.createElement("img");
-      img.src = `../uploads/room_images/${image}`;
+      // Check if it's a new image (object with preview) or existing image (string)
+      if (image.isNew && image.preview) {
+        img.src = image.preview; // Use the preview data URL for new images
+      } else {
+        img.src = `../../public/room_images_details/${image}`; // Use path for existing images
+      }
       img.className = "card-img-top";
       img.alt = "Gallery Image";
 
@@ -578,7 +583,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           data.gallery_images.forEach((image) => {
             const img = document.createElement("img");
-            img.src = `../../public/room_images/${image}`;
+            img.src = `../../public/room_images_details/${image}`;
             img.alt = "Room Gallery Image";
             img.className = "img-fluid mb-2 col-md-5";
             galleryImagesModal.appendChild(img);
