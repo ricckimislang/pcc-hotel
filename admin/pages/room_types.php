@@ -26,6 +26,7 @@
                                 <th>Type Name</th>
                                 <th>Base Price</th>
                                 <th>Capacity</th>
+                                <th>Floor</th>
                                 <th class="col-description">Description</th>
                                 <th class="col-amenities">Amenities</th>
                                 <th>Actions</th>

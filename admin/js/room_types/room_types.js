@@ -79,6 +79,14 @@ function initRoomTypeTable() {
       { data: "type_name" },
       { data: "base_price" },
       { data: "capacity" },
+      {
+        data: "floor_type",
+        render: function (data, type, row) {
+          if (data == 1) return "Ground Floor";
+          if (data == 2) return "Second Floor";
+          return data; // Return original value if it doesn't match conditions
+        },
+      },
       { data: "description", className: "col-description" },
       { data: "amenities", className: "col-amenities" },
       {
@@ -113,69 +121,77 @@ $(function () {
   initRoomTypeTable();
 
   // Handle View Room Type button clicks
-  $(document).on("click", ".view-btn", function() {
+  $(document).on("click", ".view-btn", function () {
     const roomTypeId = $(this).data("id");
-    
+
     // Fetch room type details
     $.ajax({
       url: "../api/room_types/get_room_type_by_id.php",
       type: "GET",
       data: { id: roomTypeId },
       dataType: "json",
-      success: function(response) {
+      success: function (response) {
         if (response.status && response.room_type) {
           const roomType = response.room_type;
-          
+
           // Populate modal with room type details
           $("#view_type_name").text(roomType.type_name);
-          $("#view_base_price").text(parseFloat(roomType.base_price).toLocaleString('en-PH', {
-            style: 'currency',
-            currency: 'PHP'
-          }));
+          $("#view_base_price").text(
+            parseFloat(roomType.base_price).toLocaleString("en-PH", {
+              style: "currency",
+              currency: "PHP",
+            })
+          );
           $("#view_capacity").text(roomType.capacity);
-          
+
           // Format description with fallback
           if (roomType.description && roomType.description.trim().length > 0) {
-            $("#view_description").html(roomType.description.replace(/\n/g, '<br>'));
+            $("#view_description").html(
+              roomType.description.replace(/\n/g, "<br>")
+            );
           } else {
-            $("#view_description").html('<em class="text-muted">No description available</em>');
+            $("#view_description").html(
+              '<em class="text-muted">No description available</em>'
+            );
           }
-          
+
           // Handle amenities with better formatting
           if (roomType.amenities && roomType.amenities.trim().length > 0) {
-            const amenitiesArray = roomType.amenities.split(',').map(item => item.trim());
+            const amenitiesArray = roomType.amenities
+              .split(",")
+              .map((item) => item.trim());
             let amenitiesHTML = '<div class="d-flex flex-wrap gap-2">';
-            
+
             // Map of common amenities to icons
             const amenityIcons = {
-              'wifi': 'fa-wifi',
-              'tv': 'fa-tv',
-              'bathroom': 'fa-bath',
-              'shower': 'fa-shower',
-              'air': 'fa-wind',
-              'conditioning': 'fa-wind',
-              'refrigerator': 'fa-refrigerator',
-              'fridge': 'fa-refrigerator',
-              'kitchen': 'fa-utensils',
-              'breakfast': 'fa-coffee',
-              'parking': 'fa-parking',
-              'pool': 'fa-swimming-pool',
-              'spa': 'fa-spa',
-              'gym': 'fa-dumbbell',
-              'fitness': 'fa-dumbbell',
-              'balcony': 'fa-door-open',
-              'view': 'fa-mountain',
-              'minibar': 'fa-glass-martini',
-              'safe': 'fa-vault',
-              'desk': 'fa-desk',
-              'phone': 'fa-phone',
-              'hairdryer': 'fa-wind'
+              wifi: "fa-wifi",
+              tv: "fa-tv",
+              bathroom: "fa-bath",
+              shower: "fa-shower",
+              air: "fa-wind",
+              conditioning: "fa-wind",
+              refrigerator: "fa-refrigerator",
+              fridge: "fa-refrigerator",
+              kitchen: "fa-utensils",
+              breakfast: "fa-coffee",
+              parking: "fa-parking",
+              pool: "fa-swimming-pool",
+              spa: "fa-spa",
+              gym: "fa-dumbbell",
+              fitness: "fa-dumbbell",
+              balcony: "fa-door-open",
+              view: "fa-mountain",
+              minibar: "fa-glass-martini",
+              safe: "fa-vault",
+              desk: "fa-desk",
+              phone: "fa-phone",
+              hairdryer: "fa-wind",
             };
-            
-            amenitiesArray.forEach(amenity => {
+
+            amenitiesArray.forEach((amenity) => {
               // Determine icon based on amenity text
-              let iconClass = 'fa-check-circle';
-              
+              let iconClass = "fa-check-circle";
+
               // Check if any keywords in the amenity match our icon map
               for (const [keyword, icon] of Object.entries(amenityIcons)) {
                 if (amenity.toLowerCase().includes(keyword)) {
@@ -183,7 +199,7 @@ $(function () {
                   break;
                 }
               }
-              
+
               amenitiesHTML += `
                 <div class="amenity-badge px-3 py-2 bg-light rounded d-flex align-items-center">
                   <i class="fas ${iconClass} text-primary me-2"></i>
@@ -191,49 +207,58 @@ $(function () {
                 </div>
               `;
             });
-            
-            amenitiesHTML += '</div>';
+
+            amenitiesHTML += "</div>";
             $("#view_amenities").html(amenitiesHTML);
           } else {
-            $("#view_amenities").html('<em class="text-muted">No amenities listed</em>');
+            $("#view_amenities").html(
+              '<em class="text-muted">No amenities listed</em>'
+            );
           }
-          
+
           // Show the modal
           $("#viewRoomTypeModal").modal("show");
         } else {
-          alert("Error: " + (response.message || "Failed to retrieve room type details"));
+          alert(
+            "Error: " +
+              (response.message || "Failed to retrieve room type details")
+          );
         }
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
         console.error("AJAX Error:", xhr.responseText);
         alert("Error retrieving room type details. Please try again.");
-      }
+      },
     });
   });
 
   // Handle Edit Room Type button clicks
-  $(document).on("click", ".edit-btn", function() {
+  $(document).on("click", ".edit-btn", function () {
     const roomTypeId = $(this).data("id");
-    
+
     // Show loading indicator
-    $("#editRoomTypeModal").find('.modal-content').append('<div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" id="loadingOverlay"><div class="text-center"><i class="fas fa-spinner fa-spin fa-2x text-primary mb-2"></i><p>Loading room details...</p></div></div>');
-    
+    $("#editRoomTypeModal")
+      .find(".modal-content")
+      .append(
+        '<div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" id="loadingOverlay"><div class="text-center"><i class="fas fa-spinner fa-spin fa-2x text-primary mb-2"></i><p>Loading room details...</p></div></div>'
+      );
+
     // Show the modal with loading state
     $("#editRoomTypeModal").modal("show");
-    
+
     // Fetch room type details
     $.ajax({
       url: "../api/room_types/get_room_type_by_id.php",
       type: "GET",
       data: { id: roomTypeId },
       dataType: "json",
-      success: function(response) {
+      success: function (response) {
         // Remove loading overlay
         $("#loadingOverlay").remove();
-        
+
         if (response.status && response.room_type) {
           const roomType = response.room_type;
-          
+
           // Populate form with room type details
           $("#edit_room_type_id").val(roomType.id);
           $("#edit_type_name").val(roomType.type_name);
@@ -243,22 +268,25 @@ $(function () {
           $("#edit_amenities").val(roomType.amenities);
         } else {
           $("#editRoomTypeModal").modal("hide");
-          alert("Error: " + (response.message || "Failed to retrieve room type details"));
+          alert(
+            "Error: " +
+              (response.message || "Failed to retrieve room type details")
+          );
         }
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
         // Remove loading overlay
         $("#loadingOverlay").remove();
-        
+
         $("#editRoomTypeModal").modal("hide");
         console.error("AJAX Error:", xhr.responseText);
         alert("Error retrieving room type details. Please try again.");
-      }
+      },
     });
   });
 
   // Handle Edit Room Type form submission
-  $("#editRoomTypeForm").on("submit", function(e) {
+  $("#editRoomTypeForm").on("submit", function (e) {
     e.preventDefault();
 
     // Form validation
@@ -291,10 +319,10 @@ $(function () {
       processData: false,
       contentType: false,
       dataType: "json",
-      success: function(response) {
+      success: function (response) {
         if (response.status) {
           // Show success message with standard alert
-          alert('Room type updated successfully!');
+          alert("Room type updated successfully!");
 
           // Close the modal
           $("#editRoomTypeModal").modal("hide");
@@ -305,10 +333,10 @@ $(function () {
           alert("Error: " + (response.message || "Failed to update room type"));
         }
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
         console.error("AJAX Error:", xhr.responseText);
         alert("Error updating room type. Please try again.");
-      }
+      },
     });
   });
 

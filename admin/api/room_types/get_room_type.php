@@ -22,6 +22,7 @@ try {
             'id' => $row['room_type_id'],
             'type_name' => $row['type_name'],
             'base_price' => $row['base_price'],
+            'floor_type' => $row['floor_type'],
             'description' => $row['description'],
             'capacity' => $row['capacity'],
             'amenities' => $row['amenities'],
