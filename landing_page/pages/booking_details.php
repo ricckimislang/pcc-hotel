@@ -23,12 +23,15 @@ $booking_id = $_GET['id'];
 $stmt = $conn->prepare("SELECT b.*, 
                               r.type_name, r.description, r.base_price, r.capacity, r.amenities,
                               u.username, u.email, u.phone_number,
-                              rm.room_number, r.floor_type
+                              rm.room_number, r.floor_type,
+                              COALESCE(SUM(t.amount), 0) AS paid_amount
                        FROM bookings b
                        JOIN rooms rm ON b.room_id = rm.room_id
                        JOIN room_types r ON rm.room_type_id = r.room_type_id
                        JOIN users u ON b.user_id = u.user_id
-                       WHERE b.booking_id = ? AND b.user_id = ?");
+                       LEFT JOIN transactions t ON b.booking_id = t.booking_id
+                       WHERE b.booking_id = ? AND b.user_id = ?
+                       GROUP BY b.booking_id");
 $stmt->bind_param("ii", $booking_id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -46,6 +49,12 @@ $stmt->close();
 $check_in = new DateTime($booking['check_in_date']);
 $check_out = new DateTime($booking['check_out_date']);
 $nights = $check_in->diff($check_out)->days;
+
+// Calculate remaining balance
+$paid_amount = floatval($booking['paid_amount']);
+$total_price = floatval($booking['total_price']);
+$remaining_balance = $total_price - $paid_amount;
+$has_partial_payment = $paid_amount > 0 && $paid_amount < $total_price;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,6 +62,16 @@ $nights = $check_in->diff($check_out)->days;
 <?php include_once '../includes/head.php'; ?>
 
 <body>
+    <style>
+        .price-row.remaining {
+            font-weight: bold;
+            color: #2980b9;
+            font-size: 1.1em;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed #ccc;
+        }
+    </style>
     <div class="booking-container">
         <div class="back-button" style="margin-bottom: 20px;">
             <a href="javascript:history.back()"
@@ -67,7 +86,7 @@ $nights = $check_in->diff($check_out)->days;
         </div>
 
         <div class="booking-details-container">
-    
+
             <div class="booking-status-bar">
                 <div class="status-badge <?php echo strtolower($booking['booking_status']); ?>">
                     <?php echo ucfirst($booking['booking_status']); ?>
@@ -130,6 +149,18 @@ $nights = $check_in->diff($check_out)->days;
                     <span>Total</span>
                     <span>₱<?php echo number_format($booking['total_price'], 2); ?></span>
                 </div>
+                <?php if ($paid_amount > 0): ?>
+                    <div class="price-row">
+                        <span>Amount Paid</span>
+                        <span>₱<?php echo number_format($paid_amount, 2); ?></span>
+                    </div>
+                    <?php if ($remaining_balance > 0): ?>
+                        <div class="price-row remaining">
+                            <span>Remaining Balance</span>
+                            <span>₱<?php echo number_format($remaining_balance, 2); ?></span>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
 
             <?php if (!empty($booking['special_requests'])): ?>
@@ -150,6 +181,10 @@ $nights = $check_in->diff($check_out)->days;
                 <div class="booking-actions-section">
                     <button id="payBooking" class="btn-pay">Pay Now</button>
                 </div>
+            <?php elseif ($booking['payment_status'] === 'partial'): ?>
+                <div class="booking-actions-section">
+                    <button id="payBooking" class="btn-pay">Pay Remaining Balance</button>
+                </div>
             <?php endif; ?>
         </div>
     </div>
@@ -165,7 +200,7 @@ $nights = $check_in->diff($check_out)->days;
                 <div class="gcash-details">
                     <p><strong>Account Name:</strong> PCC Home Suite Home</p>
                     <p><strong>GCash Number:</strong> 09123456789</p>
-                    <p><strong>Amount to Pay:</strong> ₱<?php echo number_format($booking['total_price'], 2); ?></p>
+                    <p><strong>Amount to Pay:</strong> ₱<?php echo number_format($booking['payment_status'] === 'partial' ? $remaining_balance : $booking['total_price'], 2); ?></p>
                 </div>
                 <div class="payment-instructions">
                     <ol>
@@ -199,7 +234,7 @@ $nights = $check_in->diff($check_out)->days;
                 <div class="form-group">
                     <label for="paymentAmount">Payment Amount</label>
                     <input type="number" id="paymentAmount" name="payment_amount" class="form-control"
-                        value="<?php echo $booking['total_price']; ?>" step="0.01" min="0" required>
+                        value="<?php echo $booking['payment_status'] === 'partial' ? $remaining_balance : $booking['total_price']; ?>" step="0.01" min="0" required>
                 </div>
 
                 <div class="form-group">
@@ -250,14 +285,14 @@ $nights = $check_in->diff($check_out)->days;
 
         if (menuToggle && navDropdown) {
             // Add a click event handler to close dropdown when clicking outside
-            document.addEventListener('click', function (event) {
+            document.addEventListener('click', function(event) {
                 if (!event.target.closest('.menu-button') && navDropdown.classList.contains('show')) {
                     navDropdown.classList.remove('show');
                 }
             });
 
             // Toggle the dropdown when clicking the menu button
-            menuToggle.addEventListener('click', function (event) {
+            menuToggle.addEventListener('click', function(event) {
                 event.stopPropagation();
                 navDropdown.classList.toggle('show');
             });
@@ -281,28 +316,28 @@ $nights = $check_in->diff($check_out)->days;
 
         // Policy agreement checkbox handler
         if (policyAgreement) {
-            policyAgreement.addEventListener('change', function () {
+            policyAgreement.addEventListener('change', function() {
                 policyAccept.disabled = !this.checked;
             });
         }
 
         // Close policy modal
         if (closePolicyModal) {
-            closePolicyModal.addEventListener('click', function () {
+            closePolicyModal.addEventListener('click', function() {
                 policyModal.style.display = 'none';
             });
         }
 
         // Policy decline button
         if (policyDecline) {
-            policyDecline.addEventListener('click', function () {
+            policyDecline.addEventListener('click', function() {
                 policyModal.style.display = 'none';
             });
         }
 
         // Policy accept button
         if (policyAccept) {
-            policyAccept.addEventListener('click', function () {
+            policyAccept.addEventListener('click', function() {
                 policyModal.style.display = 'none';
 
                 if (currentAction === 'payment') {
@@ -314,7 +349,7 @@ $nights = $check_in->diff($check_out)->days;
         }
 
         if (payButton) {
-            payButton.addEventListener('click', function () {
+            payButton.addEventListener('click', function() {
                 // Show policy modal first
                 currentAction = 'payment';
                 policyModal.style.display = 'block';
@@ -326,7 +361,7 @@ $nights = $check_in->diff($check_out)->days;
         // Cancel booking functionality
         const cancelButton = document.getElementById('cancelBooking');
         if (cancelButton) {
-            cancelButton.addEventListener('click', function () {
+            cancelButton.addEventListener('click', function() {
                 // Show policy modal first
                 currentAction = 'cancellation';
                 policyModal.style.display = 'block';
@@ -351,12 +386,14 @@ $nights = $check_in->diff($check_out)->days;
                 if (result.isConfirmed) {
                     // Send cancellation request
                     fetch('../api/cancel_booking.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ booking_id: bookingId })
-                    })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                booking_id: bookingId
+                            })
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -388,7 +425,7 @@ $nights = $check_in->diff($check_out)->days;
         }
 
         // Close modal when clicking outside the modal content
-        window.addEventListener('click', function (event) {
+        window.addEventListener('click', function(event) {
             if (event.target === paymentModal) {
                 paymentModal.style.display = 'none';
             }
@@ -399,11 +436,11 @@ $nights = $check_in->diff($check_out)->days;
 
         // Preview payment screenshot when selected
         if (screenshotInput) {
-            screenshotInput.addEventListener('change', function () {
+            screenshotInput.addEventListener('change', function() {
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         screenshotPreview.src = e.target.result;
                         screenshotPreview.style.display = 'block';
                         document.querySelector('.file-preview-container').classList.add('has-preview');
@@ -421,7 +458,7 @@ $nights = $check_in->diff($check_out)->days;
 
         // Handle payment form submission
         if (paymentForm) {
-            paymentForm.addEventListener('submit', function (e) {
+            paymentForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 const submitButton = this.querySelector('button[type="submit"]');
@@ -431,9 +468,9 @@ $nights = $check_in->diff($check_out)->days;
                 const formData = new FormData(this);
 
                 fetch('../api/submit_payment.php', {
-                    method: 'POST',
-                    body: formData
-                })
+                        method: 'POST',
+                        body: formData
+                    })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {

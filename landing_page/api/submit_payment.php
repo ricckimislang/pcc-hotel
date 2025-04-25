@@ -154,7 +154,6 @@ try {
     $response['success'] = true;
     $response['message'] = 'Payment submitted successfully';
     $response['receipt_no'] = $receipt_no;
-
 } catch (Exception $e) {
     // Rollback transaction on error
     if (isset($conn) && $conn->ping()) {
