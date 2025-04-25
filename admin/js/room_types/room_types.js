@@ -49,6 +49,7 @@ function initRoomTypeTable() {
       },
     },
     responsive: true,
+    autoWidth: false,
     dom: "Bfrtlip",
     buttons: [
       {
@@ -76,27 +77,51 @@ function initRoomTypeTable() {
       [10, 25, 50, "All"],
     ],
     columns: [
-      { data: "type_name" },
-      { data: "base_price" },
-      { data: "capacity" },
+      { data: "type_name", width: "10%" },
+      { data: "base_price", width: "5%" },
+      { data: "capacity", width: "5%" },
       {
         data: "floor_type",
+        width: "5%",
         render: function (data, type, row) {
           if (data == 1) return "Ground Floor";
           if (data == 2) return "Second Floor";
+          if (data == 3) return "Function Hall";
           return data; // Return original value if it doesn't match conditions
         },
       },
-      { data: "description", className: "col-description" },
-      { data: "amenities", className: "col-amenities" },
+      { 
+        data: "description", 
+        className: "col-description", 
+        width: "10%",
+        render: function(data, type) {
+          if (type === 'display' && data) {
+            return data.length > 100 ? data.substr(0, 100) + '...' : data;
+          }
+          return data;
+        }
+      },
+      { 
+        data: "amenities", 
+        className: "col-amenities", 
+        width: "10%",
+        render: function(data, type) {
+          if (type === 'display' && data) {
+            return data.length > 80 ? data.substr(0, 80) + '...' : data;
+          }
+          return data;
+        }
+      },
       {
         data: null,
+        width: "10%",
+        className: "text-center",
         render: function (data, type, row) {
           return `
           <div class="btn-group" role="group"></div>
-            <button type="button" class="btn btn-primary view-btn" data-id="${data.id}">View</button>
-            <button type="button" class="btn btn-warning edit-btn" data-id="${data.id}">Edit</button>
-            <button type="button" class="btn btn-danger delete-btn" data-id="${data.id}">Delete</button>
+            <button type="button" class="btn btn-sm btn-primary view-btn" data-id="${data.id}">View</button>
+            <button type="button" class="btn btn-sm btn-warning edit-btn" data-id="${data.id}">Edit</button>
+            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="${data.id}">Delete</button>
           </div>
         `;
         },

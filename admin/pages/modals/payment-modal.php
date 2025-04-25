@@ -118,7 +118,8 @@
                     <div class="mb-3">
                         <label for="fee_item_name" class="form-label">Item Name</label>
                         <select class="form-select" id="fee_item_name" required>
-                            <option value="" selected disabled>Select an item</option>
+                            <option value="" selected disabled>Select a additional fee</option>
+                            <option value="AdditionalGuest">Additional Guest</option>
                             <option value="Towel">Towel</option>
                             <option value="Soap">Soap</option>
                             <option value="Shampoo">Shampoo</option>

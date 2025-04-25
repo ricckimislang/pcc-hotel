@@ -20,11 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rowType = mysqli_fetch_assoc($resultType);
     $room_type_id = $rowType['room_type_id'];
 
-    // Get base_price from room_types
-    $priceQuery = "SELECT base_price FROM room_types WHERE room_type_id = $room_type_id";
+    // Get base_price and room_type name from room_types
+    $priceQuery = "SELECT base_price, type_name FROM room_types WHERE room_type_id = $room_type_id";
     $resultPrice = mysqli_query($conn, $priceQuery);
     $rowPrice = mysqli_fetch_assoc($resultPrice);
     $base_price = $rowPrice["base_price"];
+    $room_type_name = $rowPrice["type_name"];
 
     // Calculate number of nights
     $check_in_date = new DateTime($check_in);
@@ -37,8 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Total price = nights * base price
-    $total_price = $nights * $base_price;
+    // Calculate total price based on room type
+    if (strtolower($room_type_name) === 'function hall') {
+        // For function halls, price is based on number of guests
+        $total_price = $base_price * $guests_count;
+    } else {
+        // For other room types, price is based on number of nights
+        $total_price = $nights * $base_price;
+    }
 
     // Insert booking
     $stmt = $conn->prepare("INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, guests_count, total_price, special_requests) VALUES (?, ?, ?, ?, ?, ?, ?)");
