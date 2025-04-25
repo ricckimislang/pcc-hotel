@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Check for required fields
-if (!isset($_POST['booking_id']) || empty($_POST['booking_id']) ||
+if (
+    !isset($_POST['booking_id']) || empty($_POST['booking_id']) ||
     !isset($_POST['payment_amount']) || empty($_POST['payment_amount'])
 ) {
     echo json_encode(['status' => 'error', 'message' => 'Booking ID and payment amount are required']);
@@ -43,7 +44,7 @@ if (!empty($additional_items)) {
 try {
     // Start transaction
     $conn->begin_transaction();
-    
+
     // Check if booking exists and is active
     $query = "SELECT b.*, rt.base_price, DATEDIFF(b.check_out_date, b.check_in_date) as nights,
               r.room_id
@@ -51,132 +52,136 @@ try {
               JOIN rooms r ON b.room_id = r.room_id
               JOIN room_types rt ON r.room_type_id = rt.room_type_id
               WHERE b.booking_id = ? AND (b.booking_status = 'checked_in' OR b.booking_status = 'confirmed')";
-    
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param('i', $booking_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows === 0) {
         throw new Exception('Booking not found or not in active status');
     }
-    
+
     $booking = $result->fetch_assoc();
-    
+
     // Check if transaction already exists for this booking
     $query = "SELECT * FROM transactions WHERE booking_id = ?";
-    
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param('i', $booking_id);
     $stmt->execute();
     $transaction_result = $stmt->get_result();
-    
+
     if ($transaction_result->num_rows === 0) {
         throw new Exception('No transaction found for this booking. Please create a transaction first.');
     }
-    
+
     $transaction = $transaction_result->fetch_assoc();
     $transaction_id = $transaction['transaction_id'];
-    
+
     // Update the existing transaction with the extra payment amount
     $query = "UPDATE transactions SET 
               extra_pay = ?
               WHERE booking_id = ?";
-    
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param('di', $extra_payment, $booking_id);
     $stmt->execute();
-    
+
     // Delete any existing additional items for this transaction
     $query = "DELETE FROM additional_items WHERE transaction_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('i', $transaction_id);
     $stmt->execute();
-    
+
     // Insert new additional items
     if (!empty($items) && is_array($items)) {
         $query = "INSERT INTO additional_items (transaction_id, item_name, item_price, quantity, subtotal) 
                   VALUES (?, ?, ?, ?, ?)";
-                  
+
         $stmt = $conn->prepare($query);
-        
+
         foreach ($items as $item) {
             if (isset($item['name'], $item['price'], $item['quantity'], $item['subtotal'])) {
                 $item_name = $item['name'];
                 $item_price = floatval($item['price']);
                 $item_quantity = intval($item['quantity']);
                 $item_subtotal = floatval($item['subtotal']);
-                
-                $stmt->bind_param('isdid', 
-                    $transaction_id, 
-                    $item_name, 
-                    $item_price, 
-                    $item_quantity, 
+
+                $stmt->bind_param(
+                    'isdid',
+                    $transaction_id,
+                    $item_name,
+                    $item_price,
+                    $item_quantity,
                     $item_subtotal
                 );
                 $stmt->execute();
             }
         }
     }
-    
+
     // Calculate room total
     $room_total = $booking['base_price'] * $booking['nights'];
-    
+
     // Get total paid from transaction
     $total_paid = $transaction['amount'] + $extra_payment;
     $checkout_complete = false;
-    
+
     // If total paid equals or exceeds room total, mark booking as checked out
     if ($total_paid >= $room_total) {
         $query = "UPDATE bookings SET booking_status = 'checked_out', 
                   payment_status = 'paid', 
                   booking_date = NOW() 
                   WHERE booking_id = ?";
-        
+
         $stmt = $conn->prepare($query);
         $stmt->bind_param('i', $booking_id);
         $stmt->execute();
-        
+
         // Update room status to available
         $updateroom = "UPDATE rooms SET status = 'available'
                   WHERE room_id = ?";
-        
+
         $stmtroom = $conn->prepare($updateroom);
         $stmtroom->bind_param('i', $booking['room_id']);
         $stmtroom->execute();
 
 
-        // $stmtloyal = $conn->query("SELECT * FROM customer_profiles WHERE user_id = ?");
-        // $stmtloyal->bind_param('i', $booking['user_id']);
-        // $stmtloyal->execute();
-        // if($stmtloyal->num_rows > 0){
-        //     $loyalPoints = $stmtloyal->fetch_assoc();
-        //     $loyalPoints = $loyalPoints['loyal_points'];
+        $stmtLoyal = $conn->prepare("SELECT * FROM customer_profiles WHERE user_id = ?");
+        $stmtLoyal->bind_param('i', $booking['user_id']);
+        $stmtLoyal->execute();
+        $loyalResult = $stmtLoyal->get_result();
+        if ($loyalResult->num_rows > 0) {
+            $LoyalPoints = 20;
+            $stmtloyal = $conn->prepare("UPDATE customer_profiles SET loyal_points = loyal_points + ?, frequent_guest = frequent_guest + 1 WHERE user_id = ?");
+            $stmtloyal->bind_param('ii', $LoyalPoints, $booking['user_id']);
+            $stmtloyal->execute();
+        } else {
+            $LoyalPoints = 20;
+            $frequent_guest = 1;
+            $stmtloyal = $conn->prepare("INSERT INTO customer_profiles (user_id, loyal_points, frequent_guest) VALUES (?, ?, ?)");
+            $stmtloyal->bind_param('iii', $booking['user_id'], $LoyalPoints, $frequent_guest);
+            $stmtloyal->execute();
+        }
 
-        //     $loyalPoints = $loyalPoints + $booking['nights'];
 
-        //     $updateloyal = "UPDATE customer_profiles SET loyal_points = ?, frequent_guest = ? WHERE user_id = ?";
-
-
-        // }
-        
         $checkout_complete = true;
     }
-    
+
     // Commit transaction
     $conn->commit();
-    
+
     // Return success response
     echo json_encode([
-        'status' => 'success', 
+        'status' => 'success',
         'message' => 'Payment processed successfully',
         'checkout_complete' => $checkout_complete
     ]);
-    
 } catch (Exception $e) {
     // Rollback transaction on error
     $conn->rollback();
-    
+
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     exit;
 }
