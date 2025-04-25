@@ -93,13 +93,27 @@ if ($user_id) {
                             </div>
                             <div class="booking-actions">
                                 <p class="booking-price">₱<?php echo number_format($booking['total_price'], 2); ?></p>
-                                <?php if ($booking['booking_status'] === 'completed'): ?>
-                                    <button class="btn-review" data-booking-id="<?php echo $booking['booking_id']; ?>">Write
-                                        Review</button>
+
+                                <?php if ($booking['booking_status'] === 'checked_out'): ?>
+                                    <button class="btn-review" data-booking-id="<?php echo $booking['booking_id']; ?>">
+                                        Write Review
+                                    </button>
+
+                                <?php elseif ($booking['booking_status'] === 'pending'): ?>
+                                    <button class="btn-cancel" data-booking-id="<?php echo $booking['booking_id']; ?>">
+                                        Cancel Booking
+                                    </button>
+                                    <a href="booking_details.php?id=<?php echo $booking['booking_id']; ?>" class="btn-details">
+                                        View Details
+                                    </a>
+
+                                <?php elseif ($booking['booking_status'] === 'confirmed'): ?>
+                                    <a href="booking_details.php?id=<?php echo $booking['booking_id']; ?>" class="btn-details">
+                                        View Details
+                                    </a>
                                 <?php endif; ?>
-                                <a href="booking_details.php?id=<?php echo $booking['booking_id']; ?>" class="btn-details">View
-                                    Details</a>
                             </div>
+
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -114,14 +128,14 @@ if ($user_id) {
 
         if (menuToggle && navDropdown) {
             // Add a click event handler to close dropdown when clicking outside
-            document.addEventListener('click', function (event) {
+            document.addEventListener('click', function(event) {
                 if (!event.target.closest('.menu-button') && navDropdown.classList.contains('show')) {
                     navDropdown.classList.remove('show');
                 }
             });
 
             // Toggle the dropdown when clicking the menu button
-            menuToggle.addEventListener('click', function (event) {
+            menuToggle.addEventListener('click', function(event) {
                 event.stopPropagation();
                 navDropdown.classList.toggle('show');
             });
@@ -129,17 +143,19 @@ if ($user_id) {
 
         // Cancel booking functionality
         document.querySelectorAll('.btn-cancel').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 const bookingId = this.getAttribute('data-booking-id');
                 if (confirm('Are you sure you want to cancel this booking?')) {
                     // Send cancellation request
                     fetch('../api/cancel_booking.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ booking_id: bookingId })
-                    })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                booking_id: bookingId
+                            })
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
