@@ -19,7 +19,7 @@ if ($user_id) {
                           JOIN rooms rm ON b.room_id = rm.room_id
                           JOIN room_types r ON rm.room_type_id = r.room_type_id
                           WHERE b.user_id = ?
-                          ORDER BY b.check_in_date DESC");
+                          ORDER BY FIELD(b.booking_status, 'confirmed', 'pending')");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();

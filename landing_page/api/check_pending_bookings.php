@@ -14,11 +14,10 @@ $user_id = $_SESSION['user_id'];
 require_once '../../config/db.php';
 
 try {
-    // Query to check for pending bookings (status 'pending' or 'awaiting_payment')
     $stmt = $conn->prepare(
         "SELECT COUNT(*) as pending_count 
          FROM bookings 
-         WHERE user_id = ? AND (booking_status = 'pending' or payment_status = 'pending')"
+         WHERE user_id = ? AND (booking_status = 'pending' AND payment_status = 'pending')"
     );
 
     $stmt->bind_param("i", $user_id);
