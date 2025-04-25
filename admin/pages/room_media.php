@@ -37,8 +37,6 @@ require_once '../includes/head.php';
                                 <i class="fas fa-cloud-upload-alt"></i>
                             </div>
                             <h3>Drag & Drop Card Image</h3>
-                            <p>or</p>
-                            <label for="cardImageUpload" class="btn btn-primary">Browse Files</label>
                             <input type="file" id="cardImageUpload" accept="image/*" class="d-none">
                             <p class="text-muted mt-2">Recommended size: 800x600px, Max: 5MB</p>
                         </div>
@@ -81,8 +79,6 @@ require_once '../includes/head.php';
                                 <i class="fas fa-panorama"></i>
                             </div>
                             <h3>Drag & Drop 360° Image</h3>
-                            <p>or</p>
-                            <label for="panoramaUpload" class="btn btn-primary">Browse Files</label>
                             <input type="file" id="panoramaUpload" accept="image/*" class="d-none">
                             <p class="text-muted mt-2">Equirectangular format recommended, Max: 30MB</p>
                         </div>

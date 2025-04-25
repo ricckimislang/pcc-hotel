@@ -59,6 +59,7 @@ if ($room_type) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <?php include_once '../includes/head.php'; ?>
     <link rel="stylesheet" href="../css/room_details.css">
@@ -66,6 +67,13 @@ if ($room_type) {
 </head>
 
 <body>
+    <div class="back-nav">
+        <a href="index.php" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Rooms
+        </a>
+    </div>
+
     <div class="room-details">
         <div class="hero-section">
             <img src="../assets/images/luxury-twin.jpg" alt="<?php echo $type_name; ?>" class="hero-image">
@@ -222,27 +230,27 @@ if ($room_type) {
             position: relative;
             cursor: pointer;
         }
-        
+
         .panorama-hint {
             display: flex;
             align-items: center;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             color: white;
             padding: 10px 15px;
             border-radius: 30px;
             font-size: 14px;
             transition: transform 0.3s ease;
         }
-        
+
         .panorama-hint i {
             margin-right: 8px;
             font-size: 16px;
         }
-        
+
         .panorama-link:hover .panorama-hint {
             transform: scale(1.05);
         }
-        
+
         .panorama-overlay {
             position: absolute;
             top: 0;
@@ -252,13 +260,14 @@ if ($room_type) {
             display: flex;
             justify-content: center;
             align-items: center;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             transition: background 0.3s ease;
         }
-        
+
         .panorama-link:hover .panorama-overlay {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
         }
     </style>
 </body>
+
 </html>
