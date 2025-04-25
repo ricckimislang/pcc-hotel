@@ -24,7 +24,6 @@ while ($room = $rooms_result->fetch_assoc()) {
     $available_rooms[] = $room;
 }
 $rooms_stmt->close();
-$conn->close();
 
 // Check if room type data is available
 if ($room_type) {
@@ -41,7 +40,6 @@ if ($room_type) {
         $room_number = $room['room_number'];
         $floor       = $room['floor_type'];
         $status      = $room['status'];
-        $card_image  = $room['card_image'];
         $panorama_image = $room['panorama_image'];
     } else {
         $room_id     = null;
@@ -151,24 +149,18 @@ if ($room_type) {
             <h2 class="section-title">Room Gallery</h2>
             <p class="section-subtitle">Explore our luxurious accommodations</p>
             <div class="photos-grid">
-                <div class="photo-item">
-                    <img src="../assets/images/room-gallery-1.jpg" alt="Luxury Room - Bedroom View">
-                    <div class="photo-overlay">
-                        <span>Bedroom</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="../assets/images/room-gallery-2.jpg" alt="Luxury Room - Bathroom View">
-                    <div class="photo-overlay">
-                        <span>Bathroom</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="../assets/images/room-gallery-3.jpg" alt="Luxury Room - Living Space">
-                    <div class="photo-overlay">
-                        <span>Living Area</span>
-                    </div>
-                </div>
+                <?php
+                $photoGridstmt = $conn->prepare("SELECT image_path FROM room_gallery WHERE room_type_id = ?");
+                $photoGridstmt->bind_param("i", $room_type_id);
+                $photoGridstmt->execute();
+                $result = $photoGridstmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    echo "<div class='photo-item'>";
+                    echo "<img src='../../public/room_images_details/{$row['image_path']}' alt='Room Gallery Image'>";
+                    echo "</div>";
+                }
+                $photoGridstmt->close();
+                ?>
             </div>
             <!-- Panorama Image Section -->
             <?php if (!empty($panorama_image)): ?>
@@ -195,16 +187,17 @@ if ($room_type) {
             <h2 class="section-title">Room Amenities</h2>
             <div class="amenities-grid">
                 <?php
-                $amenities_array = explode(',', $amenities);
+                $amenities_array = array_map('strtoupper', explode(',', $amenities));
                 $amenity_icons   = [
-                    'WiFi'             => 'fa-wifi',
+                    'WIFI'             => 'fa-wifi',
                     'TV'               => 'fa-tv',
-                    'Air Conditioning' => 'fa-snowflake',
-                    'Mini Bar'         => 'fa-wine-glass',
-                    'Safe'             => 'fa-vault',
-                    'Room Service'     => 'fa-concierge-bell',
-                    'Coffee Maker'     => 'fa-mug-hot',
-                    'Hair Dryer'       => 'fa-wind',
+                    'AIR CONDITIONING' => 'fa-snowflake',
+                    'MINI BAR'         => 'fa-wine-glass',
+                    'SAFE'             => 'fa-vault',
+                    'ROOM SERVICE'     => 'fa-concierge-bell',
+                    'COFFEE MAKER'     => 'fa-mug-hot',
+                    'HAIR DRYER'       => 'fa-wind',
+                    'BATH AMENITIES'   => 'fa-bath',
                 ];
                 foreach ($amenities_array as $amenity) {
                     $amenity = trim($amenity);
