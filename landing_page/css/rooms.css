@@ -1,0 +1,187 @@
+/* Room Cards Styling */
+.activity-card {
+  cursor: pointer;
+  background-color: var(--white);
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.activity-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.12);
+}
+
+.activity-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.activity-image img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.activity-card:hover .activity-image img {
+  transform: scale(1.05);
+}
+
+.room-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(28, 60, 100, 0.85);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px);
+}
+
+.activity-info {
+  padding: 20px;
+  color: var(--dark-text);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.activity-info h3 {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+.rating {
+  margin-bottom: 15px;
+}
+
+.rating .stars {
+  color: var(--primary-color);
+  font-size: 14px;
+}
+
+.room-highlights {
+  margin-bottom: 15px;
+  flex: 1;
+}
+
+.room-highlights .amenities {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: var(--secondary-color);
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.room-highlights .amenities i,
+.room-highlights .description i {
+  margin-top: 3px;
+}
+
+.room-highlights .description {
+  font-size: 14px;
+  color: var(--light-text);
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.room-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.price {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 12px;
+  color: var(--light-text);
+  margin-bottom: 2px;
+}
+
+.price-value {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--secondary-color);
+}
+
+.price-unit {
+  font-size: 14px;
+  color: var(--light-text);
+}
+
+.view-room-btn {
+  background: var(--luxury-gradient);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.view-room-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .activity-info h3 {
+    font-size: 1.2rem;
+  }
+  
+  .price-value {
+    font-size: 1.1rem;
+  }
+  
+  .view-room-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .activities-grid {
+    gap: 20px;
+  }
+  
+  .room-footer {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .view-room-btn {
+    width: 100%;
+    padding: 10px;
+  }
+} 

@@ -493,19 +493,6 @@ header {
   color: var(--secondary-color);
 }
 
-.price::before {
-  content: "Starting at";
-  position: absolute;
-  top: -20px;
-  left: 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--light-text);
-  font-family: "Montserrat", sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
 .activity-promo {
   background: var(--luxury-gradient);
   border-radius: 15px;

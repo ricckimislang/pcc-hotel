@@ -9,34 +9,75 @@ async function getRooms() {
         const roomCard = document.createElement("div");
         roomCard.className = "activity-card";
         roomCard.dataset.roomId = room.room_type_id;
+
+        // Get a room image based on room type (using room type id as a simple hash)
+        const roomImgId = (room.room_type_id % 5) + 1; // This will cycle between 1-5
+        const roomImages = [
+          "../assets/images/luxury-twin.jpg",
+          "../assets/images/luxury-twin.jpg",
+          "../assets/images/luxury-twin.jpg",
+          "../assets/images/luxury-twin.jpg",
+          "../assets/images/luxury-twin.jpg",
+        ];
+        const roomImg = roomImages[roomImgId - 1] || roomImages[0];
+
         roomCard.innerHTML = `
-                    <div class="activity-image">
-                        <img src="../assets/images/luxury-twin.jpg" alt="Luxury Twin Matress">
-                    </div>
-                    <div class="activity-info">
-                        <h3>${room.type_name}</h3>
-                        <p>Good for: ${room.capacity} people</p>
-                        <span class="description">
-                            <p><i class="far fa-sticky-note"></i>${room.description}</p>
-                            <p>Amenities: ${room.amenities}</p>
-                        </span>
-                         <div class="rating">
-                            <span class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </span>
-                        </div>
-                         <div class="price"><p>Price: ₱${room.base_price}/night</p></div>
-                    </div>
+          <div class="activity-image">
+            <img src="${roomImg}" alt="${room.type_name}">
+          </div>
+          <div class="activity-info">
+            <h3>${room.type_name}</h3>
+            <div class="rating">
+              <span class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </span>
+            </div>
+            <div class="room-highlights">
+              <p class="amenities"><i class="fas fa-concierge-bell"></i> ${room.amenities
+                .split(",")
+                .slice(0, 3)
+                .join(", ")}</p>
+              <p class="description"><i class="far fa-sticky-note"></i> ${room.description.substring(
+                0,
+                100
+              )}${room.description.length > 100 ? "..." : ""}</p>
+            </div>
+            <div class="room-footer">
+              <div class="price">
+                <span class="price-label">From</span>
+                <span class="price-value">₱${room.base_price}</span>
+                <span class="price-unit">/night</span>
+              </div>
+              <button class="view-room-btn">View Details</button>
+            </div>
+          </div>
         `;
 
-        // attach listener that “closes over” room.id
-        roomCard.addEventListener("click", () => {
-          onRoomClick(room.room_type_id);
+        // attach listener that "closes over" room.id
+        roomCard.addEventListener("click", (e) => {
+          // Don't navigate if clicking on the button (button has its own handler)
+          if (e.target.classList.contains("view-room-btn")) {
+            e.preventDefault();
+            e.stopPropagation();
+            onRoomClick(room.room_type_id);
+          } else {
+            onRoomClick(room.room_type_id);
+          }
         });
+
+        // Add a specific handler for the button
+        const viewButton = roomCard.querySelector(".view-room-btn");
+        if (viewButton) {
+          viewButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onRoomClick(room.room_type_id);
+          });
+        }
 
         roomsContainer.appendChild(roomCard);
       });
