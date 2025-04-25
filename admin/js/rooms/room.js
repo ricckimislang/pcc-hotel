@@ -80,7 +80,6 @@ function initRoomsTable() {
     columns: [
       { data: "room_number" },
       { data: "room_type" },
-      { data: "floor" },
       {
         data: "status",
         render: function (data, type, row) {
@@ -181,7 +180,6 @@ function openEditModal(roomId) {
         const room = data.roomData[0];
         $("#edit_room_number").val(room.room_number);
         $("#edit_room_type_id").val(room.room_type_id);
-        $("#edit_floor").val(room.floor);
         $("#edit_status").val(room.status);
         $("#edit_description").val(room.description);
       } else {
@@ -284,7 +282,6 @@ document.addEventListener("click", function (e) {
           const details = data.details;
           $("#roomNumber").text(details.room_number);
           $("#roomType").text(details.room_type);
-          $("#floor").text(details.floor);
           $("#status").text(details.status);
           $("#guestName").val(details.fullname);
           $("#guestContact").val(details.bookingDate);

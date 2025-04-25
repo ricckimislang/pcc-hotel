@@ -128,9 +128,9 @@ $(function () {
           
           // Populate modal with room type details
           $("#view_type_name").text(roomType.type_name);
-          $("#view_base_price").text(parseFloat(roomType.base_price).toLocaleString('en-US', {
+          $("#view_base_price").text(parseFloat(roomType.base_price).toLocaleString('en-PH', {
             style: 'currency',
-            currency: 'USD'
+            currency: 'PHP'
           }));
           $("#view_capacity").text(roomType.capacity);
           

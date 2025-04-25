@@ -17,15 +17,16 @@ $response = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $type_name = $_POST['type_name'];
+    $type_name = strtoupper($_POST['type_name']);
     $base_price = $_POST['base_price'];
+    $floor = $_POST['floor'];
     $capacity = $_POST['capacity'];
     $description = $_POST['description'];
-    $amenities = $_POST['amenities'];
+    $amenities = strtoupper($_POST['amenities']);
 
-    $sql = "INSERT INTO room_types (type_name, base_price, capacity, description, amenities) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO room_types (type_name, base_price, capacity, description, floor_type, amenities) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sdiss", $type_name, $base_price, $capacity, $description, $amenities);
+    $stmt->bind_param("sdisis", $type_name, $base_price, $capacity, $description, $floor, $amenities);
 
     if ($stmt->execute()) {
         $response['status'] = true;

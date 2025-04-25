@@ -4,10 +4,12 @@
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Add New Room Type</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="addRoomTypeForm">
+
                     <!-- Basic Info Card -->
                     <div class="card mb-4 border-0 shadow-sm">
                         <div class="card-header bg-light">
@@ -17,16 +19,20 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="type_name" class="form-label small text-muted mb-1">TYPE NAME</label>
-                                        <input type="text" class="form-control" id="type_name" name="type_name" required>
+                                        <label for="type_name" class="form-label small text-muted mb-1">TYPE
+                                            NAME</label>
+                                        <input type="text" class="form-control" id="type_name" name="type_name"
+                                            required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="base_price" class="form-label small text-muted mb-1">BASE PRICE</label>
+                                        <label for="base_price" class="form-label small text-muted mb-1">BASE
+                                            PRICE</label>
                                         <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" step="0.01" class="form-control" id="base_price" name="base_price" required>
+                                            <span class="input-group-text">₱</span>
+                                            <input type="number" step="0.01" class="form-control" id="base_price"
+                                                name="base_price" required>
                                         </div>
                                     </div>
                                 </div>
@@ -34,23 +40,19 @@
                         </div>
                     </div>
 
-                    <!-- Capacity Card -->
+                    <!-- Floor Card -->
                     <div class="card mb-4 border-0 shadow-sm">
                         <div class="card-header bg-light">
-                            <h6 class="mb-0"><i class="fas fa-users me-2"></i>Capacity</h6>
+                            <h6 class="mb-0"><i class="fas fa-building me-2"></i>Floor</h6>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6"></div>
-                                    <div class="form-group">
-                                        <label for="capacity" class="form-label small text-muted mb-1">MAXIMUM OCCUPANCY</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                            <input type="number" class="form-control" id="capacity" name="capacity" required>
-                                            <span class="input-group-text">person(s)</span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label for="floor" class="form-label small text-muted mb-1">FLOOR</label>
+                                <select name="floor" id="floor" class="form-control">
+                                    <option value="">Select Floor</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -62,21 +64,46 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter room type description"></textarea>
-                                <small class="form-text text-muted">Provide a detailed description of the room type and its features.</small>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                    placeholder="Enter room type description"></textarea>
+                                <small class="form-text text-muted">Provide a detailed description of the room type and
+                                    its features.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Capacity Card -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-users me-2"></i>Capacity</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="form-group">
+                                    <label for="capacity" class="form-label small text-muted mb-1">MAXIMUM
+                                        OCCUPANCY</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="number" class="form-control" id="capacity" name="capacity"
+                                            required>
+                                        <span class="input-group-text">person(s)</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Amenities Card -->
-                    <div class="card mb-0 border-0 shadow-sm">
+                    <div class="card mb-4 border-0 shadow-sm">
                         <div class="card-header bg-light">
                             <h6 class="mb-0"><i class="fas fa-concierge-bell me-2"></i>Amenities</h6>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control" id="amenities" name="amenities" rows="3" placeholder="Enter amenities separated by commas (e.g., WiFi, TV, Mini Bar)"></textarea>
-                                <small class="form-text text-muted">List all amenities provided with this room type. Separate each amenity with a comma.</small>
+                                <textarea class="form-control" id="amenities" name="amenities" rows="3"
+                                    placeholder="Enter amenities separated by commas (e.g., WiFi, TV, Mini Bar)"></textarea>
+                                <small class="form-text text-muted">List all amenities provided with this room type.
+                                    Separate each amenity with a comma.</small>
                             </div>
                         </div>
                     </div>
@@ -91,6 +118,7 @@
         </div>
     </div>
 </div>
+</div>
 
 <!-- Edit Room Type Modal -->
 <div class="modal fade" id="editRoomTypeModal" tabindex="-1" aria-hidden="true">
@@ -98,7 +126,8 @@
         <div class="modal-content">
             <div class="modal-header bg-warning text-white">
                 <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Room Type</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="editRoomTypeForm" action="../api/room_types/update_room_type.php" method="post">
@@ -114,16 +143,20 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="edit_type_name" class="form-label small text-muted mb-1">TYPE NAME</label>
-                                        <input type="text" class="form-control" id="edit_type_name" name="type_name" required>
+                                        <label for="edit_type_name" class="form-label small text-muted mb-1">TYPE
+                                            NAME</label>
+                                        <input type="text" class="form-control" id="edit_type_name" name="type_name"
+                                            required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="edit_base_price" class="form-label small text-muted mb-1">BASE PRICE</label>
+                                        <label for="edit_base_price" class="form-label small text-muted mb-1">BASE
+                                            PRICE</label>
                                         <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" step="0.01" class="form-control" id="edit_base_price" name="base_price" required>
+                                            <span class="input-group-text">₱</span>
+                                            <input type="number" step="0.01" class="form-control" id="edit_base_price"
+                                                name="base_price" required>
                                         </div>
                                     </div>
                                 </div>
@@ -140,10 +173,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="edit_capacity" class="form-label small text-muted mb-1">MAXIMUM OCCUPANCY</label>
+                                        <label for="edit_capacity" class="form-label small text-muted mb-1">MAXIMUM
+                                            OCCUPANCY</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                            <input type="number" class="form-control" id="edit_capacity" name="capacity" required>
+                                            <input type="number" class="form-control" id="edit_capacity" name="capacity"
+                                                required>
                                             <span class="input-group-text">person(s)</span>
                                         </div>
                                     </div>
@@ -159,8 +194,10 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control" id="edit_description" name="description" rows="3" placeholder="Enter room type description"></textarea>
-                                <small class="form-text text-muted">Provide a detailed description of the room type and its features.</small>
+                                <textarea class="form-control" id="edit_description" name="description" rows="3"
+                                    placeholder="Enter room type description"></textarea>
+                                <small class="form-text text-muted">Provide a detailed description of the room type and
+                                    its features.</small>
                             </div>
                         </div>
                     </div>
@@ -172,8 +209,10 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control" id="edit_amenities" name="amenities" rows="3" placeholder="Enter amenities separated by commas (e.g., WiFi, TV, Mini Bar)"></textarea>
-                                <small class="form-text text-muted">List all amenities provided with this room type. Separate each amenity with a comma.</small>
+                                <textarea class="form-control" id="edit_amenities" name="amenities" rows="3"
+                                    placeholder="Enter amenities separated by commas (e.g., WiFi, TV, Mini Bar)"></textarea>
+                                <small class="form-text text-muted">List all amenities provided with this room type.
+                                    Separate each amenity with a comma.</small>
                             </div>
                         </div>
                     </div>
@@ -195,7 +234,8 @@
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>Room Type Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <!-- Basic Info Card -->
@@ -268,4 +308,3 @@
         </div>
     </div>
 </div>
-

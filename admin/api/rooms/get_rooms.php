@@ -23,7 +23,6 @@ JOIN room_types rt ON r.room_type_id = rt.room_type_id');
             'id'          => $row['room_id'],
             'room_number' => $row['room_number'],
             'room_type'   => $row['type_name'],
-            'floor'       => $row['floor'],
             'status'      => $row['status'],
             'price'       => $row['base_price'],
             'capacity'    => $row['capacity'],

@@ -62,7 +62,6 @@
                             <tr>
                                 <th>Room #</th>
                                 <th>Room Type</th>
-                                <th>Floor</th>
                                 <th>Status</th>
                                 <th>Price</th>
                                 <th>Capacity</th>

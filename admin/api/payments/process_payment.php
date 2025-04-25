@@ -144,6 +144,21 @@ try {
         $stmtroom = $conn->prepare($updateroom);
         $stmtroom->bind_param('i', $booking['room_id']);
         $stmtroom->execute();
+
+
+        // $stmtloyal = $conn->query("SELECT * FROM customer_profiles WHERE user_id = ?");
+        // $stmtloyal->bind_param('i', $booking['user_id']);
+        // $stmtloyal->execute();
+        // if($stmtloyal->num_rows > 0){
+        //     $loyalPoints = $stmtloyal->fetch_assoc();
+        //     $loyalPoints = $loyalPoints['loyal_points'];
+
+        //     $loyalPoints = $loyalPoints + $booking['nights'];
+
+        //     $updateloyal = "UPDATE customer_profiles SET loyal_points = ?, frequent_guest = ? WHERE user_id = ?";
+
+
+        // }
         
         $checkout_complete = true;
     }
