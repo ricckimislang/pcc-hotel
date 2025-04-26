@@ -225,9 +225,6 @@ function loadDashboardData(period, startDate = '', endDate = '', roomType = 'all
                 if (response.data.revenue_occupancy) {
                     renderRevenueOccupancyChart(response.data.revenue_occupancy);
                 }
-                if (response.data.occupancy_forecast) {
-                    renderOccupancyForecastChart(response.data.occupancy_forecast);
-                }
                 
                 // Check if booking trends data is included in the response
                 if (response.data.most_booked_rooms && response.data.peak_booking_days) {
@@ -923,87 +920,6 @@ function renderRevenueOccupancyChart(data) {
                             } else {
                                 return label + ': ' + value.toFixed(1) + '%';
                             }
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-/**
- * Render occupancy forecast chart
- */
-function renderOccupancyForecastChart(data) {
-    const canvas = document.getElementById('occupancy-forecast-chart');
-    if (!canvas) {
-        console.error('Occupancy forecast chart canvas not found');
-        return;
-    }
-
-    const ctx = canvas.getContext('2d');
-
-    // Destroy existing chart if it exists
-    if (window.occupancyForecastChart) {
-        window.occupancyForecastChart.destroy();
-    }
-
-    // Check if data is available
-    if (!data || !data.dates || !data.predicted || !data.confirmed) {
-        // Display "No Data" message
-        window.occupancyForecastChart = createNoDataChart(ctx, 'bar');
-        return;
-    }
-
-    // Create chart
-    window.occupancyForecastChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: data.dates,
-            datasets: [
-                {
-                    label: 'Confirmed',
-                    data: data.confirmed,
-                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Predicted',
-                    data: data.predicted,
-                    backgroundColor: 'rgba(255, 206, 86, 0.8)',
-                    borderColor: 'rgba(255, 206, 86, 1)',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    title: {
-                        display: true,
-                        text: 'Occupancy Rate (%)'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date'
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
                         }
                     }
                 }

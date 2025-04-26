@@ -348,25 +348,6 @@ require_once '../includes/functions.php';
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Occupancy Forecast</h2>
-                        <small class="text-muted">Next 30 Days</small>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <div class="chart-loading">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                            <canvas id="occupancy-forecast-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Room Booking Trends -->

@@ -206,50 +206,6 @@ try {
         $revenue_occupancy_data['occupancy'][] = $occupancy_rate;
     }
     
-    // Get occupancy forecast for the next 30 days
-    $forecast_query = "SELECT 
-                      DATE_FORMAT(forecast_date, '%Y-%m-%d') as date,
-                      DATE_FORMAT(forecast_date, '%d %b') as date_display,
-                      confirmed_rooms,
-                      predicted_rooms,
-                      total_rooms,
-                      ROUND((confirmed_rooms / total_rooms) * 100, 1) as confirmed_percentage,
-                      ROUND((predicted_rooms / total_rooms) * 100, 1) as predicted_percentage
-                      FROM (
-                          SELECT 
-                              d.date as forecast_date,
-                              COUNT(DISTINCT b.room_id) as confirmed_rooms,
-                              FLOOR(COUNT(DISTINCT b.room_id) * 1.2) as predicted_rooms, -- Simple prediction based on confirmed
-                              (SELECT COUNT(*) FROM rooms) as total_rooms
-                          FROM 
-                              (
-                                  SELECT CURDATE() + INTERVAL (a.a + (10 * b.a)) DAY as date
-                                  FROM (SELECT 0 as a UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) as a
-                                  CROSS JOIN (SELECT 0 as a UNION SELECT 1 UNION SELECT 2 UNION SELECT 3) as b
-                                  WHERE CURDATE() + INTERVAL (a.a + (10 * b.a)) DAY <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
-                              ) d
-                          LEFT JOIN bookings b ON d.date BETWEEN b.check_in_date AND b.check_out_date
-                              AND b.booking_status IN ('confirmed', 'checked_in')
-                          GROUP BY d.date
-                      ) forecast
-                      ORDER BY forecast_date";
-    
-    $stmt = $conn->prepare($forecast_query);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    $forecast_data = [
-        'dates' => [],
-        'confirmed' => [],
-        'predicted' => []
-    ];
-    
-    while ($row = $result->fetch_assoc()) {
-        $forecast_data['dates'][] = $row['date_display'];
-        $forecast_data['confirmed'][] = (float)$row['confirmed_percentage'];
-        $forecast_data['predicted'][] = (float)$row['predicted_percentage'];
-    }
-    
     // Get weekly occupancy trend data
     $weekly_trend_query = "SELECT 
                           CONCAT('W', WEEK(check_in_date), ' ', YEAR(check_in_date)) as week,
@@ -308,7 +264,6 @@ try {
             'daily_occupancy' => $daily_occupancy,
             'room_types' => $room_type_data,
             'revenue_occupancy' => $revenue_occupancy_data,
-            'occupancy_forecast' => $forecast_data,
             'occupancy_trend' => $occupancy_trend,
             'most_booked_rooms' => $most_booked_rooms,
             'peak_booking_days' => $peak_booking_days
