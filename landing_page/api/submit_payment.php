@@ -8,6 +8,9 @@ $response = ['success' => false, 'message' => ''];
 // Function to generate receipt number
 function generateReceiptNumber($conn)
 {
+    // Get the current date in YYYYMMDD format
+    $date_prefix = date('Ymd');
+
     // Get the last receipt number from transactions table
     $query = "SELECT receipt_no FROM transactions ORDER BY transaction_id DESC LIMIT 1";
     $result = mysqli_query($conn, $query);
@@ -16,14 +19,18 @@ function generateReceiptNumber($conn)
         $row = mysqli_fetch_assoc($result);
         $lastReceiptNo = $row['receipt_no'];
 
-        // Extract the numeric part and increment by 1
-        $receiptNumber = intval($lastReceiptNo) + 1;
+        // Extract the numeric part (last 3 digits) and increment by 1
+        $numericPart = substr($lastReceiptNo, -3);
+        $receiptNumber = intval($numericPart) + 1;
 
         // Format with leading zeros to make it 3 digits
-        return sprintf('%03d', $receiptNumber);
+        $formattedNumber = sprintf('%03d', $receiptNumber);
+
+        // Combine date prefix with formatted number
+        return $date_prefix . $formattedNumber;
     } else {
-        // First transaction, start with 001
-        return '001';
+        // First transaction, start with date prefix and 001
+        return $date_prefix . '001';
     }
 }
 
@@ -85,8 +92,14 @@ $room_id = $booking['room_id'];
 try {
     // Handle file upload
     $file = $_FILES['payment_screenshot'];
-    $filename = time() . '_' . basename($file['name']);
     $target_dir = '../../public/uploads/payment_screenshots/';
+
+    // Create a unique filename with timestamp, booking id and random string
+    $timestamp = date('Ymd_His');
+    $random_string = substr(md5(uniqid(mt_rand(), true)), 0, 8);
+    $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $filename = "payment_{$booking_id}_{$timestamp}_{$random_string}.{$file_extension}";
+
     $upload_path = 'uploads/payment_screenshots/' . $filename;
     $target_file = $target_dir . $filename;
 
