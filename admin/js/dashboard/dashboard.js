@@ -228,6 +228,15 @@ function loadDashboardData(period, startDate = '', endDate = '', roomType = 'all
                 if (response.data.occupancy_forecast) {
                     renderOccupancyForecastChart(response.data.occupancy_forecast);
                 }
+                
+                // Check if booking trends data is included in the response
+                if (response.data.most_booked_rooms && response.data.peak_booking_days) {
+                    renderMostBookedRoomsChart(response.data.most_booked_rooms);
+                    renderPeakBookingDaysChart(response.data.peak_booking_days);
+                } else {
+                    // If not included, load separately
+                    loadRoomBookingTrends(period, startDate, endDate, roomType);
+                }
 
                 // Load real-time room grid
                 loadRealTimeOccupancyGrid();
@@ -674,7 +683,6 @@ function getStatusColor(status) {
     const statusColors = {
         'available': 'success',
         'occupied': 'danger',
-        'maintenance': 'secondary',
         'reserved': 'warning',
         'dirty': 'info'
     };
@@ -1448,4 +1456,236 @@ function showAlert(message, type = 'success') {
     } else {
         alert(message);
     }
+}
+
+/**
+ * Load room booking trends data
+ */
+function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 'all') {
+    // Build API URL with filters
+    let apiUrl = '../api/dashboard/get_room_booking_trends.php?period=' + period;
+    if (period === 'custom' && startDate && endDate) {
+        apiUrl += '&start_date=' + startDate + '&end_date=' + endDate;
+    }
+
+    if (roomType && roomType !== 'all') {
+        apiUrl += '&room_type=' + roomType;
+    }
+
+    // Fetch data from API
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(response => {
+            if (response.success) {
+                renderMostBookedRoomsChart(response.data.most_booked_rooms);
+                renderPeakBookingDaysChart(response.data.peak_booking_days);
+            } else {
+                console.error('Error loading booking trends:', response.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching booking trends data:', error);
+        });
+}
+
+/**
+ * Render most booked rooms chart
+ */
+function renderMostBookedRoomsChart(roomsData) {
+    const ctx = document.getElementById('most-booked-rooms-chart');
+    
+    // If no data or canvas not found
+    if (!roomsData || roomsData.length === 0 || !ctx) {
+        if (ctx) {
+            createNoDataChart(ctx, 'bar');
+        }
+        return;
+    }
+
+    // Destroy existing chart if any
+    if (ctx.chart) {
+        ctx.chart.destroy();
+    }
+
+    // Hide loading indicator
+    if (ctx.closest('.chart-wrapper')) {
+        ctx.closest('.chart-wrapper').querySelector('.chart-loading').style.display = 'none';
+    }
+
+    // Sort data by booking count in descending order
+    const sortedData = [...roomsData].sort((a, b) => b.booking_count - a.booking_count);
+    
+    // Take top 10 rooms
+    const topRooms = sortedData.slice(0, 10);
+    
+    // Prepare chart data
+    const labels = topRooms.map(room => `Room ${room.room_number} (${room.room_type})`);
+    const bookingCounts = topRooms.map(room => room.booking_count);
+    const revenues = topRooms.map(room => room.total_revenue);
+    
+    // Create gradient for bars
+    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+    gradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+    
+    // Create chart
+    ctx.chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Booking Count',
+                    data: bookingCounts,
+                    backgroundColor: gradient,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Revenue',
+                    data: revenues,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    type: 'line',
+                    yAxisID: 'y1',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const datasetLabel = context.dataset.label || '';
+                            const value = context.parsed.y;
+                            if (datasetLabel === 'Revenue') {
+                                return datasetLabel + ': $' + value.toFixed(2);
+                            }
+                            return datasetLabel + ': ' + value;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Booking Count'
+                    }
+                },
+                y1: {
+                    position: 'right',
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Revenue ($)'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Render peak booking days chart
+ */
+function renderPeakBookingDaysChart(peakDaysData) {
+    const ctx = document.getElementById('peak-booking-days-chart');
+    
+    // If no data or canvas not found
+    if (!peakDaysData || !peakDaysData.days || peakDaysData.days.length === 0 || !ctx) {
+        if (ctx) {
+            createNoDataChart(ctx, 'bar');
+        }
+        return;
+    }
+
+    // Destroy existing chart if any
+    if (ctx.chart) {
+        ctx.chart.destroy();
+    }
+
+    // Hide loading indicator
+    if (ctx.closest('.chart-wrapper')) {
+        ctx.closest('.chart-wrapper').querySelector('.chart-loading').style.display = 'none';
+    }
+    
+    // Create gradient for bars
+    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(75, 192, 192, 0.8)');
+    gradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)');
+    
+    // Create chart
+    ctx.chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: peakDaysData.days,
+            datasets: [
+                {
+                    label: 'Booking Count',
+                    data: peakDaysData.counts,
+                    backgroundColor: gradient,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItem) {
+                            return tooltipItem[0].label;
+                        },
+                        label: function(context) {
+                            const value = context.parsed.y;
+                            return 'Bookings: ' + value;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Bookings'
+                    }
+                }
+            }
+        }
+    });
 }

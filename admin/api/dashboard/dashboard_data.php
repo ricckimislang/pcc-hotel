@@ -270,18 +270,48 @@ try {
         $occupancy_trend[$row['week']] = $occupancy_rate;
     }
     
-    // Return all data
+    // Get booking trends data by calling the room booking trends API
+    $booking_trends_url = 'get_room_booking_trends.php?period=' . $period;
+    if ($period == 'custom' && !empty($start_date) && !empty($end_date)) {
+        $booking_trends_url .= '&start_date=' . $start_date . '&end_date=' . $end_date;
+    }
+    if ($room_type != 'all') {
+        $booking_trends_url .= '&room_type=' . $room_type;
+    }
+    
+    // Use cURL to make the request rather than file_get_contents
+    $ch = curl_init($booking_trends_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $booking_trends_data = curl_exec($ch);
+    curl_close($ch);
+    
+    if ($booking_trends_data) {
+        $booking_trends_response = json_decode($booking_trends_data, true);
+        $most_booked_rooms = $booking_trends_response['data']['most_booked_rooms'] ?? [];
+        $peak_booking_days = $booking_trends_response['data']['peak_booking_days'] ?? [];
+    } else {
+        // If API call fails, provide empty data
+        $most_booked_rooms = [];
+        $peak_booking_days = [
+            'days' => [],
+            'counts' => []
+        ];
+    }
+    
+    // Return all dashboard data
     echo json_encode([
         'success' => true,
         'data' => [
-            'occupancy' => $occupancy_data,
             'total_rooms' => $total_rooms,
+            'occupancy' => $occupancy_data,
             'bookings' => $bookings_data,
             'daily_occupancy' => $daily_occupancy,
             'room_types' => $room_type_data,
             'revenue_occupancy' => $revenue_occupancy_data,
             'occupancy_forecast' => $forecast_data,
-            'occupancy_trend' => $occupancy_trend
+            'occupancy_trend' => $occupancy_trend,
+            'most_booked_rooms' => $most_booked_rooms,
+            'peak_booking_days' => $peak_booking_days
         ]
     ]);
     

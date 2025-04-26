@@ -2,6 +2,16 @@
     padding: 20px;
 }
 
+/* Section Titles */
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #eaeaea;
+}
+
 /* Status Card */
 .status-card {
     background-color: white;

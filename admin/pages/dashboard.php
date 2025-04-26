@@ -216,14 +216,9 @@ require_once '../includes/functions.php';
                             <span class="status-dot occupied"></span> Occupied
                         </div>
                         <div class="legend-item me-3">
-                            <span class="status-dot maintenance"></span> Maintenance
-                        </div>
-                        <div class="legend-item me-3">
                             <span class="status-dot reserved"></span> Reserved
                         </div>
-                        <div class="legend-item">
-                            <span class="status-dot dirty"></span> Needs Cleaning
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -368,6 +363,51 @@ require_once '../includes/functions.php';
                                 </div>
                             </div>
                             <canvas id="occupancy-forecast-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Booking Trends -->
+        <div class="row mb-4">
+            <div class="col-12 mb-3">
+                <h2 class="section-title">Room Booking Trends Analysis</h2>
+                <p class="text-muted">Track the most popular rooms and peak booking days for resource management and pricing optimization</p>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Most Booked Rooms</h2>
+                        <small class="text-muted">Top 10 by booking frequency</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <div class="chart-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <canvas id="most-booked-rooms-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Peak Booking Days</h2>
+                        <small class="text-muted">Booking frequency by day of week</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <div class="chart-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <canvas id="peak-booking-days-chart"></canvas>
                         </div>
                     </div>
                 </div>
