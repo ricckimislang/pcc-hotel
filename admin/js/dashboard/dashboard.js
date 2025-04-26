@@ -1390,17 +1390,28 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
 
     // Fetch data from API
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
         .then(response => {
             if (response.success) {
                 renderMostBookedRoomsChart(response.data.most_booked_rooms);
                 renderPeakBookingDaysChart(response.data.peak_booking_days);
             } else {
                 console.error('Error loading booking trends:', response.message);
+                // Create empty charts to show no data
+                renderMostBookedRoomsChart([]);
+                renderPeakBookingDaysChart({days: [], counts: []});
             }
         })
         .catch(error => {
             console.error('Error fetching booking trends data:', error);
+            // Create empty charts to show no data
+            renderMostBookedRoomsChart([]);
+            renderPeakBookingDaysChart({days: [], counts: []});
         });
 }
 
@@ -1410,17 +1421,21 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
 function renderMostBookedRoomsChart(roomsData) {
     const ctx = document.getElementById('most-booked-rooms-chart');
     
-    // If no data or canvas not found
-    if (!roomsData || roomsData.length === 0 || !ctx) {
-        if (ctx) {
-            createNoDataChart(ctx, 'bar');
-        }
+    // If canvas not found
+    if (!ctx) {
+        console.error('Most booked rooms chart canvas not found');
         return;
     }
 
     // Destroy existing chart if any
-    if (ctx.chart) {
-        ctx.chart.destroy();
+    if (window.mostBookedRoomsChart) {
+        window.mostBookedRoomsChart.destroy();
+    }
+
+    // If no data or empty data
+    if (!roomsData || roomsData.length === 0) {
+        window.mostBookedRoomsChart = createNoDataChart(ctx, 'bar');
+        return;
     }
 
     // Hide loading indicator
@@ -1445,7 +1460,7 @@ function renderMostBookedRoomsChart(roomsData) {
     gradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
     
     // Create chart
-    ctx.chart = new Chart(ctx, {
+    window.mostBookedRoomsChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
@@ -1530,17 +1545,21 @@ function renderMostBookedRoomsChart(roomsData) {
 function renderPeakBookingDaysChart(peakDaysData) {
     const ctx = document.getElementById('peak-booking-days-chart');
     
-    // If no data or canvas not found
-    if (!peakDaysData || !peakDaysData.days || peakDaysData.days.length === 0 || !ctx) {
-        if (ctx) {
-            createNoDataChart(ctx, 'bar');
-        }
+    // If canvas not found
+    if (!ctx) {
+        console.error('Peak booking days chart canvas not found');
         return;
     }
 
     // Destroy existing chart if any
-    if (ctx.chart) {
-        ctx.chart.destroy();
+    if (window.peakBookingDaysChart) {
+        window.peakBookingDaysChart.destroy();
+    }
+
+    // If no data or empty data
+    if (!peakDaysData || !peakDaysData.days || peakDaysData.days.length === 0) {
+        window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
+        return;
     }
 
     // Hide loading indicator
@@ -1554,7 +1573,7 @@ function renderPeakBookingDaysChart(peakDaysData) {
     gradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)');
     
     // Create chart
-    ctx.chart = new Chart(ctx, {
+    window.peakBookingDaysChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: peakDaysData.days,

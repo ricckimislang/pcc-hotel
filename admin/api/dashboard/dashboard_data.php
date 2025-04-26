@@ -227,22 +227,31 @@ try {
     }
     
     // Get booking trends data by calling the room booking trends API
-    $booking_trends_url = 'get_room_booking_trends.php?period=' . $period;
+    $booking_trends_url = 'get_room_booking_trends.php';
+    $booking_trends_params = [
+        'period' => $period
+    ];
+    
     if ($period == 'custom' && !empty($start_date) && !empty($end_date)) {
-        $booking_trends_url .= '&start_date=' . $start_date . '&end_date=' . $end_date;
+        $booking_trends_params['start_date'] = $start_date;
+        $booking_trends_params['end_date'] = $end_date;
     }
+    
     if ($room_type != 'all') {
-        $booking_trends_url .= '&room_type=' . $room_type;
+        $booking_trends_params['room_type'] = $room_type;
     }
     
-    // Use cURL to make the request rather than file_get_contents
-    $ch = curl_init($booking_trends_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $booking_trends_data = curl_exec($ch);
-    curl_close($ch);
+    // Create a direct include of the file instead of using cURL
+    // This avoids HTTP issues and ensures proper execution
+    ob_start();
+    $_GET = $booking_trends_params; // Set the GET parameters
+    include __DIR__ . '/get_room_booking_trends.php'; // Include the file directly
+    $booking_trends_data = ob_get_clean();
     
-    if ($booking_trends_data) {
-        $booking_trends_response = json_decode($booking_trends_data, true);
+    // Process the results
+    $booking_trends_response = json_decode($booking_trends_data, true);
+    
+    if ($booking_trends_response && isset($booking_trends_response['data'])) {
         $most_booked_rooms = $booking_trends_response['data']['most_booked_rooms'] ?? [];
         $peak_booking_days = $booking_trends_response['data']['peak_booking_days'] ?? [];
     } else {
