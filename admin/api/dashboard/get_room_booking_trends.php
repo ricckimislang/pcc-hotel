@@ -25,35 +25,47 @@ try {
                                 rt.type_name as room_type,
                                 r.floor,
                                 COUNT(b.booking_id) as booking_count,
-                                SUM(b.total_price) as total_revenue
+                                IFNULL(SUM(b.total_price), 0) as total_revenue
                               FROM rooms r
-                              LEFT JOIN bookings b ON r.room_id = b.room_id
                               LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id
-                              WHERE 1=1 ";
+                              LEFT JOIN bookings b ON r.room_id = b.room_id 
+                                   AND b.booking_status NOT IN ('cancelled')";
     
-    $params = [];
-    $types = "";
+    // Add date filters directly into the JOIN condition
+    if ($period == 'custom' && !empty($start_date) && !empty($end_date)) {
+        $most_booked_rooms_query .= " AND ((b.check_in_date BETWEEN ? AND ?) 
+                                       OR (b.check_out_date BETWEEN ? AND ?)
+                                       OR (b.check_in_date <= ? AND b.check_out_date >= ?))";
+        $params = [$start_date, $end_date, $start_date, $end_date, $start_date, $end_date];
+        $types = "ssssss";
+    } elseif ($period == 'today') {
+        $most_booked_rooms_query .= " AND (b.check_in_date = CURDATE() 
+                                       OR b.check_out_date = CURDATE() 
+                                       OR (b.check_in_date <= CURDATE() AND b.check_out_date >= CURDATE()))";
+    } elseif ($period == 'week') {
+        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) 
+                                       OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                                       OR (b.check_in_date <= CURDATE() AND b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)))";
+    } elseif ($period == 'month') {
+        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
+                                       OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                                       OR (b.check_in_date <= CURDATE() AND b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)))";
+    } elseif ($period == 'year') {
+        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) 
+                                       OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+                                       OR (b.check_in_date <= CURDATE() AND b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)))";
+    }
     
     // Add room type filter if specified
     if ($room_type != 'all') {
-        $most_booked_rooms_query .= " AND r.room_type_id = ? ";
-        $params[] = $room_type;
-        $types .= "i";
-    }
-    
-    // Apply date filters if needed
-    if ($period == 'custom' && !empty($start_date) && !empty($end_date)) {
-        $most_booked_rooms_query .= " AND ((b.check_in_date BETWEEN ? AND ?) OR (b.check_out_date BETWEEN ? AND ?))";
-        $params = array_merge($params, [$start_date, $end_date, $start_date, $end_date]);
-        $types .= "ssss";
-    } elseif ($period == 'today') {
-        $most_booked_rooms_query .= " AND (b.check_in_date = CURDATE() OR b.check_out_date = CURDATE() OR (b.check_in_date <= CURDATE() AND b.check_out_date >= CURDATE()))";
-    } elseif ($period == 'week') {
-        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY))";
-    } elseif ($period == 'month') {
-        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY))";
-    } elseif ($period == 'year') {
-        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR))";
+        $most_booked_rooms_query .= " WHERE r.room_type_id = ? ";
+        if (isset($params)) {
+            $params[] = $room_type;
+            $types .= "i";
+        } else {
+            $params = [$room_type];
+            $types = "i";
+        }
     }
     
     $most_booked_rooms_query .= " GROUP BY r.room_id, r.room_number, rt.type_name, r.floor
@@ -87,7 +99,7 @@ try {
                                DAYOFWEEK(check_in_date) as day_number,
                                COUNT(*) as booking_count
                              FROM bookings b
-                             WHERE 1=1 ";
+                             WHERE booking_status NOT IN ('cancelled') ";
     
     $day_params = [];
     $day_types = "";

@@ -226,41 +226,136 @@ try {
         $occupancy_trend[$row['week']] = $occupancy_rate;
     }
     
-    // Get booking trends data by calling the room booking trends API
-    $booking_trends_url = 'get_room_booking_trends.php';
-    $booking_trends_params = [
-        'period' => $period
+    // Get most booked rooms data directly
+    $most_booked_rooms_query = "SELECT 
+                              r.room_id,
+                              r.room_number,
+                              rt.type_name as room_type,
+                              rt.floor_type,
+                              COUNT(b.booking_id) as booking_count,
+                              IFNULL(SUM(b.total_price), 0) as total_revenue
+                            FROM rooms r
+                            LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id
+                            LEFT JOIN bookings b ON r.room_id = b.room_id 
+                                AND b.booking_status NOT IN ('cancelled')";
+    
+    // Add date filters
+    if ($period == 'custom' && !empty($start_date) && !empty($end_date)) {
+        $most_booked_rooms_query .= " AND ((b.check_in_date BETWEEN ? AND ?) 
+                                     OR (b.check_out_date BETWEEN ? AND ?)
+                                     OR (b.check_in_date <= ? AND b.check_out_date >= ?))";
+        $trend_params = [$start_date, $end_date, $start_date, $end_date, $start_date, $end_date];
+        $trend_types = "ssssss";
+    } elseif ($period == 'today') {
+        $most_booked_rooms_query .= " AND (b.check_in_date = CURDATE() 
+                                     OR b.check_out_date = CURDATE() 
+                                     OR (b.check_in_date <= CURDATE() AND b.check_out_date >= CURDATE()))";
+    } elseif ($period == 'week') {
+        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) 
+                                     OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                                     OR (b.check_in_date <= CURDATE() AND b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)))";
+    } elseif ($period == 'month') {
+        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
+                                     OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                                     OR (b.check_in_date <= CURDATE() AND b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)))";
+    } elseif ($period == 'year') {
+        $most_booked_rooms_query .= " AND (b.check_in_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) 
+                                     OR b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+                                     OR (b.check_in_date <= CURDATE() AND b.check_out_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)))";
+    }
+    
+    // Add room type filter if specified
+    if ($room_type != 'all') {
+        $most_booked_rooms_query .= " WHERE r.room_type_id = ? ";
+        if (isset($trend_params)) {
+            $trend_params[] = $room_type;
+            $trend_types .= "i";
+        } else {
+            $trend_params = [$room_type];
+            $trend_types = "i";
+        }
+    }
+    
+    $most_booked_rooms_query .= " GROUP BY r.room_id, r.room_number, rt.type_name, rt.floor_type
+                              ORDER BY booking_count DESC
+                              LIMIT 10";
+    
+    $stmt = $conn->prepare($most_booked_rooms_query);
+    
+    if (isset($trend_params) && isset($trend_types)) {
+        $stmt->bind_param($trend_types, ...$trend_params);
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $most_booked_rooms = [];
+    while ($row = $result->fetch_assoc()) {
+        $most_booked_rooms[] = [
+            'room_id' => $row['room_id'],
+            'room_number' => $row['room_number'],
+            'room_type' => $row['room_type'],
+            'floor' => $row['floor_type'],
+            'booking_count' => (int)$row['booking_count'],
+            'total_revenue' => (float)$row['total_revenue']
+        ];
+    }
+    
+    // Get peak booking days data directly
+    $peak_booking_days_query = "SELECT 
+                             DAYNAME(check_in_date) as day_name,
+                             DAYOFWEEK(check_in_date) as day_number,
+                             COUNT(*) as booking_count
+                           FROM bookings b
+                           WHERE booking_status NOT IN ('cancelled') ";
+    
+    $day_params = [];
+    $day_types = "";
+    
+    // Apply room type filter if specified
+    if ($room_type != 'all') {
+        $peak_booking_days_query .= " AND b.room_id IN (SELECT room_id FROM rooms WHERE room_type_id = ?) ";
+        $day_params[] = $room_type;
+        $day_types .= "i";
+    }
+    
+    // Apply date filters
+    if ($period == 'custom' && !empty($start_date) && !empty($end_date)) {
+        $peak_booking_days_query .= " AND (check_in_date BETWEEN ? AND ?)";
+        $day_params = array_merge($day_params, [$start_date, $end_date]);
+        $day_types .= "ss";
+    } elseif ($period == 'today') {
+        // For "today", we'll look at the past 30 days to still get meaningful day-of-week data
+        $peak_booking_days_query .= " AND check_in_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+    } elseif ($period == 'week') {
+        // For "week", we'll look at the past 90 days to get meaningful day-of-week data
+        $peak_booking_days_query .= " AND check_in_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)";
+    } elseif ($period == 'month') {
+        $peak_booking_days_query .= " AND check_in_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)";
+    } elseif ($period == 'year') {
+        $peak_booking_days_query .= " AND check_in_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)";
+    }
+    
+    $peak_booking_days_query .= " GROUP BY day_name, day_number
+                             ORDER BY day_number";
+    
+    $stmt = $conn->prepare($peak_booking_days_query);
+    
+    if (!empty($day_params)) {
+        $stmt->bind_param($day_types, ...$day_params);
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $peak_booking_days = [
+        'days' => [],
+        'counts' => []
     ];
     
-    if ($period == 'custom' && !empty($start_date) && !empty($end_date)) {
-        $booking_trends_params['start_date'] = $start_date;
-        $booking_trends_params['end_date'] = $end_date;
-    }
-    
-    if ($room_type != 'all') {
-        $booking_trends_params['room_type'] = $room_type;
-    }
-    
-    // Create a direct include of the file instead of using cURL
-    // This avoids HTTP issues and ensures proper execution
-    ob_start();
-    $_GET = $booking_trends_params; // Set the GET parameters
-    include __DIR__ . '/get_room_booking_trends.php'; // Include the file directly
-    $booking_trends_data = ob_get_clean();
-    
-    // Process the results
-    $booking_trends_response = json_decode($booking_trends_data, true);
-    
-    if ($booking_trends_response && isset($booking_trends_response['data'])) {
-        $most_booked_rooms = $booking_trends_response['data']['most_booked_rooms'] ?? [];
-        $peak_booking_days = $booking_trends_response['data']['peak_booking_days'] ?? [];
-    } else {
-        // If API call fails, provide empty data
-        $most_booked_rooms = [];
-        $peak_booking_days = [
-            'days' => [],
-            'counts' => []
-        ];
+    while ($row = $result->fetch_assoc()) {
+        $peak_booking_days['days'][] = $row['day_name'];
+        $peak_booking_days['counts'][] = (int)$row['booking_count'];
     }
     
     // Return all dashboard data

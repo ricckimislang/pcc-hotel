@@ -281,7 +281,31 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `first_name`, `
 (3, 'john_doe', 'john@doe.com', 'password', 'John', 'Doe', '345-678-9012', 'customer', 'john_doe.jpg', '2025-04-23 02:16:42', '2025-04-23 02:16:42', NULL),
 (4, 'jane_smith', 'jane@smith.com', 'password', 'Jane', 'Smith', '456-789-0123', 'customer', 'jane_smith.jpg', '2025-04-23 02:16:42', '2025-04-23 02:16:42', NULL),
 (5, 'bob_johnson', 'bob@johnson.com', 'password', 'Bob', 'Johnson', '567-890-1234', 'customer', 'bob_johnson.jpg', '2025-04-23 02:16:42', '2025-04-23 02:16:42', NULL),
-(6, 'alice_brown', 'alice@brown.com', 'password', 'Alice', 'Brown', '678-901-2345', 'customer', 'alice_brown.jpg', '2025-04-23 02:16:42', '2025-04-23 02:16:42', NULL);
+(6, 'alice_brown', 'alice@brown.com', 'password', 'Alice', 'Brown', '678-901-2345', 'customer', 'alice_brown.jpg', '2025-04-23 02:16:42', '2025-04-23 02:16:42', NULL), 
+(7, 'maria_garcia', 'maria@garcia.com', 'password', 'Maria', 'Garcia', '123-111-2222', 'customer', 'maria_garcia.jpg', '2025-01-02 08:30:42', '2025-01-02 08:30:42', NULL),
+(8, 'james_wilson', 'james@wilson.com', 'password', 'James', 'Wilson', '123-222-3333', 'customer', 'james_wilson.jpg', '2025-01-03 10:15:42', '2025-01-03 10:15:42', NULL),
+(9, 'linda_martin', 'linda@martin.com', 'password', 'Linda', 'Martin', '123-333-4444', 'customer', 'linda_martin.jpg', '2025-01-04 09:20:42', '2025-01-04 09:20:42', NULL),
+(10, 'david_wang', 'david@wang.com', 'password', 'David', 'Wang', '123-444-5555', 'customer', 'david_wang.jpg', '2025-01-05 14:45:42', '2025-01-05 14:45:42', NULL),
+(11, 'sarah_jones', 'sarah@jones.com', 'password', 'Sarah', 'Jones', '123-555-6666', 'customer', 'sarah_jones.jpg', '2025-01-06 11:30:42', '2025-01-06 11:30:42', NULL),
+(12, 'michael_lee', 'michael@lee.com', 'password', 'Michael', 'Lee', '123-666-7777', 'customer', 'michael_lee.jpg', '2025-01-07 16:20:42', '2025-01-07 16:20:42', NULL),
+(13, 'jennifer_kim', 'jennifer@kim.com', 'password', 'Jennifer', 'Kim', '123-777-8888', 'customer', 'jennifer_kim.jpg', '2025-01-08 13:10:42', '2025-01-08 13:10:42', NULL),
+(14, 'robert_chen', 'robert@chen.com', 'password', 'Robert', 'Chen', '123-888-9999', 'customer', 'robert_chen.jpg', '2025-01-09 12:25:42', '2025-01-09 12:25:42', NULL),
+(15, 'lisa_rodriguez', 'lisa@rodriguez.com', 'password', 'Lisa', 'Rodriguez', '123-999-0000', 'customer', 'lisa_rodriguez.jpg', '2025-01-10 10:40:42', '2025-01-10 10:40:42', NULL),
+(16, 'william_brown', 'william@brown.com', 'password', 'William', 'Brown', '123-101-2020', 'customer', 'william_brown.jpg', '2025-01-11 09:15:42', '2025-01-11 09:15:42', NULL),
+(17, 'patricia_davis', 'patricia@davis.com', 'password', 'Patricia', 'Davis', '123-202-3030', 'customer', 'patricia_davis.jpg', '2025-01-12 15:30:42', '2025-01-12 15:30:42', NULL),
+(18, 'thomas_miller', 'thomas@miller.com', 'password', 'Thomas', 'Miller', '123-303-4040', 'customer', 'thomas_miller.jpg', '2025-01-13 14:20:42', '2025-01-13 14:20:42', NULL),
+(19, 'elizabeth_wilson', 'elizabeth@wilson.com', 'password', 'Elizabeth', 'Wilson', '123-404-5050', 'customer', 'elizabeth_wilson.jpg', '2025-01-14 11:45:42', '2025-01-14 11:45:42', NULL),
+(20, 'joseph_taylor', 'joseph@taylor.com', 'password', 'Joseph', 'Taylor', '123-505-6060', 'customer', 'joseph_taylor.jpg', '2025-01-15 10:35:42', '2025-01-15 10:35:42', NULL),
+(21, 'mary_anderson', 'mary@anderson.com', 'password', 'Mary', 'Anderson', '123-606-7070', 'customer', 'mary_anderson.jpg', '2025-01-16 09:55:42', '2025-01-16 09:55:42', NULL),
+(22, 'charles_thomas', 'charles@thomas.com', 'password', 'Charles', 'Thomas', '123-707-8080', 'customer', 'charles_thomas.jpg', '2025-01-17 16:15:42', '2025-01-17 16:15:42', NULL),
+(23, 'karen_jackson', 'karen@jackson.com', 'password', 'Karen', 'Jackson', '123-808-9090', 'customer', 'karen_jackson.jpg', '2025-01-18 13:25:42', '2025-01-18 13:25:42', NULL),
+(24, 'steven_white', 'steven@white.com', 'password', 'Steven', 'White', '123-909-0101', 'customer', 'steven_white.jpg', '2025-01-19 12:40:42', '2025-01-19 12:40:42', NULL),
+(25, 'nancy_harris', 'nancy@harris.com', 'password', 'Nancy', 'Harris', '123-010-2121', 'customer', 'nancy_harris.jpg', '2025-01-20 11:30:42', '2025-01-20 11:30:42', NULL),
+(26, 'edward_martin', 'edward@martin.com', 'password', 'Edward', 'Martin', '123-121-3232', 'customer', 'edward_martin.jpg', '2025-01-21 10:20:42', '2025-01-21 10:20:42', NULL),
+(27, 'sandra_thompson', 'sandra@thompson.com', 'password', 'Sandra', 'Thompson', '123-232-4343', 'customer', 'sandra_thompson.jpg', '2025-01-22 09:15:42', '2025-01-22 09:15:42', NULL),
+(28, 'christopher_garcia', 'christopher@garcia.com', 'password', 'Christopher', 'Garcia', '123-343-5454', 'customer', 'christopher_garcia.jpg', '2025-01-23 15:45:42', '2025-01-23 15:45:42', NULL),
+(29, 'margaret_martinez', 'margaret@martinez.com', 'password', 'Margaret', 'Martinez', '123-454-6565', 'customer', 'margaret_martinez.jpg', '2025-01-24 14:35:42', '2025-01-24 14:35:42', NULL),
+(30, 'andrew_robinson', 'andrew@robinson.com', 'password', 'Andrew', 'Robinson', '123-565-7676', 'customer', 'andrew_robinson.jpg', '2025-01-25 13:25:42', '2025-01-25 13:25:42', NULL);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

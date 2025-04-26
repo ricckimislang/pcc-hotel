@@ -348,33 +348,6 @@ require_once '../includes/functions.php';
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Room Booking Trends -->
-        <div class="row mb-4">
-            <div class="col-12 mb-3">
-                <h2 class="section-title">Room Booking Trends Analysis</h2>
-                <p class="text-muted">Track the most popular rooms and peak booking days for resource management and pricing optimization</p>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Most Booked Rooms</h2>
-                        <small class="text-muted">Top 10 by booking frequency</small>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <div class="chart-loading">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                            <canvas id="most-booked-rooms-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
@@ -393,6 +366,34 @@ require_once '../includes/functions.php';
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Room Booking Trends -->
+        <div class="row mb-4">
+            <div class="col-12 mb-3">
+                <h2 class="section-title">Room Booking Trends Analysis</h2>
+                <p class="text-muted">Track the most popular rooms and peak booking days for resource management and pricing optimization</p>
+            </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Most Booked Rooms</h2>
+                        <small class="text-muted">Top 10 by booking frequency</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <div class="chart-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <canvas id="most-booked-rooms-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
         </div>
     </div>
 
