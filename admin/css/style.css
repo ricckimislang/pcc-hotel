@@ -107,6 +107,12 @@ body {
     transition: all 0.3s ease;
     z-index: 1000;
     overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .sidebar.collapsed {

@@ -1,0 +1,224 @@
+body {
+    background: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-content {
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+.page-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.page-header h1 {
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0;
+    font-size: 1.75rem;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+    background: transparent;
+}
+
+.breadcrumb-item a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #64748b;
+}
+
+.card {
+    border-radius: 0.75rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1.5rem;
+}
+
+.customer-card {
+    overflow: hidden;
+    background: #ffffff;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.customer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.search-container {
+    background: #ffffff;
+    border-radius: 0.75rem;
+}
+
+.search-icon {
+    font-size: 1.25rem;
+    color: #3b82f6;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: 50%;
+}
+
+.form-control-lg {
+    font-size: 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.form-control-lg:focus {
+    background: #f1f5f9;
+}
+
+small.text-muted {
+    font-size: 0.8rem;
+}
+
+#loading-spinner .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #3b82f6;
+}
+
+.customer-avatar-wrapper {
+    position: relative;
+}
+
+.customer-avatar {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border: 3px solid #ffffff;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #334155;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.customer-phone {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.customer-detail-row {
+    margin-top: 0.5rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.detail-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.detail-icon .fa-user-check {
+    color: #10b981;
+}
+
+.detail-icon .fa-gem {
+    color: #f59e0b;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.btn-outline-primary {
+    color: #3b82f6;
+    border-color: #3b82f6;
+    transition: all 0.2s;
+}
+
+.btn-outline-primary:hover {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
+#no-results {
+    background-color: #f0f9ff;
+    border-left: 4px solid #3b82f6;
+    color: #1e40af;
+    padding: 1.25rem;
+}
+
+#no-results h5 {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+#no-results p {
+    color: #3b82f6;
+}
+
+@media (max-width: 767.98px) {
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .breadcrumb {
+        margin-top: 0.5rem;
+    }
+    
+    .search-container {
+        padding: 1rem !important;
+    }
+    
+    .form-control-lg {
+        font-size: 0.9rem;
+    }
+    
+    .customer-card {
+        margin-bottom: 1rem;
+    }
+    
+    .customer-avatar {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container-fluid {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+} 
