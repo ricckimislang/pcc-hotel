@@ -22,9 +22,12 @@ require_once '../includes/functions.php';
     <div class="main-content">
         <div class="page-header">
             <h1>Dashboard</h1>
-            <button id="refresh-data" class="btn btn-outline-secondary">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
+            <div>
+                <span id="last-updated" class="me-2 text-muted">Last updated: Never</span>
+                <button id="refresh-data" class="btn btn-outline-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
         </div>
 
         <!-- Filters -->
@@ -40,13 +43,22 @@ require_once '../includes/functions.php';
                             <select id="period-filter" class="form-select">
                                 <option value="today">Today</option>
                                 <option value="week">This Week</option>
-                                <option value="month">This Month</option>
+                                <option value="month" selected>This Month</option>
                                 <option value="year">This Year</option>
                                 <option value="custom">Custom Range</option>
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="room-type-filter">Room Type</label>
+                            <select id="room-type-filter" class="form-select">
+                                <option value="all" selected>All Types</option>
+                                <!-- Room types will be loaded dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <div id="date-range-container" class="row d-none">
                             <div class="col-md-5">
                                 <div class="form-group">
@@ -167,6 +179,56 @@ require_once '../includes/functions.php';
             </div>
         </div>
 
+        <!-- Real-time Occupancy Monitoring -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Real-time Occupancy Monitor</h2>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="realtime-toggle" checked>
+                    <label class="form-check-label" for="realtime-toggle">Auto-refresh (30s)</label>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="floor-selector mb-3">
+                    <label for="floor-filter" class="me-2">Floor:</label>
+                    <div class="btn-group" role="group" id="floor-filter">
+                        <button type="button" class="btn btn-outline-primary active" data-floor="all">All</button>
+                        <!-- Floor buttons will be populated dynamically -->
+                    </div>
+                </div>
+                <div class="room-grid-container">
+                    <div id="room-occupancy-grid" class="room-grid">
+                        <!-- Room blocks will be loaded dynamically -->
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="d-flex justify-content-center flex-wrap">
+                        <div class="legend-item me-3">
+                            <span class="status-dot available"></span> Available
+                        </div>
+                        <div class="legend-item me-3">
+                            <span class="status-dot occupied"></span> Occupied
+                        </div>
+                        <div class="legend-item me-3">
+                            <span class="status-dot maintenance"></span> Maintenance
+                        </div>
+                        <div class="legend-item me-3">
+                            <span class="status-dot reserved"></span> Reserved
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-dot dirty"></span> Needs Cleaning
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Charts Row 1 -->
         <div class="row mb-4">
             <div class="col-md-6">
@@ -245,29 +307,78 @@ require_once '../includes/functions.php';
                 </div>
             </div>
         </div>
+
+        <!-- Charts Row 3 - Advanced Analytics -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2>Occupancy Trend Analysis</h2>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary active" data-trend="weekly">Weekly</button>
+                            <button type="button" class="btn btn-outline-primary" data-trend="monthly">Monthly</button>
+                            <button type="button" class="btn btn-outline-primary" data-trend="quarterly">Quarterly</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <div class="chart-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <canvas id="occupancy-trend-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue and Occupancy Correlation -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Revenue vs. Occupancy</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <div class="chart-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <canvas id="revenue-occupancy-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Occupancy Forecast</h2>
+                        <small class="text-muted">Next 30 Days</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <div class="chart-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <canvas id="occupancy-forecast-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="../js/dashboard/dashboard.js"></script>
-    <script>
-        // Additional initialization if needed
-        document.getElementById('refresh-data').addEventListener('click', function () {
-            const period = document.getElementById('period-filter').value;
-            if (period === 'custom') {
-                const startDate = document.getElementById('start-date').value;
-                const endDate = document.getElementById('end-date').value;
-                if (startDate && endDate) {
-                    loadDashboardData('custom', startDate, endDate);
-                } else {
-                    showAlert('Please select both start and end dates', 'error');
-                }
-            } else {
-                loadDashboardData(period);
-            }
-        });
-    </script>
 </body>
 
 </html>

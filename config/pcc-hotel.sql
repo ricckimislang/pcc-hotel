@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 25, 2025 at 08:24 AM
+-- Generation Time: Apr 26, 2025 at 03:57 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `additional_items` (
 --
 
 INSERT INTO `additional_items` (`item_id`, `transaction_id`, `item_name`, `item_price`, `quantity`, `subtotal`, `created_at`) VALUES
-(1, 1, 'matress', 200.00, 1, 200.00, '2025-04-25 07:07:08');
+(1, 1, 'Addtional 1 hr', 500.00, 1, 500.00, '2025-04-25 15:41:52');
 
 -- --------------------------------------------------------
 
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `bookings` (
 --
 
 INSERT INTO `bookings` (`booking_id`, `user_id`, `room_id`, `check_in_date`, `check_out_date`, `booking_date`, `guests_count`, `total_price`, `special_requests`, `booking_status`, `payment_status`, `booking_source`) VALUES
-(1, 3, 1, '2025-04-26', '2025-04-30', '2025-04-25 08:15:50', 1, 3800.00, 'buy me noodles too', 'pending', 'partial', 'website');
+(1, 3, 1, '2025-04-26', '2025-04-30', '2025-04-25 15:41:52', 3, 3800.00, 'may noodles sana naka hain', 'checked_out', 'paid', 'website');
 
 -- --------------------------------------------------------
 
@@ -93,7 +93,14 @@ CREATE TABLE IF NOT EXISTS `customer_profiles` (
   `loyal_points` int NOT NULL,
   PRIMARY KEY (`customer_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `customer_profiles`
+--
+
+INSERT INTO `customer_profiles` (`customer_id`, `user_id`, `frequent_guest`, `loyal_points`) VALUES
+(1, 3, 1, 20);
 
 -- --------------------------------------------------------
 
@@ -119,23 +126,65 @@ CREATE TABLE IF NOT EXISTS `rooms` (
 --
 
 INSERT INTO `rooms` (`room_id`, `room_number`, `room_type_id`, `description`, `status`, `is_active`) VALUES
-(1, '001', 1, '❗Children 12 years old and below are free of charge when sharing room with an adult.\r\n\r\n❗rooms exclusive for breakfast.\r\n\r\n❗Check-in time is at 2:00 PM. Check-out time is at 1:00 PM. Early arrivals (12:00 MN to 5:00 AM) are still charge the whole day rate.', 'reserved', 1),
+(1, '001', 1, '❗Children 12 years old and below are free of charge when sharing room with an adult.\r\n\r\n❗rooms exclusive for breakfast.\r\n\r\n❗Check-in time is at 2:00 PM. Check-out time is at 1:00 PM. Early arrivals (12:00 MN to 5:00 AM) are still charge the whole day rate.', 'available', 1),
 (2, '002', 2, '123', 'available', 1),
 (3, '003', 3, '123', 'available', 1),
 (4, '20', 6, 'FUNCTION', 'available', 1);
 
 -- --------------------------------------------------------
 
+--
+-- Table structure for table `room_gallery`
+--
+
+DROP TABLE IF EXISTS `room_gallery`;
+CREATE TABLE IF NOT EXISTS `room_gallery` (
+  `gallery_id` int NOT NULL AUTO_INCREMENT,
+  `room_type_id` int NOT NULL,
+  `image_path` varchar(255) NOT NULL,
+  `caption` varchar(100) DEFAULT NULL,
+  `display_order` int DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gallery_id`),
+  KEY `room_type_id` (`room_type_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `room_gallery`
+--
+
+INSERT INTO `room_gallery` (`gallery_id`, `room_type_id`, `image_path`, `caption`, `display_order`, `created_at`) VALUES
+(1, 1, 'room_1_gallery_1745594776_6665.jpg', NULL, 0, '2025-04-25 23:26:16'),
+(2, 2, 'room_2_gallery_1745594790_5898.jpg', NULL, 0, '2025-04-25 23:26:30'),
+(3, 2, 'room_2_gallery_1745594790_7738.jpg', NULL, 1, '2025-04-25 23:26:30'),
+(4, 2, 'room_2_gallery_1745594790_4713.jpg', NULL, 2, '2025-04-25 23:26:30'),
+(5, 3, 'room_3_gallery_1745594809_3472.jpg', NULL, 0, '2025-04-25 23:26:49'),
+(6, 3, 'room_3_gallery_1745594809_8917.jpg', NULL, 1, '2025-04-25 23:26:49'),
+(7, 3, 'room_3_gallery_1745594809_6825.jpg', NULL, 2, '2025-04-25 23:26:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_media`
+--
+
 DROP TABLE IF EXISTS `room_media`;
 CREATE TABLE IF NOT EXISTS `room_media` (
-  `media_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `room_id` INT(11) NOT NULL,
-  `panorama_image` VARCHAR(255) DEFAULT NULL,
-  `last_updated` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`media_id`),
-  KEY `room_id` (`room_id`)  -- Index for room_id to optimize queries
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `media_id` int NOT NULL AUTO_INCREMENT,
+  `room_id` int NOT NULL,
+  `panorama_image` varchar(255) DEFAULT NULL,
+  `last_updated` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`media_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `room_media`
+--
+
+INSERT INTO `room_media` (`media_id`, `room_id`, `panorama_image`, `last_updated`) VALUES
+(1, 1, 'room_1_panorama_1745594832_1041.jpg', '2025-04-25 23:27:12'),
+(2, 2, NULL, '2025-04-25 23:26:30'),
+(3, 3, NULL, '2025-04-25 23:26:49');
 
 -- --------------------------------------------------------
 
@@ -152,20 +201,21 @@ CREATE TABLE IF NOT EXISTS `room_types` (
   `base_price` decimal(10,2) NOT NULL,
   `capacity` int NOT NULL,
   `amenities` text,
+  `image_path` text,
   PRIMARY KEY (`room_type_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `room_types`
 --
 
-INSERT INTO `room_types` (`room_type_id`, `type_name`, `description`, `floor_type`, `base_price`, `capacity`, `amenities`) VALUES
-(1, 'STANDARD MATRIMONIAL', 'GOOD FOR 2 Persons.\r\n❗Children 12 years old and below are free of charge when sharing room with an adult.\r\n\r\n❗rooms exclusive for breakfast.\r\n\r\n❗Check-in time is at 2:00 PM. Check-out time is at 1:00 PM. Early arrivals (12:00 MN to 5:00 AM) are still charge the whole day rate.', 1, 950.00, 4, 'BATH AMENITIES'),
-(2, 'TWIN MATRIMONIAL', 'Maximum of 5 pax add on 1 extra foam', 1, 1300.00, 5, 'BATH AMENITIES SET, TV, WIFI'),
-(3, 'FAMILY DELUXE TWIN', 'Maximum of 7pax additional 2extra foam', 1, 1800.00, 7, 'BATH AMENITIES, TV, WIFI'),
-(4, 'TWIN STANDARD MATRIMONIAL', 'Maximum of 6pax additional 2extra foam', 2, 1500.00, 6, 'BATH AMENITIES, SMART-TV, WIFI'),
-(5, 'STANDARD MATRIMONIAL', 'Maximum of 4pax additional 2extra foam', 2, 1300.00, 4, 'BATH AMENITIES SET, SMART-TV, WIFI'),
-(6, 'FUNCTION HALL', '5000 for 50 pax, 3500 for 35 pax, 2500 for 25 Pax.', 3, 100.00, 50, 'NONE');
+INSERT INTO `room_types` (`room_type_id`, `type_name`, `description`, `floor_type`, `base_price`, `capacity`, `amenities`, `image_path`) VALUES
+(1, 'STANDARD MATRIMONIAL', 'GOOD FOR 2 Persons.\r\n❗Children 12 years old and below are free of charge when sharing room with an adult.\r\n\r\n❗rooms exclusive for breakfast.\r\n\r\n❗Check-in time is at 2:00 PM. Check-out time is at 1:00 PM. Early arrivals (12:00 MN to 5:00 AM) are still charge the whole day rate.', 1, 950.00, 4, 'BATH AMENITIES', 'public/room_images/room_1745591300_7054.jpg'),
+(2, 'TWIN MATRIMONIAL', 'Maximum of 5 pax add on 1 extra foam', 1, 1300.00, 5, 'BATH AMENITIES SET, TV, WIFI', 'public/room_images/room_1745573557_9209.jpg'),
+(3, 'FAMILY DELUXE TWIN', 'Maximum of 7pax additional 2extra foam', 1, 1800.00, 7, 'BATH AMENITIES, TV, WIFI', 'public/room_images/room_1745573226_1512.jpg'),
+(7, 'TEST', '123', 1, 123.00, 1, '123', 'public/room_images/room_1745573341_2456.jpg'),
+(5, 'STANDARD MATRIMONIAL', 'Maximum of 4pax additional 2extra foam', 2, 1300.00, 4, 'BATH AMENITIES SET, SMART-TV, WIFI', 'public/room_images/room_1745573523_5405.jpg'),
+(6, 'FUNCTION HALL', '5000 for 50 pax, 3500 for 35 pax, 2500 for 25 Pax.', 3, 100.00, 50, 'NONE', NULL);
 
 -- --------------------------------------------------------
 
@@ -195,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `transactions` (
 --
 
 INSERT INTO `transactions` (`transaction_id`, `booking_id`, `room_id`, `user_id`, `reference_no`, `payment_screenshot`, `amount`, `extra_pay`, `receipt_no`, `created_at`) VALUES
-(1, 1, 1, 3, '5961684', 'uploads/payment_screenshots/1745569302_WIN_20250310_14_08_54_Pro.jpg', 2000, 0.00, '001', '2025-04-25 08:21:42');
+(1, 1, 1, 3, '23123123', 'uploads/payment_screenshots/1745595361_WIN_20250131_00_42_07_Pro.jpg', 3800, 500.00, '001', '2025-04-25 15:36:01');
 
 -- --------------------------------------------------------
 
@@ -237,17 +287,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
-
-DROP TABLE IF EXISTS `room_gallery`;
-CREATE TABLE IF NOT EXISTS `room_gallery` (
-  `gallery_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `room_type_id` INT(11) NOT NULL,
-  `image_path` VARCHAR(255) NOT NULL,
-  `caption` VARCHAR(100) DEFAULT NULL,
-  `display_order` INT(11) DEFAULT 0,
-  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`gallery_id`),
-  KEY `room_type_id` (`room_type_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
