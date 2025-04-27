@@ -108,7 +108,6 @@ require_once '../includes/head.php';
                     <table id="roomMediaTable" class="table table-hover display responsive nowrap" width="100%">
                         <thead>
                             <tr>
-                                <th>Room Number</th>
                                 <th>Room Type</th>
                                 <th>Card Image</th>
                                 <th>360° Image</th>

@@ -9,12 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Check if room_id is provided
-if (!isset($_POST['room_id']) || empty($_POST['room_id'])) {
+if (!isset($_POST['room_type_id']) || empty($_POST['room_type_id'])) {
     echo json_encode(['success' => false, 'message' => 'Room ID is required']);
     exit;
 }
 
-$room_id = $_POST['room_id'];
+$room_type_id = $_POST['room_type_id'];
 
 // Create upload directory if it doesn't exist
 $upload_dir = '../../../public/room_images_details/';
@@ -24,8 +24,8 @@ if (!is_dir($upload_dir)) {
 
 // Get existing gallery images for this room
 $existing_images = [];
-$stmt = $conn->prepare("SELECT gallery_id, image_path FROM room_gallery WHERE room_type_id = (SELECT room_type_id FROM rooms WHERE room_id = ?)");
-$stmt->bind_param("i", $room_id);
+$stmt = $conn->prepare("SELECT gallery_id, image_path FROM room_gallery WHERE room_type_id = ?");
+$stmt->bind_param("i", $room_type_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -60,7 +60,7 @@ if (!$update_only) {
             }
 
             // Generate a unique filename
-            $filename = 'room_' . $room_id . '_gallery_' . time() . '_' . mt_rand(1000, 9999) . '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = 'room_' . $room_type_id . '_gallery_' . time() . '_' . mt_rand(1000, 9999) . '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
             $target_path = $upload_dir . $filename;
 
             // Move the uploaded file to the target directory
@@ -80,22 +80,6 @@ foreach ($_POST as $key => $value) {
         $keep_images[] = $value;
     }
 }
-
-// Get the room type ID
-$stmt = $conn->prepare("SELECT room_type_id FROM rooms WHERE room_id = ?");
-$stmt->bind_param("i", $room_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$room_type_id = null;
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $room_type_id = $row['room_type_id'];
-} else {
-    echo json_encode(['success' => false, 'message' => 'Room not found']);
-    exit;
-}
-$stmt->close();
 
 // Begin transaction
 $conn->begin_transaction();
@@ -127,17 +111,17 @@ try {
     }
 
     // Update the last_updated timestamp in room_media table
-    $stmt = $conn->prepare("SELECT room_id FROM room_media WHERE room_id = ?");
-    $stmt->bind_param("i", $room_id);
+    $stmt = $conn->prepare("SELECT room_type_id FROM room_media WHERE room_type_id = ?");
+    $stmt->bind_param("i", $room_type_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $stmt = $conn->prepare("UPDATE room_media SET last_updated = NOW() WHERE room_id = ?");
-        $stmt->bind_param("i", $room_id);
+        $stmt = $conn->prepare("UPDATE room_media SET last_updated = NOW() WHERE room_type_id = ?");
+        $stmt->bind_param("i", $room_type_id);
     } else {
-        $stmt = $conn->prepare("INSERT INTO room_media (room_id, last_updated) VALUES (?, NOW())");
-        $stmt->bind_param("i", $room_id);
+        $stmt = $conn->prepare("INSERT INTO room_media (room_type_id, last_updated) VALUES (?, NOW())");
+        $stmt->bind_param("i", $room_type_id);
     }
     $stmt->execute();
     $stmt->close();

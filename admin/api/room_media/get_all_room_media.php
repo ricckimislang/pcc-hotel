@@ -5,20 +5,15 @@ header('Content-Type: application/json');
 // SQL query to get all rooms with their media (or null if no media exists)
 $query = "
     SELECT 
-        r.room_id,
-        r.room_number,
-        r.room_type_id,
+        rt.room_type_id,
         rt.type_name as room_type,
         rm.panorama_image,
         rm.last_updated
-    FROM 
-        rooms r
+    FROM room_types rt
     LEFT JOIN 
-        room_types rt ON r.room_type_id = rt.room_type_id
-    LEFT JOIN 
-        room_media rm ON r.room_id = rm.room_id
+        room_media rm ON rt.room_type_id = rm.room_type_id
     ORDER BY 
-        r.room_number
+        rt.room_type_id
 ";
 
 $result = $conn->query($query);

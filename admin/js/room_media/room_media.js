@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
       dataSrc: "",
     },
     columns: [
-      { data: "room_number" },
       { data: "room_type" },
       {
         data: "gallery_images",
@@ -78,10 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
         data: null,
         render: function (data, type, row) {
           return `
-                        <button class="btn btn-sm btn-info view-media" data-id="${row.room_id}">
+                        <button class="btn btn-sm btn-info view-media" data-id="${row.room_type_id}">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger delete-media" data-id="${row.room_id}">
+                        <button class="btn btn-sm btn-danger delete-media" data-id="${row.room_type_id}">
                             <i class="fas fa-trash"></i>
                         </button>
                     `;
@@ -105,8 +104,8 @@ document.addEventListener("DOMContentLoaded", function () {
           // Add room options
           data.forEach((room) => {
             const option = document.createElement("option");
-            option.value = room.room_id;
-            option.textContent = `Room ${room.room_number} (${room.room_type})`;
+            option.value = room.room_type_id;
+            option.textContent = `Room ${room.room_type}`;
             select.appendChild(option);
           });
         });
@@ -441,7 +440,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const formData = new FormData();
-    formData.append("room_id", selectedRoom);
+    formData.append("room_type_id", selectedRoom);
 
     // Add files to formData
     let newFileCount = 0;
@@ -516,7 +515,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const formData = new FormData();
-    formData.append("room_id", selectedRoom360);
+    formData.append("room_type_id", selectedRoom360);
     formData.append("panorama_image", panoramaFile);
 
     // Show progress bar
@@ -570,10 +569,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // View Media button click
   $(roomMediaTable).on("click", ".view-media", function () {
-    const roomId = $(this).data("id");
+    const roomTypeId = $(this).data("id");
 
     // Fetch room media data
-    fetch(`../api/room_media/get_room_media.php?room_id=${roomId}`)
+    fetch(`../api/room_media/get_room_media.php?room_type_id=${roomTypeId}`)
       .then((response) => response.json())
       .then((data) => {
         // Show gallery images if available
@@ -654,14 +653,14 @@ document.addEventListener("DOMContentLoaded", function () {
   // Delete Media button click
   $(roomMediaTable).on("click", ".delete-media", function () {
     if (confirm("Are you sure you want to delete media for this room?")) {
-      const roomId = $(this).data("id");
+      const roomTypeId = $(this).data("id");
 
       fetch("../api/room_media/delete_room_media.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `room_id=${roomId}`,
+        body: `room_type_id=${roomTypeId}`,
       })
         .then((response) => response.json())
         .then((data) => {
