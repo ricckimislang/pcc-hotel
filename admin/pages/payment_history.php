@@ -87,7 +87,6 @@ try {
     $payment_methods = [
         ['method' => 'Cash/Bank Transfer', 'count' => count($transactions)]
     ];
-
 } catch (Exception $e) {
     $error_message = $e->getMessage();
 }
@@ -98,8 +97,65 @@ try {
 
 <?php include_once '../includes/head.php'; ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 <link rel="stylesheet" href="../css/payment_history.css">
+<style>
+    /* Custom styles for DataTables */
+    .dataTables_wrapper {
+        padding: 20px 0;
+    }
+
+    .dataTables_length,
+    .dataTables_filter {
+        margin-bottom: 15px;
+    }
+
+    .dt-buttons {
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+
+    .dt-button {
+        padding: 5px 10px;
+        margin-right: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .btn-excel {
+        background-color: #1e7e34 !important;
+        color: white !important;
+    }
+
+    .btn-pdf {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
+
+    .btn-print {
+        background-color: #0069d9 !important;
+        color: white !important;
+    }
+
+    .dataTables_info,
+    .dataTables_paginate {
+        margin-top: 15px;
+    }
+
+    .paginate_button {
+        padding: 5px 10px;
+        margin: 0 2px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+    }
+
+    .paginate_button.current {
+        background-color: #f2f2f2;
+    }
+</style>
 
 <body>
     <?php include_once '../includes/sidebar.php'; ?>
@@ -417,9 +473,7 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -447,13 +501,13 @@ try {
         }
         ?>
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Initialize DataTables
             const transactionsTable = $('#transactionsTable');
-            
+
             // Check if there are actual data rows in the table (not just the "no transactions" row)
             const hasTransactions = transactionsTable.find('tbody tr td:first-child').text() !== 'No transactions found';
-            
+
             if (hasTransactions) {
                 transactionsTable.DataTable({
                     responsive: true,
@@ -462,7 +516,9 @@ try {
                         [10, 25, 50, 100, -1],
                         [10, 25, 50, 100, 'All Records']
                     ],
-                    order: [[1, 'desc']], // Sort by date column descending
+                    order: [
+                        [1, 'desc']
+                    ], // Sort by date column descending
                     language: {
                         search: "Search transactions:",
                         lengthMenu: "_MENU_ records per page",
@@ -471,15 +527,16 @@ try {
                         infoEmpty: "No transactions available",
                         zeroRecords: "No matching transactions found"
                     },
-                    columnDefs: [
-                        { orderable: false, targets: 7 } // Disable sorting on actions column
+                    columnDefs: [{
+                            orderable: false,
+                            targets: 7
+                        } // Disable sorting on actions column
                     ],
-                    dom: '<"row mb-3"<"col-md-6"l><"col-md-6 text-end"<"export-buttons"B>f>>rt<"row"<"col-md-6"i><"col-md-6"p>>',
-                    buttons: [
-                        {
+                    dom: 'lBfrtip',
+                    buttons: [{
                             extend: 'excel',
                             text: '<i class="fas fa-file-excel"></i> Excel',
-                            className: 'btn btn-sm btn-success',
+                            className: 'btn-excel',
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6]
                             },
@@ -488,12 +545,12 @@ try {
                         {
                             extend: 'pdf',
                             text: '<i class="fas fa-file-pdf"></i> PDF',
-                            className: 'btn btn-sm btn-danger',
+                            className: 'btn-pdf',
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6]
                             },
                             title: 'Payment History - ' + new Date().toLocaleDateString(),
-                            customize: function (doc) {
+                            customize: function(doc) {
                                 // Formatting PDF
                                 doc.pageMargins = [20, 20, 20, 20];
                                 doc.defaultStyle.fontSize = 10;
@@ -520,21 +577,37 @@ try {
                                 // Style the table
                                 doc.content[2].table.widths = ['10%', '15%', '15%', '10%', '10%', '15%', '15%'];
                                 doc.content[2].layout = {
-                                    hLineWidth: function (i, node) { return 0.5; },
-                                    vLineWidth: function (i, node) { return 0.5; },
-                                    hLineColor: function (i, node) { return '#aaa'; },
-                                    vLineColor: function (i, node) { return '#aaa'; },
-                                    paddingLeft: function (i, node) { return 5; },
-                                    paddingRight: function (i, node) { return 5; },
-                                    paddingTop: function (i, node) { return 5; },
-                                    paddingBottom: function (i, node) { return 5; }
+                                    hLineWidth: function(i, node) {
+                                        return 0.5;
+                                    },
+                                    vLineWidth: function(i, node) {
+                                        return 0.5;
+                                    },
+                                    hLineColor: function(i, node) {
+                                        return '#aaa';
+                                    },
+                                    vLineColor: function(i, node) {
+                                        return '#aaa';
+                                    },
+                                    paddingLeft: function(i, node) {
+                                        return 5;
+                                    },
+                                    paddingRight: function(i, node) {
+                                        return 5;
+                                    },
+                                    paddingTop: function(i, node) {
+                                        return 5;
+                                    },
+                                    paddingBottom: function(i, node) {
+                                        return 5;
+                                    }
                                 };
                             }
                         },
                         {
                             extend: 'print',
                             text: '<i class="fas fa-print"></i> Print',
-                            className: 'btn btn-sm btn-primary',
+                            className: 'btn-print',
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6]
                             },
@@ -547,12 +620,12 @@ try {
                                     hour: '2-digit',
                                     minute: '2-digit'
                                 }) + '</p>',
-                            customize: function (win) {
+                            customize: function(win) {
                                 // Let the print stylesheet handle most of the styling
                                 $(win.document.body).find('table').addClass('dataTable');
 
                                 // Format amounts
-                                $(win.document.body).find('td:nth-child(5)').each(function () {
+                                $(win.document.body).find('td:nth-child(5)').each(function() {
                                     const amount = parseFloat($(this).text().replace(/[^\d.]/g, ''));
                                     $(this).text('₱' + amount.toLocaleString('en-US', {
                                         minimumFractionDigits: 2,
@@ -564,8 +637,8 @@ try {
                     ]
                 });
             } else {
-                // If no transactions, hide the export buttons container and add a simple message
-                $('.export-buttons').hide();
+                // If no transactions, hide the export buttons container
+                $('.dt-buttons').hide();
             }
 
             // Initialize date pickers
@@ -580,7 +653,7 @@ try {
             });
 
             // Show/hide date range inputs based on period selection
-            document.getElementById('period').addEventListener('change', function () {
+            document.getElementById('period').addEventListener('change', function() {
                 const dateRangeInputs = document.querySelectorAll('.date-range');
                 if (this.value === 'custom') {
                     dateRangeInputs.forEach(el => el.classList.remove('d-none'));
@@ -592,12 +665,12 @@ try {
             // Monthly Revenue Chart
             const monthlyRevenueCtx = document.getElementById('revenueChart').getContext('2d');
             const monthlyData = <?php echo json_encode(array_map(function ($item) {
-                return $item['total'];
-            }, $monthly_revenue)); ?>;
+                                    return $item['total'];
+                                }, $monthly_revenue)); ?>;
             const monthLabels = <?php echo json_encode(array_map(function ($item) {
-                $date = new DateTime($item['month'] . '-01');
-                return $date->format('M Y');
-            }, $monthly_revenue)); ?>;
+                                    $date = new DateTime($item['month'] . '-01');
+                                    return $date->format('M Y');
+                                }, $monthly_revenue)); ?>;
 
             new Chart(monthlyRevenueCtx, {
                 type: 'bar',
@@ -618,7 +691,7 @@ try {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function (value) {
+                                callback: function(value) {
                                     return '₱' + value.toLocaleString();
                                 }
                             }
@@ -629,7 +702,7 @@ try {
 
             // View transaction details
             document.querySelectorAll('.view-details').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const transactionId = this.getAttribute('data-id');
                     const bookingId = this.getAttribute('data-booking');
 
@@ -653,7 +726,7 @@ try {
 
             // View receipt image
             document.querySelectorAll('.view-receipt').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const receiptPath = this.getAttribute('data-receipt');
                     const receiptImage = document.getElementById('receiptImage');
                     const downloadLink = document.getElementById('downloadReceipt');
@@ -710,12 +783,18 @@ try {
             // Helper function to get badge class
             function getStatusBadgeClass(status) {
                 switch (status) {
-                    case 'pending': return 'warning';
-                    case 'confirmed': return 'primary';
-                    case 'checked_in': return 'info';
-                    case 'checked_out': return 'success';
-                    case 'cancelled': return 'danger';
-                    default: return 'secondary';
+                    case 'pending':
+                        return 'warning';
+                    case 'confirmed':
+                        return 'primary';
+                    case 'checked_in':
+                        return 'info';
+                    case 'checked_out':
+                        return 'success';
+                    case 'cancelled':
+                        return 'danger';
+                    default:
+                        return 'secondary';
                 }
             }
 
@@ -725,7 +804,7 @@ try {
             }
 
             // Print receipt
-            document.getElementById('printReceiptBtn').addEventListener('click', function () {
+            document.getElementById('printReceiptBtn').addEventListener('click', function() {
                 const receiptNo = document.getElementById('receipt-no').textContent;
                 const transactionId = document.querySelector('.view-details').getAttribute('data-id');
 
