@@ -27,7 +27,7 @@ else if (isset($_GET['room_id'])) {
     $query = "SELECT r.*, rt.type_name, rm.panorama_image 
               FROM rooms r 
               LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id 
-              LEFT JOIN room_media rm ON r.room_id = rm.room_id 
+              LEFT JOIN room_media rm ON rt.room_type_id = rm.room_type_id 
               WHERE r.room_id = ?";
 
     $stmt = $conn->prepare($query);
