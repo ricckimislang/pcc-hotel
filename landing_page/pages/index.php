@@ -50,7 +50,7 @@ $user_id = isset($_SESSION['user_id'])
             <div class="hero-content">
                 <p class="hero-subtitle">Experience Luxury & Comfort</p>
                 <h1 class="hero-title">PCC HOME SUITE HOME</h1>
-                <div class="search-container">
+                <!-- <div class="search-container">
                     <div class="search-box">
                         <div class="search-item">
                             <i class="fas fa-map-marker-alt"></i>
@@ -77,7 +77,7 @@ $user_id = isset($_SESSION['user_id'])
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                </div>
+                </div> -->
             </div>
         </section>
 
