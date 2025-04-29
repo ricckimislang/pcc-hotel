@@ -331,28 +331,15 @@ require_once '../includes/functions.php';
 
         <!-- Revenue and Occupancy Correlation -->
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h2>Revenue vs. Occupancy</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <div class="chart-loading">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                            <canvas id="revenue-occupancy-chart"></canvas>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2>Peak Booking Days</h2>  
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary active" data-booking-period="weekly">Weekly</button>
+                            <button type="button" class="btn btn-outline-primary" data-booking-period="monthly">Monthly</button>
+                            <button type="button" class="btn btn-outline-primary" data-booking-period="yearly">Yearly</button>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Peak Booking Days</h2>
-                        <small class="text-muted">Booking frequency by day of week</small>
                     </div>
                     <div class="card-body">
                         <div class="chart-wrapper">

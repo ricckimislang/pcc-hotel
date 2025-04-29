@@ -71,6 +71,15 @@ function initializeFilters() {
             e.target.classList.add('active');
             loadOccupancyTrendData(e.target.dataset.trend);
         }
+        
+        // Handle peak booking days period buttons
+        if (e.target.dataset.bookingPeriod) {
+            document.querySelectorAll('[data-booking-period]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            e.target.classList.add('active');
+            loadPeakBookingDaysData(e.target.dataset.bookingPeriod);
+        }
     });
 
     // Toggle real-time updates
@@ -252,7 +261,8 @@ function loadDashboardData(period, startDate = '', endDate = '', roomType = 'all
                 // Check if booking trends data exists
                 if (response.data.most_booked_rooms && response.data.peak_booking_days) {
                     renderMostBookedRoomsChart(response.data.most_booked_rooms);
-                    renderPeakBookingDaysChart(response.data.peak_booking_days);
+                    // Use the new filter approach for peak booking days
+                    loadPeakBookingDaysData('weekly');
                 } else {
                     // Load it separately if not included
                     loadRoomBookingTrends(period, startDate, endDate, roomType);
@@ -1503,16 +1513,19 @@ function showAlert(message, type = 'success') {
  * Load room booking trends data
  */
 function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 'all') {
-    // Show loading indicators for these charts
+    // Show loading indicators
     document.querySelectorAll('#most-booked-rooms-chart, #peak-booking-days-chart').forEach(canvas => {
         if (canvas.closest('.chart-wrapper')) {
-            canvas.closest('.chart-wrapper').querySelector('.chart-loading').style.display = 'flex';
+            const loadingElement = canvas.closest('.chart-wrapper').querySelector('.chart-loading');
+            if (loadingElement) {
+                loadingElement.style.display = 'flex';
+            }
         }
     });
 
     // Build API URL with filters
-    let apiUrl = '../api/dashboard/get_room_booking_trends.php?period=' + period;
-    if (period === 'custom' && startDate && endDate) {
+    let apiUrl = '../api/dashboard/room_booking_trends.php?period=' + period;
+    if (period === 'custom') {
         apiUrl += '&start_date=' + startDate + '&end_date=' + endDate;
     }
 
@@ -1520,7 +1533,7 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
         apiUrl += '&room_type=' + roomType;
     }
 
-    // Fetch data from API
+    // Fetch data from API for most booked rooms
     fetch(apiUrl)
         .then(response => {
             if (!response.ok) {
@@ -1530,24 +1543,47 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
         })
         .then(response => {
             if (response.success) {
-                // Check if data exists and is valid
-                const mostBookedRoomsData = response.data.most_booked_rooms || [];
-                const peakBookingDaysData = response.data.peak_booking_days || {days: [], counts: []};
+                // Render most booked rooms chart
+                if (response.data.most_booked_rooms) {
+                    renderMostBookedRoomsChart(response.data.most_booked_rooms);
+                }
                 
-                renderMostBookedRoomsChart(mostBookedRoomsData);
-                renderPeakBookingDaysChart(peakBookingDaysData);
+                // Instead of rendering peak booking days directly,
+                // load it with the default 'weekly' period filter
+                loadPeakBookingDaysData('weekly');
             } else {
-                console.error('Error loading booking trends:', response.message || 'Unknown error');
-                // Create empty charts to show no data
-                renderMostBookedRoomsChart([]);
-                renderPeakBookingDaysChart({days: [], counts: []});
+                // Create empty charts
+                document.querySelectorAll('#most-booked-rooms-chart, #peak-booking-days-chart').forEach(canvas => {
+                    createNoDataChart(canvas, 'bar');
+                });
+            }
+            
+            // Hide loading indicators for most-booked-rooms-chart only
+            // (peak-booking-days loading will be handled by loadPeakBookingDaysData)
+            const mostBookedCanvas = document.getElementById('most-booked-rooms-chart');
+            if (mostBookedCanvas && mostBookedCanvas.closest('.chart-wrapper')) {
+                const loadingElement = mostBookedCanvas.closest('.chart-wrapper').querySelector('.chart-loading');
+                if (loadingElement) {
+                    loadingElement.style.display = 'none';
+                }
             }
         })
         .catch(error => {
-            console.error('Error fetching booking trends data:', error);
-            // Create empty charts to show no data
-            renderMostBookedRoomsChart([]);
-            renderPeakBookingDaysChart({days: [], counts: []});
+            console.error('Error fetching room booking trends:', error);
+            // Create empty charts
+            document.querySelectorAll('#most-booked-rooms-chart, #peak-booking-days-chart').forEach(canvas => {
+                createNoDataChart(canvas, 'bar');
+            });
+            
+            // Hide loading indicators
+            document.querySelectorAll('#most-booked-rooms-chart, #peak-booking-days-chart').forEach(canvas => {
+                if (canvas.closest('.chart-wrapper')) {
+                    const loadingElement = canvas.closest('.chart-wrapper').querySelector('.chart-loading');
+                    if (loadingElement) {
+                        loadingElement.style.display = 'none';
+                    }
+                }
+            });
         });
 }
 
@@ -1689,99 +1725,207 @@ function renderMostBookedRoomsChart(roomsData) {
 }
 
 /**
- * Render peak booking days chart
+ * Load peak booking days data with specific period
  */
-function renderPeakBookingDaysChart(peakDaysData) {
-    const canvas = document.getElementById('peak-booking-days-chart');
-    
-    // If canvas not found
-    if (!canvas) {
-        console.error('Peak booking days chart canvas not found');
-        return;
-    }
-
-    const ctx = canvas.getContext('2d');
-
-    // Destroy existing chart if any
-    if (window.peakBookingDaysChart) {
-        window.peakBookingDaysChart.destroy();
-    }
-
-    // Hide loading indicator
-    if (canvas.closest('.chart-wrapper')) {
-        const loadingElement = canvas.closest('.chart-wrapper').querySelector('.chart-loading');
+function loadPeakBookingDaysData(periodType) {
+    // Show loading for the specific chart
+    const chartContainer = document.getElementById('peak-booking-days-chart').closest('.chart-wrapper');
+    let loadingElement = null;
+    if (chartContainer) {
+        loadingElement = chartContainer.querySelector('.chart-loading');
         if (loadingElement) {
-            loadingElement.style.display = 'none';
+            loadingElement.style.display = 'flex';
         }
     }
 
-    // If no data or empty data
-    if (!peakDaysData || !peakDaysData.days || peakDaysData.days.length === 0) {
-        window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
-        return;
+    // Get current filters
+    const period = document.getElementById('period-filter').value;
+    const roomType = document.getElementById('room-type-filter').value;
+    let startDate = '', endDate = '';
+    
+    if (period === 'custom') {
+        startDate = document.getElementById('start-date').value;
+        endDate = document.getElementById('end-date').value;
+    }
+
+    // Build API URL with filters
+    let apiUrl = '../api/dashboard/peak_booking_days.php?period=' + period;
+    if (period === 'custom') {
+        apiUrl += '&start_date=' + startDate + '&end_date=' + endDate;
     }
     
-    // Check if all values are zero
-    const hasBookings = peakDaysData.counts.some(count => count > 0);
-    if (!hasBookings) {
-        window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
-        return;
+    apiUrl += '&booking_period=' + periodType;
+    
+    if (roomType && roomType !== 'all') {
+        apiUrl += '&room_type=' + roomType;
     }
-    
-    // Create gradient for bars
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(75, 192, 192, 0.8)');
-    gradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)');
-    
-    // Create chart
-    window.peakBookingDaysChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: peakDaysData.days,
-            datasets: [
-                {
-                    label: 'Booking Count',
-                    data: peakDaysData.counts,
-                    backgroundColor: gradient,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
+
+    // Use a temporary API endpoint until the real one is created
+    // Modify this to use your actual API once it's created
+    apiUrl = '../api/dashboard/peak_booking_days.php?period=' + period + '&booking_period=' + periodType;
+    if (period === 'custom') {
+        apiUrl += '&start_date=' + startDate + '&end_date=' + endDate;
+    }
+    if (roomType && roomType !== 'all') {
+        apiUrl += '&room_type=' + roomType;
+    }
+
+    // Fetch data from API
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(response => {
+            if (response.success && response.data) {
+                renderPeakBookingDaysChart(response.data, periodType);
+            } else {
+                // If no data or error, show empty chart
+                const canvas = document.getElementById('peak-booking-days-chart');
+                if (canvas) {
+                    // If chart already exists, destroy it first
+                    if (window.peakBookingDaysChart) {
+                        window.peakBookingDaysChart.destroy();
+                        window.peakBookingDaysChart = null;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
                 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false,
+            }
+            
+            // Hide loading indicator
+            if (chartContainer && loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching peak booking days data:', error);
+            // Create empty chart
+            const canvas = document.getElementById('peak-booking-days-chart');
+            if (canvas) {
+                // If chart already exists, destroy it first
+                if (window.peakBookingDaysChart) {
+                    window.peakBookingDaysChart.destroy();
+                    window.peakBookingDaysChart = null;
+                }
+                const ctx = canvas.getContext('2d');
+                window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
+            }
+            
+            // Hide loading indicator
+            if (chartContainer && loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+        });
+}
+
+/**
+ * Render the peak booking days chart
+ */
+function renderPeakBookingDaysChart(peakDaysData, periodType = 'weekly') {
+    try {
+        const canvas = document.getElementById('peak-booking-days-chart');
+        if (!canvas) {
+            console.error('Peak booking days chart canvas not found');
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        // If chart already exists, destroy it
+        if (window.peakBookingDaysChart) {
+            window.peakBookingDaysChart.destroy();
+            window.peakBookingDaysChart = null; // Ensure it's fully cleared
+        }
+
+        // Check if data is available
+        if (!peakDaysData || Object.keys(peakDaysData).length === 0) {
+            window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
+            return;
+        }
+
+        // Prepare data for chart
+        let labels = [];
+        let data = [];
+        
+        // Determine labels based on period type
+        if (periodType === 'weekly') {
+            labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            // Make sure data is ordered by day of week
+            data = labels.map(day => peakDaysData[day] || 0);
+        } else if (periodType === 'monthly') {
+            // For monthly, use month names
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            labels = monthNames;
+            data = labels.map(month => peakDaysData[month] || 0);
+        } else if (periodType === 'yearly') {
+            // For yearly, extract available years from data
+            labels = Object.keys(peakDaysData).sort();
+            data = labels.map(year => peakDaysData[year] || 0);
+        }
+
+        // Create chart
+        window.peakBookingDaysChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Booking Frequency',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Bookings'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: periodType === 'weekly' ? 'Day of Week' : 
+                                  periodType === 'monthly' ? 'Month' : 'Year'
+                        }
+                    }
                 },
-                tooltip: {
-                    callbacks: {
-                        title: function(tooltipItem) {
-                            return tooltipItem[0].label;
-                        },
-                        label: function(context) {
-                            const value = context.parsed.y;
-                            return 'Bookings: ' + value;
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Booking Frequency by ${periodType === 'weekly' ? 'Day of Week' : 
+                               periodType === 'monthly' ? 'Month' : 'Year'}`
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Bookings: ${context.raw}`;
+                            }
                         }
                     }
                 }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Number of Bookings'
-                    }
-                }
             }
+        });
+    } catch (error) {
+        console.error('Error rendering peak booking days chart:', error);
+        // If there was an error rendering the chart, make sure we don't try to use it again
+        if (window.peakBookingDaysChart) {
+            window.peakBookingDaysChart.destroy();
+            window.peakBookingDaysChart = null;
         }
-    });
+        const canvas = document.getElementById('peak-booking-days-chart');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
+        }
+    }
 }
