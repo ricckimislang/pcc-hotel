@@ -94,10 +94,10 @@ if ($user_id) {
                             <div class="booking-actions">
                                 <p class="booking-price">₱<?php echo number_format($booking['total_price'], 2); ?></p>
 
-                                <?php if ($booking['booking_status'] === 'checked_out'): ?>
-                                    <button class="btn-review" data-booking-id="<?php echo $booking['booking_id']; ?>">
+                                <?php if ($booking['booking_status'] === 'checked_out' && $booking['is_feedback'] === 0): ?>
+                                    <a class="btn-review" data-booking-id="<?php echo $booking['booking_id']; ?>">
                                         Write Review
-                                    </button>
+                                    </a>
 
                                 <?php elseif ($booking['booking_status'] === 'pending'): ?>
                                     <button class="btn-cancel" data-booking-id="<?php echo $booking['booking_id']; ?>">
@@ -120,6 +120,7 @@ if ($user_id) {
             <?php endif; ?>
         </div>
     </div>
+    <?php include_once 'modal/feedback-modal.php'; ?>
 
     <script>
         // Dropdown menu functionality
@@ -170,6 +171,15 @@ if ($user_id) {
                             alert('An error occurred while cancelling the booking');
                         });
                 }
+            });
+        });
+        // Feedback modal functionality
+        document.querySelectorAll('.btn-review').forEach(button => {
+            button.addEventListener('click', function() {
+                const bookingId = this.getAttribute('data-booking-id');
+                document.getElementById('bookingId').value = bookingId;
+                document.getElementById('customerId').value = <?php echo $user_id; ?>;
+                $('#feedbackModal').modal('show');
             });
         });
     </script>
