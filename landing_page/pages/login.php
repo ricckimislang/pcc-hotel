@@ -44,7 +44,15 @@
                     })
                     .then(function(data) {
                         if (data.status) {
-                            window.location.href = "index.php";
+                            if(data.role === "customer"){
+                                window.location.href = "index.php";
+                            }
+                            else if(data.role === "admin"){
+                                window.location.href = "http://localhost/pcc-hotel/admin/pages/dashboard.php";
+                            }
+                            else{
+                                alert("user does not have a role.");
+                            }
                         } else {
                             // show your error message
                             alert(data.message || "Login failed");
