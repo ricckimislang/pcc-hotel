@@ -27,6 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $base_price = $rowPrice["base_price"];
     $room_type_name = $rowPrice["type_name"];
 
+    $loyalty_query = $conn->prepare("SELECT loyal_points FROM customer_profiles WHERE user_id = ?");
+    $loyalty_query->bind_param("i", $user_id);
+    $loyalty_query->execute();
+    $loyalty_result = $loyalty_query->get_result();
+    $loyalty_data = $loyalty_result->fetch_assoc();
+    $loyalty_points = isset($loyalty_data['loyal_points']) ? $loyalty_data['loyal_points'] : 0;
+    $is_discount = 0;
+
     // Calculate number of nights
     $check_in_date = new DateTime($check_in);
     $check_out_date = new DateTime($check_out);
@@ -47,9 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $total_price = $nights * $base_price;
     }
 
+    if ($loyalty_points > 100) {
+        $total_price = $total_price * 0.95;
+        $is_discount = 1;
+    }
+
     // Insert booking
-    $stmt = $conn->prepare("INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, guests_count, total_price, special_requests) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("iissids", $user_id, $room_id, $check_in, $check_out, $guests_count, $total_price, $special_requests);
+    $stmt = $conn->prepare("INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, guests_count, total_price, is_discount, special_requests) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iissidis", $user_id, $room_id, $check_in, $check_out, $guests_count, $total_price, $is_discount, $special_requests);
 
     if ($stmt->execute()) {
         $roomUpdate = $conn->prepare("UPDATE rooms SET status = 'reserved' WHERE room_id = ?");

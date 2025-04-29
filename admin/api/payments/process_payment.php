@@ -123,6 +123,9 @@ try {
 
     // Calculate room total
     $room_total = $booking['base_price'] * $booking['nights'];
+    if ($booking['is_discount'] == 1) {
+        $room_total = $room_total * 0.95;
+    }
 
     // Get total paid from transaction
     $total_paid = $transaction['amount'] + $extra_payment;

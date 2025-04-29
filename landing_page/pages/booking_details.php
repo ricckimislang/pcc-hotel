@@ -45,6 +45,15 @@ if ($result->num_rows === 0) {
 $booking = $result->fetch_assoc();
 $stmt->close();
 
+// Fetch customer profile for loyalty points check
+$customerProfileQuery = $conn->prepare("SELECT loyal_points FROM customer_profiles WHERE user_id = ?");
+$customerProfileQuery->bind_param("i", $user_id);
+$customerProfileQuery->execute();
+$customerProfileResult = $customerProfileQuery->get_result();
+$customerProfile = $customerProfileResult->fetch_assoc();
+$loyalty_points = isset($customerProfile['loyal_points']) ? $customerProfile['loyal_points'] : 0;
+$customerProfileQuery->close();
+
 // Calculate number of nights
 $check_in = new DateTime($booking['check_in_date']);
 $check_out = new DateTime($booking['check_out_date']);
@@ -145,6 +154,12 @@ $has_partial_payment = $paid_amount > 0 && $paid_amount < $total_price;
                         nights)</span>
                     <span>₱<?php echo number_format($booking['base_price'] * $nights, 2); ?></span>
                 </div>
+                <?php if (isset($booking['is_discount']) && $booking['is_discount'] == 1): ?>
+                    <div class="price-row">
+                        <span>Loyalty Discount:</span>
+                        <span>5%</span>
+                    </div>
+                <?php endif; ?>
                 <div class="price-row total">
                     <span>Total</span>
                     <span>₱<?php echo number_format($booking['total_price'], 2); ?></span>

@@ -39,7 +39,11 @@ try {
     // Calculate room total
     $nights = $booking['nights_stayed'];
     $room_rate = $booking['room_rate'];
-    $room_total = $nights * $room_rate;
+    if($booking['is_discount'] == 1){
+        $room_total = $nights * $room_rate * 0.95;
+    }else{
+        $room_total = $nights * $room_rate;
+    }
 
     // Get payment information from transactions table
     $query = "SELECT COALESCE(SUM(amount), 0) as total_paid 
