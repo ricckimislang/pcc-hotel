@@ -1,4 +1,3 @@
-
 <div class="sidebar">
     <div class="sidebar-header">
         <h3>PCC Hotel</h3>
@@ -9,7 +8,7 @@
 
     <div class="sidebar-user">
         <div class="user-image">
-            <img src="" alt="Admin">
+            <i class="fas fa-user-circle"></i>
         </div>
         <div class="user-info">
             <h5>Admin User</h5>
@@ -76,19 +75,11 @@
             </a>
         </li>
 
-        <li class="menu-header">Reports</li>
-        <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'analytics.php' ? 'active' : ''; ?>">
-            <a href="../pages/analytics.php">
-                <i class="fas fa-chart-line"></i>
-                <span>Analytics</span>
-            </a>
-        </li>
-
         <li class="menu-header">Settings</li>
         <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
-            <a href="../pages/profile.php">
+            <a href="javascript:void(0);" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                 <i class="fas fa-user-cog"></i>
-                <span>Profile</span>
+                <span>Change Password</span>
             </a>
         </li>
         <li>

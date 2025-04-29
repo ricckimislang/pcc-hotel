@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 
 try {
     $username = $_POST["username"];
-    $password = $_POST["password"];
+    $password = md5($_POST["password"]);
 
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
