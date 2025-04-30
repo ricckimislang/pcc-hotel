@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['username']) && $_SESSION['user_type'] != 'admin') {
+    header("Location: ../../landing_page/");
+    exit();
+}
+?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
