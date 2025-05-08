@@ -10,7 +10,7 @@
                 <form id="processPaymentForm">
                     <input type="hidden" id="payment_booking_id" name="booking_id">
                     <input type="hidden" id="payment_amount" name="payment_amount" value="0.01">
-                    
+
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <div class="card h-100">
@@ -31,7 +31,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="card h-100">
                                 <div class="card-header">
@@ -54,7 +54,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-12">
                             <div class="card mb-3">
@@ -118,32 +118,22 @@
                     <div class="mb-3">
                         <label for="fee_item_name" class="form-label">Item Name</label>
                         <select class="form-select" id="fee_item_name" required>
-                            <option value="" selected disabled>Select a additional fee</option>
-                            <option value="AdditionalGuest">Additional Guest</option>
-                            <option value="Towel">Towel</option>
-                            <option value="Soap">Soap</option>
-                            <option value="Shampoo">Shampoo</option>
-                            <option value="Toothbrush">Toothbrush</option>
-                            <option value="Toothpaste">Toothpaste</option>
-                            <option value="Slippers">Slippers</option>
-                            <option value="Extra Bed">Extra Bed</option>
-                            <option value="Laundry">Laundry</option>
-                            <option value="Room Service">Room Service</option>
-                            <option value="Late Checkout">Late Checkout</option>
+                            <option value="" selected disabled>Select an additional fee</option>
+                            <!-- Items will be loaded dynamically -->
                             <option value="custom">Custom Item...</option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3" id="customItemNameContainer" style="display: none;">
                         <label for="custom_item_name" class="form-label">Custom Item Name</label>
                         <input type="text" class="form-control" id="custom_item_name">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="fee_item_price" class="form-label">Item Price (₱)</label>
                         <input type="number" step="0.01" class="form-control" id="fee_item_price" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="fee_item_quantity" class="form-label">Quantity</label>
                         <input type="number" class="form-control" id="fee_item_quantity" min="1" value="1" required>
@@ -193,7 +183,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -211,7 +201,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div id="noPaymentsMessage" class="alert alert-info" style="display: none;">
                     No payment records found for this booking.
                 </div>
@@ -269,3 +259,4 @@
     </div>
 </div>
 
+<script src="../js/items/items.js"></script>
