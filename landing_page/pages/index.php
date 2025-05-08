@@ -136,7 +136,6 @@ $user_id = isset($_SESSION['user_id'])
 
     <script src="../js/main.js"></script>
     <script src="../js/rooms.js"></script>
-    <script src="crud_table.js"></script>
 </body>
 
 </html>

@@ -28,7 +28,7 @@ if ($user_id) {
 <body>
     <div class="booking-container">
         <div class="back-button" style="margin-bottom: 20px;">
-            <a href="index.php"
+            <a href="javascript:history.back()"
                 style="text-decoration: none; color: var(--dark-text); display: flex; align-items: center; width: fit-content;">
                 <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
                 Back to Home

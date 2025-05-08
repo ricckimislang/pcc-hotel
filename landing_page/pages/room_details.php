@@ -225,6 +225,98 @@ if ($room_type) {
             cursor: pointer;
         }
 
+        /* Room Card Styles */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .room-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .room-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .room-card-header {
+            margin-bottom: 8px;
+        }
+
+        .room-number {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .room-number h3 {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .room-floor {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .floor-badge {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .room-card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .room-status {
+            font-size: 0.85rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge i {
+            font-size: 0.7rem;
+        }
+
+        .select-room-btn {
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            background: #1a73e8;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .select-room-btn:hover {
+            background: #1557b0;
+        }
+
+        /* Existing panorama styles */
         .panorama-hint {
             display: flex;
             align-items: center;
