@@ -109,12 +109,17 @@ document.addEventListener("DOMContentLoaded", function () {
   $("#confirmAddFeeBtn").click(function () {
     // Get form values
     let itemName = $("#fee_item_name").val();
+    const selectedOption = $("#fee_item_name option:selected");
+    
     if (itemName === "custom") {
       itemName = $("#custom_item_name").val();
       if (!itemName.trim()) {
         showToast("error", "Please enter a custom item name");
         return;
       }
+    } else {
+      // Use the item name from the dataset for non-custom items
+      itemName = selectedOption.data('name');
     }
 
     const itemPrice = parseFloat($("#fee_item_price").val());
@@ -140,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>₱${subtotal.toFixed(2)}</td>
         <td>
           <button type="button" class="btn btn-sm btn-danger remove-fee">
-            <i class="bi bi-trash"></i>
+            <i class="fa fa-trash"></i>
           </button>
         </td>
       </tr>

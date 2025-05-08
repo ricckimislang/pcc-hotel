@@ -49,6 +49,8 @@
                                         <dd class="col-sm-6 amount-paid"></dd>
                                         <dt class="col-sm-6">Balance Due:</dt>
                                         <dd class="col-sm-6 balance-due"></dd>
+                                        <dt class="col-sm-6 fw-bold border-top pt-2">Grand Total:</dt>
+                                        <dd class="col-sm-6 grand-total fw-bold border-top pt-2">₱0.00</dd>
                                     </dl>
                                 </div>
                             </div>

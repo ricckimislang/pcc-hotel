@@ -45,3 +45,48 @@ document.getElementById('fee_item_name').addEventListener('change', function () 
         }
     }
 });
+
+// Function to update grand total
+function updateGrandTotal() {
+    const roomTotalElement = document.querySelector('.room-total');
+    const additionalFeesElement = document.querySelector('.additional-fees');
+    const grandTotalElement = document.querySelector('.grand-total');
+
+    // Get room total amount (remove ₱ symbol and convert to number)
+    const roomTotal = parseFloat(roomTotalElement.textContent.replace('₱', '')) || 0;
+    
+    // Get additional fees total
+    const additionalFees = parseFloat(additionalFeesElement.textContent.replace('₱', '')) || 0;
+    
+    // Calculate grand total
+    const grandTotal = roomTotal + additionalFees;
+    
+    // Update grand total display with peso symbol and 2 decimal places
+    grandTotalElement.textContent = `₱${grandTotal.toFixed(2)}`;
+}
+
+// Call updateGrandTotal whenever additional fees change
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === 'characterData' || mutation.type === 'childList') {
+            updateGrandTotal();
+        }
+    });
+});
+
+// Start observing the additional fees element for changes
+document.addEventListener('DOMContentLoaded', function() {
+    const additionalFeesElement = document.querySelector('.additional-fees');
+    if (additionalFeesElement) {
+        observer.observe(additionalFeesElement, { 
+            characterData: true, 
+            childList: true, 
+            subtree: true 
+        });
+    }
+});
+
+// Update grand total when the payment modal opens
+document.getElementById('processPaymentModal').addEventListener('show.bs.modal', function () {
+    updateGrandTotal();
+});
