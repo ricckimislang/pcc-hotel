@@ -21,5 +21,5 @@ if ($result) {
         'message' => 'Failed to fetch items'
     ]);
 }
-
 mysqli_close($conn);
+

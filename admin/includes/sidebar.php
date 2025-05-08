@@ -47,6 +47,13 @@
             </a>
         </li>
 
+        <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'items.php' ? 'active' : ''; ?>">
+            <a href="../pages/items.php">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Items</span>
+            </a>
+
+
         <li class="menu-header">Booking Management</li>
         <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'manage_bookings.php' ? 'active' : ''; ?>">
             <a href="../pages/manage_bookings.php">
