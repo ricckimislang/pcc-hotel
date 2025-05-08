@@ -72,7 +72,6 @@ try {
     $hotel_address = "OSMENA STREET, ZONE 1, KORONADAL CITY, Koronadal, Philippines";
     $hotel_phone = "0920 665 3062";
     $hotel_email = "pcchotel@gmail.com";
-
 } catch (Exception $e) {
     die('Error: ' . $e->getMessage());
 }
@@ -273,7 +272,6 @@ try {
                 <h4>Payment Information</h4>
                 <p>Payment Method: Cash/Bank Transfer</p>
                 <p>Reference #: <?php echo $transaction['reference_no'] ?: 'N/A'; ?></p>
-                <p>Transaction ID: <?php echo $transaction['transaction_id']; ?></p>
             </div>
         </div>
 
@@ -363,9 +361,9 @@ try {
 
     <script>
         // Auto-print when the page loads
-        window.onload = function () {
+        window.onload = function() {
             // Automatically open print dialog
-            setTimeout(function () {
+            setTimeout(function() {
                 window.print();
             }, 500);
         };
