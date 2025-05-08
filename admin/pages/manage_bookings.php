@@ -17,7 +17,7 @@ require_once '../api/bookings/get_checkin_table.php';
             <div class="bookings-header">
                 <h1>Manage Bookings</h1>
                 <div class="header-actions">
-                    <button class="refresh-btn" id="refreshTable">
+                    <button onclick="refreshTable()" class="refresh-btn" id="refreshTable">
                         <i class="fas fa-sync-alt"></i> Refresh
                     </button>
                 </div>

@@ -2,12 +2,17 @@ $(document).ready(function () {
   // Initialize DataTable
   const bookingsTable = initializeBookingsDataTable();
   const checkInOutTable = initializeCheckInOutDataTable();
+  const refreshTable = document.querySelector("#refreshTable");
 
   // Initialize event handlers
   initializeEventHandlers(bookingsTable);
 
   // Initialize modal handlers
   initializeModalHandlers();
+
+  refreshTable.addEventListener("click", function () {
+    window.location.reload();
+  });
 });
 
 // DataTable initialization
