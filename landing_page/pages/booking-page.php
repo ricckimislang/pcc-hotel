@@ -23,6 +23,7 @@ if ($user_id) {
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="../css/booking.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <?php include_once '../includes/head.php'; ?>
 
 <body>
@@ -47,7 +48,7 @@ if ($user_id) {
         <?php } ?>
 
         <form id="bookingForm"
-            style="display:                                                                                                                                                                                                                                                                                                                                   <?php echo $user_id ? 'block' : 'none'; ?>">
+            style="display: <?php echo $user_id ? 'block' : 'none'; ?>">
             <!-- Personal Information Section -->
             <input type="hidden" id="room_id" name="room_id" value="<?php echo $room_id; ?>">
             <input type="hidden" id="user_id" name="user_id" value="<?php echo $user_id; ?>">
@@ -88,7 +89,6 @@ if ($user_id) {
                 </div>
             </div>
 
-
             <!-- Booking Details Section -->
             <div class="form-section">
                 <h2 class="section-title">Booking Details</h2>
@@ -96,37 +96,13 @@ if ($user_id) {
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="check_in_date">Check-in Date</label>
-                            <input type="date" id="check_in_date" name="check_in_date"
-                                min="<?php echo date('Y-m-d'); ?>" class="form-control" required>
+                            <input type="text" id="check_in_date" name="check_in_date" class="form-control" placeholder="Select Check-in Date" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="check_out_date">Check-out Date</label>
-                            <input type="date" id="check_out_date" name="check_out_date" min="" class="form-control"
-                                required onchange="validateDates()">
-                            <script>
-                                document.getElementById('check_in_date').addEventListener('change', function() {
-                                    validateDates();
-                                });
-
-                                function validateDates() {
-                                    var checkIn = document.getElementById('check_in_date');
-                                    var checkOut = document.getElementById('check_out_date');
-
-                                    if (checkIn.value) {
-                                        // Set minimum check-out date to day after check-in
-                                        var minDate = new Date(checkIn.value);
-                                        minDate.setDate(minDate.getDate() + 1);
-                                        checkOut.min = minDate.toISOString().split('T')[0];
-
-                                        // If check-out date is before new minimum, clear it
-                                        if (checkOut.value && new Date(checkOut.value) <= new Date(checkIn.value)) {
-                                            checkOut.value = '';
-                                        }
-                                    }
-                                }
-                            </script>
+                            <input type="text" id="check_out_date" name="check_out_date" class="form-control" placeholder="Select Check-out Date" required>
                         </div>
                     </div>
                 </div>
@@ -166,8 +142,82 @@ if ($user_id) {
         </form>
     </div>
 
-    <script src="../js/booking.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Fetch booked dates when page loads
+        let bookedDates = [];
+        const roomId = document.getElementById('room_id').value;
 
+        // Fetch booked dates from the server
+        fetch(`../api/get_booked_dates.php?room_id=${roomId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bookedDates = data.booked_dates;
+                    initializeDatePickers();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+        function initializeDatePickers() {
+            // Initialize check-in date picker
+            const checkInPicker = flatpickr("#check_in_date", {
+                minDate: "today",
+                disable: bookedDates,
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates) {
+                    if (selectedDates[0]) {
+                        // Update check-out date minimum
+                        const minCheckOut = new Date(selectedDates[0]);
+                        minCheckOut.setDate(minCheckOut.getDate() + 1);
+
+                        // Find the next available date after check-in
+                        let nextAvailableDate = new Date(minCheckOut);
+                        while (bookedDates.includes(nextAvailableDate.toISOString().split('T')[0])) {
+                            nextAvailableDate.setDate(nextAvailableDate.getDate() + 1);
+                        }
+
+                        // Update check-out picker
+                        checkOutPicker.set('minDate', minCheckOut);
+                        if (!checkOutPicker.selectedDates[0] ||
+                            checkOutPicker.selectedDates[0] <= selectedDates[0] ||
+                            bookedDates.includes(checkOutPicker.selectedDates[0].toISOString().split('T')[0])) {
+                            checkOutPicker.setDate(nextAvailableDate);
+                        }
+                    }
+                }
+            });
+
+            // Initialize check-out date picker
+            const checkOutPicker = flatpickr("#check_out_date", {
+                minDate: new Date().fp_incr(1),
+                disable: bookedDates,
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates) {
+                    if (selectedDates[0] && checkInPicker.selectedDates[0]) {
+                        // Validate the date range
+                        const start = new Date(checkInPicker.selectedDates[0]);
+                        const end = new Date(selectedDates[0]);
+                        let currentDate = new Date(start);
+
+                        // Check if any date in the range is booked
+                        while (currentDate <= end) {
+                            if (bookedDates.includes(currentDate.toISOString().split('T')[0])) {
+                                // Find next available date
+                                while (bookedDates.includes(currentDate.toISOString().split('T')[0])) {
+                                    currentDate.setDate(currentDate.getDate() + 1);
+                                }
+                                checkOutPicker.setDate(currentDate);
+                                break;
+                            }
+                            currentDate.setDate(currentDate.getDate() + 1);
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    <script src="../js/booking.js"></script>
 </body>
 
 </html>
