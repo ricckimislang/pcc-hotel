@@ -76,8 +76,11 @@ if ($user_id) {
                                     <p><i class="fas fa-user"></i> Guests:
                                         <?php echo htmlspecialchars($booking['guests_count']); ?>
                                     </p>
-                                    <p><i class="fas fa-bookmark"></i> Booking ID:
-                                        <?php echo htmlspecialchars($booking['booking_id']); ?>
+                                    <p><i class="fas fa-money-bill"></i> Payment Status:
+                                        <span class="<?php echo $booking['payment_status'] === 'paid' ? 'text-success' : ''; ?>">
+                                            <i class="<?php echo $booking['payment_status'] === 'paid' ? 'fas fa-circle' : ''; ?>"></i>
+                                            <?php echo htmlspecialchars(ucfirst($booking['payment_status'])); ?>
+                                        </span>
                                     </p>
                                     <p class="booking-status <?php echo strtolower($booking['booking_status']); ?>">
                                         <i class="fas fa-circle"></i> Status:
