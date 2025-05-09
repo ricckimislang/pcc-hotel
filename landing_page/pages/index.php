@@ -26,7 +26,8 @@ $user_id = isset($_SESSION['user_id'])
                 </div>
             </div>
             <div class="logo">
-                PCC HOME SUITE HOME
+                <span class="logo-full">PCC HOME SUITE HOME</span>
+                <span class="logo-short">PCC HOME</span>
             </div>
             <?php if (!$user_id) {
                 echo '

@@ -25,6 +25,8 @@
 body {
   background-color: var(--light-bg) !important;
   color: var(--dark-text);
+  overflow-x: hidden;
+  font-size: 14px;
 }
 
 /* Header styles */
@@ -145,26 +147,36 @@ header {
   transform: translateY(-2px);
 }
 
+/* Logo styles */
 .logo {
   display: flex;
   align-items: center;
+  justify-content: center;
   font-weight: 700;
-  font-size: 22px;
-  font-family: "Playfair Display", serif;
   color: var(--white);
   letter-spacing: 1px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
 }
 
 .logo::before {
   content: "";
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: var(--luxury-gradient);
   border-radius: 50%;
-  margin-right: 12px;
-  box-shadow: 0 0 15px rgba(200, 169, 126, 0.6);
+  margin-right: 8px;
+  box-shadow: 0 0 10px rgba(200, 169, 126, 0.6);
+}
+
+.logo-full {
+  display: none;
+}
+
+.logo-short {
+  display: inline-block;
 }
 
 .user-container {
@@ -877,5 +889,327 @@ header {
   .footer-content {
     padding: 0 20px 40px;
     gap: 30px;
+  }
+}
+
+/* Mobile-first base styles (320px and up) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Playfair Display", serif;
+}
+
+body {
+  background-color: var(--light-bg) !important;
+  color: var(--dark-text);
+  overflow-x: hidden;
+  font-size: 14px;
+}
+
+/* Extra small mobile styles (320px-374px) */
+@media (min-width: 320px) {
+  .header-container {
+    padding: 0 8px;
+  }
+
+  .menu-button button,
+  .login-button a {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 20px;
+  }
+
+  .logo {
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+  
+  .logo::before {
+    width: 4px;
+    height: 4px;
+    margin-right: 6px;
+  }
+
+  .hero-title {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .activities-grid {
+    gap: 15px;
+    padding: 0 10px;
+  }
+
+  .activity-card {
+    border-radius: 8px;
+  }
+
+  .activity-image img {
+    height: 180px;
+  }
+
+  .activity-info {
+    padding: 12px;
+  }
+
+  .activity-info h3 {
+    font-size: 1.2em;
+  }
+
+  .booking-cta p {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .travel-options {
+    padding: 30px 10px;
+  }
+
+  .travel-options h2 {
+    font-size: 20px;
+  }
+
+  .footer-content {
+    padding: 0 10px 30px;
+    gap: 20px;
+  }
+
+  .footer-column h4 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .footer-column ul li a {
+    font-size: 13px;
+  }
+}
+
+/* Small mobile styles (375px-424px) */
+@media (min-width: 375px) {
+  .header-container {
+    padding: 0 12px;
+  }
+
+  .menu-button button,
+  .login-button a {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
+  .logo {
+    font-size: 17px;
+    letter-spacing: 0.8px;
+  }
+  
+  .logo::before {
+    width: 5px;
+    height: 5px;
+    margin-right: 7px;
+  }
+
+  .hero-title {
+    font-size: 32px;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+  }
+
+  .activity-image img {
+    height: 190px;
+  }
+
+  .activity-info {
+    padding: 13px;
+  }
+
+  .booking-cta p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .travel-options h2 {
+    font-size: 22px;
+  }
+}
+
+/* Medium mobile styles (425px-575px) */
+@media (min-width: 425px) {
+  .header-container {
+    padding: 0 15px;
+  }
+
+  .menu-button button,
+  .login-button a {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .logo {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+  
+  .logo::before {
+    width: 6px;
+    height: 6px;
+    margin-right: 8px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .activities-grid {
+    gap: 20px;
+    padding: 0 15px;
+  }
+
+  .activity-image img {
+    height: 200px;
+  }
+
+  .activity-info {
+    padding: 15px;
+  }
+
+  .activity-info h3 {
+    font-size: 1.3em;
+  }
+
+  .booking-cta p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .travel-options {
+    padding: 35px 15px;
+  }
+
+  .travel-options h2 {
+    font-size: 24px;
+  }
+
+  .footer-content {
+    padding: 0 15px 35px;
+    gap: 25px;
+  }
+
+  .footer-column h4 {
+    font-size: 17px;
+    margin-bottom: 15px;
+  }
+
+  .footer-column ul li a {
+    font-size: 14px;
+  }
+}
+
+/* Large mobile styles (576px-767px) */
+@media (min-width: 576px) {
+  .header-container {
+    padding: 0 20px;
+  }
+
+  .menu-button button,
+  .login-button a {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .logo {
+    font-size: 18px;
+    letter-spacing: 1.2px;
+  }
+  
+  .logo::before {
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+  }
+
+  .hero-title {
+    font-size: 42px;
+    margin-bottom: 25px;
+  }
+
+  .hero-subtitle {
+    font-size: 17px;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+  }
+
+  .activities-grid {
+    gap: 25px;
+    padding: 0 20px;
+  }
+
+  .activity-image img {
+    height: 220px;
+  }
+
+  .activity-info {
+    padding: 18px;
+  }
+
+  .activity-info h3 {
+    font-size: 1.4em;
+  }
+
+  .booking-cta p {
+    font-size: 16px;
+  }
+
+  .travel-options {
+    padding: 40px 20px;
+  }
+
+  .travel-options h2 {
+    font-size: 26px;
+  }
+
+  .footer-content {
+    padding: 0 20px 40px;
+    gap: 30px;
+  }
+
+  .footer-column h4 {
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+}
+
+/* Tablet and above */
+@media (min-width: 768px) {
+  .logo {
+    font-size: 22px;
+    letter-spacing: 1.5px;
+  }
+  
+  .logo::before {
+    width: 8px;
+    height: 8px;
+    margin-right: 12px;
+  }
+
+  .logo-full {
+    display: inline-block;
+  }
+
+  .logo-short {
+    display: none;
   }
 }
