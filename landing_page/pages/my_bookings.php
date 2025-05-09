@@ -63,45 +63,56 @@ if ($user_id) {
                     <?php foreach ($bookings as $booking): ?>
                         <div class="booking-card">
                             <div class="booking-details">
-                                <h3><?php echo htmlspecialchars($booking['type_name']); ?></h3>
-                                <div class="booking-dates">
-                                    <p><i class="far fa-calendar-alt"></i> Check-in:
-                                        <?php echo date('M d, Y', strtotime($booking['check_in_date'])); ?>
-                                    </p>
-                                    <p><i class="far fa-calendar-alt"></i> Check-out:
-                                        <?php echo date('M d, Y', strtotime($booking['check_out_date'])); ?>
-                                    </p>
-                                </div>
-                                <div class="booking-meta">
-                                    <p><i class="fas fa-user"></i> Guests:
-                                        <?php echo htmlspecialchars($booking['guests_count']); ?>
-                                    </p>
-                                    <p><i class="fas fa-money-bill"></i> Payment Status:
-                                        <span class="<?php echo $booking['payment_status'] === 'paid' ? 'text-success' : ''; ?>">
-                                            <i class="<?php echo $booking['payment_status'] === 'paid' ? 'fas fa-circle' : ''; ?>"></i>
-                                            <?php echo htmlspecialchars(ucfirst($booking['payment_status'])); ?>
-                                        </span>
-                                    </p>
-                                    <p class="booking-status <?php echo strtolower($booking['booking_status']); ?>">
-                                        <i class="fas fa-circle"></i> Status:
-                                        <?php echo htmlspecialchars(ucfirst($booking['booking_status'])); ?>
-                                    </p>
-                                </div>
-                                <?php if (!empty($booking['special_requests'])): ?>
-                                    <div class="special-requests">
-                                        <p><i class="fas fa-sticky-note"></i> Special Requests:</p>
-                                        <p><?php echo htmlspecialchars($booking['special_requests']); ?></p>
+                                <div class="booking-main-info">
+                                    <h3><?php echo htmlspecialchars($booking['type_name']); ?></h3>
+                                    <div class="booking-status <?php echo strtolower($booking['booking_status']); ?>">
+                                        <i class="fas fa-circle"></i> <?php echo htmlspecialchars(ucfirst($booking['booking_status'])); ?>
                                     </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="booking-actions">
-                                <p class="booking-price">₱<?php echo number_format($booking['total_price'], 2); ?></p>
+                                </div>
+                                
+                                <div class="booking-essential">
+                                    <div class="booking-dates">
+                                        <p><i class="far fa-calendar-alt"></i> Check-in:
+                                            <?php echo date('M d, Y', strtotime($booking['check_in_date'])); ?>
+                                        </p>
+                                        <p><i class="far fa-calendar-alt"></i> Check-out:
+                                            <?php echo date('M d, Y', strtotime($booking['check_out_date'])); ?>
+                                        </p>
+                                    </div>
+                                    <p class="booking-price">₱<?php echo number_format($booking['total_price'], 2); ?></p>
+                                </div>
 
+                                <div class="booking-expandable">
+                                    <div class="booking-meta">
+                                        <p><i class="fas fa-user"></i> Guests:
+                                            <?php echo htmlspecialchars($booking['guests_count']); ?>
+                                        </p>
+                                        <p><i class="fas fa-money-bill"></i> Payment Status:
+                                            <span class="<?php echo $booking['payment_status'] === 'paid' ? 'text-success' : ''; ?>">
+                                                <i class="<?php echo $booking['payment_status'] === 'paid' ? 'fas fa-circle' : ''; ?>"></i>
+                                                <?php echo htmlspecialchars(ucfirst($booking['payment_status'])); ?>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <?php if (!empty($booking['special_requests'])): ?>
+                                        <div class="special-requests">
+                                            <p><i class="fas fa-sticky-note"></i> Special Requests:</p>
+                                            <p><?php echo htmlspecialchars($booking['special_requests']); ?></p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <button class="toggle-details">
+                                    <span class="show-more">See more <i class="fas fa-chevron-down"></i></span>
+                                    <span class="show-less">See less <i class="fas fa-chevron-up"></i></span>
+                                </button>
+                            </div>
+
+                            <div class="booking-actions">
                                 <?php if ($booking['booking_status'] === 'checked_out' && $booking['is_feedback'] === 0): ?>
                                     <a class="btn-review" data-booking-id="<?php echo $booking['booking_id']; ?>">
                                         Write Review
                                     </a>
-
                                 <?php elseif ($booking['booking_status'] === 'pending'): ?>
                                     <button class="btn-cancel" data-booking-id="<?php echo $booking['booking_id']; ?>">
                                         Cancel Booking
@@ -109,14 +120,12 @@ if ($user_id) {
                                     <a href="booking_details.php?id=<?php echo $booking['booking_id']; ?>" class="btn-details">
                                         View Details
                                     </a>
-
                                 <?php elseif ($booking['booking_status'] === 'confirmed'): ?>
                                     <a href="booking_details.php?id=<?php echo $booking['booking_id']; ?>" class="btn-details">
                                         View Details
                                     </a>
                                 <?php endif; ?>
                             </div>
-
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -131,26 +140,77 @@ if ($user_id) {
         const navDropdown = document.getElementById('navDropdown');
 
         if (menuToggle && navDropdown) {
-            // Add a click event handler to close dropdown when clicking outside
             document.addEventListener('click', function(event) {
                 if (!event.target.closest('.menu-button') && navDropdown.classList.contains('show')) {
                     navDropdown.classList.remove('show');
                 }
             });
 
-            // Toggle the dropdown when clicking the menu button
             menuToggle.addEventListener('click', function(event) {
                 event.stopPropagation();
                 navDropdown.classList.toggle('show');
             });
         }
 
+        // Mobile-only toggle booking details functionality
+        function initializeExpandableContent() {
+            const isMobile = window.innerWidth <= 768;
+            const bookingCards = document.querySelectorAll('.booking-card');
+            
+            bookingCards.forEach(card => {
+                const expandable = card.querySelector('.booking-expandable');
+                const toggleBtn = card.querySelector('.toggle-details');
+                
+                if (isMobile) {
+                    expandable.style.display = 'none';
+                    toggleBtn.style.display = 'flex';
+                } else {
+                    expandable.style.display = 'block';
+                    toggleBtn.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize on page load
+        initializeExpandableContent();
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(initializeExpandableContent, 250);
+        });
+
+        // Toggle details click handler
+        document.querySelectorAll('.toggle-details').forEach(button => {
+            button.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    const card = this.closest('.booking-card');
+                    const expandable = card.querySelector('.booking-expandable');
+                    
+                    card.classList.toggle('expanded');
+                    if (card.classList.contains('expanded')) {
+                        expandable.style.display = 'block';
+                        setTimeout(() => {
+                            expandable.style.opacity = '1';
+                            expandable.style.maxHeight = expandable.scrollHeight + 'px';
+                        }, 10);
+                    } else {
+                        expandable.style.opacity = '0';
+                        expandable.style.maxHeight = '0';
+                        setTimeout(() => {
+                            expandable.style.display = 'none';
+                        }, 300);
+                    }
+                }
+            });
+        });
+
         // Cancel booking functionality
         document.querySelectorAll('.btn-cancel').forEach(button => {
             button.addEventListener('click', function() {
                 const bookingId = this.getAttribute('data-booking-id');
                 if (confirm('Are you sure you want to cancel this booking?')) {
-                    // Send cancellation request
                     fetch('../api/cancel_booking.php', {
                             method: 'POST',
                             headers: {
@@ -176,6 +236,7 @@ if ($user_id) {
                 }
             });
         });
+
         // Feedback modal functionality
         document.querySelectorAll('.btn-review').forEach(button => {
             button.addEventListener('click', function() {
