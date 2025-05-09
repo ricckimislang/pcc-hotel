@@ -16,7 +16,7 @@ $room_id = $_GET['room_id'];
 $query = "SELECT check_in_date, check_out_date 
           FROM bookings 
           WHERE room_id = ? 
-          AND booking_status NOT IN ('cancelled')
+          AND booking_status NOT IN ('cancelled', 'checked_out')
           AND check_out_date >= CURDATE()";
 
 $stmt = $conn->prepare($query);

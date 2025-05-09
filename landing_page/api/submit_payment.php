@@ -157,9 +157,16 @@ try {
                            WHERE booking_id = ?");
     $stmt->bind_param("ii", $booking_id, $booking_id);
 
-    $loyalty_points = $conn->prepare("UPDATE customer_profiles SET loyal_points = loyal_points - 100 WHERE user_id = ?");
+    // check if eligible for loyalty points 
+    $loyalty_points = $conn->prepare("SELECT * FROM customer_profiles WHERE user_id = ?");
     $loyalty_points->bind_param("i", $user_id);
     $loyalty_points->execute();
+    $loyalty_points_result = $loyalty_points->get_result();
+    if ($loyalty_points_result->num_rows > 0) {
+        $loyalty_points = $conn->prepare("UPDATE customer_profiles SET loyal_points = loyal_points - 100 WHERE user_id = ?");
+        $loyalty_points->bind_param("i", $user_id);
+        $loyalty_points->execute();
+    }
 
     if (!$stmt->execute()) {
         throw new Exception('Failed to update booking status: ' . $stmt->error);
