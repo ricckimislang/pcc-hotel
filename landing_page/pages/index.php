@@ -51,34 +51,6 @@ $user_id = isset($_SESSION['user_id'])
             <div class="hero-content">
                 <p class="hero-subtitle">Experience Luxury & Comfort</p>
                 <h1 class="hero-title">PCC HOME SUITE HOME</h1>
-                <!-- <div class="search-container">
-                    <div class="search-box">
-                        <div class="search-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div class="search-text">
-                                <span class="search-label">City or Destination</span>
-                                <p>Oxford, Great Britain</p>
-                            </div>
-                        </div>
-                        <div class="search-item">
-                            <i class="far fa-calendar-alt"></i>
-                            <div class="search-text">
-                                <span class="search-label">Booking Dates</span>
-                                <p>29 Oct 24 - 30 Oct 24</p>
-                            </div>
-                        </div>
-                        <div class="search-item">
-                            <i class="fas fa-user"></i>
-                            <div class="search-text">
-                                <span class="search-label">Guest & Rooms</span>
-                                <p>2 Adults, 1 Room</p>
-                            </div>
-                        </div>
-                        <button class="search-button" title="Search for available rooms">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div> -->
             </div>
         </section>
 

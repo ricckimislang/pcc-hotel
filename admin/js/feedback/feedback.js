@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
             search: "Search feedback:",
         },
         columns: [
-            { data: 'id' },
             { data: 'customer_name' },
             {
                 data: 'rating',

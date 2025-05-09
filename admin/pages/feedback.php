@@ -146,7 +146,6 @@ require_once '../includes/head.php';
                                 <table id="feedback-table" class="table table-hover" width="100%">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Customer</th>
                                             <th>Rating</th>
                                             <th>Comment</th>

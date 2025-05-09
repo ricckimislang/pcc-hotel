@@ -14,19 +14,19 @@
                     <div class="mb-4">
                         <label class="form-label fw-semibold">Rating</label>
                         <div class="rating d-flex justify-content-center gap-2">
-                            <input type="radio" class="btn-check star-input" name="rating" value="5" id="star5" autocomplete="off">
+                            <input type="radio" class="btn-check star-input" name="rating" value="1" id="star1" autocomplete="off">
                             <label class="btn btn-outline-warning star-label" for="star1" data-rating="1"><i class="fas fa-star"></i></label>
 
-                            <input type="radio" class="btn-check star-input" name="rating" value="1" id="star1" autocomplete="off">
+                            <input type="radio" class="btn-check star-input" name="rating" value="2" id="star2" autocomplete="off">
                             <label class="btn btn-outline-warning star-label" for="star2" data-rating="2"><i class="fas fa-star"></i></label>
 
-                            <input type="radio" class="btn-check star-input" name="rating" value="2" id="star2" autocomplete="off">
+                            <input type="radio" class="btn-check star-input" name="rating" value="3" id="star3" autocomplete="off">
                             <label class="btn btn-outline-warning star-label" for="star3" data-rating="3"><i class="fas fa-star"></i></label>
 
-                            <input type="radio" class="btn-check star-input" name="rating" value="3" id="star3" autocomplete="off">
+                            <input type="radio" class="btn-check star-input" name="rating" value="4" id="star4" autocomplete="off">
                             <label class="btn btn-outline-warning star-label" for="star4" data-rating="4"><i class="fas fa-star"></i></label>
 
-                            <input type="radio" class="btn-check star-input" name="rating" value="4" id="star4" autocomplete="off">
+                            <input type="radio" class="btn-check star-input" name="rating" value="5" id="star5" autocomplete="off">
                             <label class="btn btn-outline-warning star-label" for="star5" data-rating="5"><i class="fas fa-star"></i></label>
                         </div>
                     </div>
