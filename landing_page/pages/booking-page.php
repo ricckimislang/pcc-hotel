@@ -159,6 +159,18 @@ if ($user_id) {
             })
             .catch(error => console.error('Error:', error));
 
+        function isDateBooked(date) {
+            return bookedDates.includes(date.toISOString().split('T')[0]);
+        }
+
+        function getNextAvailableDate(startDate) {
+            let nextDate = new Date(startDate);
+            while (isDateBooked(nextDate)) {
+                nextDate.setDate(nextDate.getDate() + 1);
+            }
+            return nextDate;
+        }
+
         function initializeDatePickers() {
             // Initialize check-in date picker
             const checkInPicker = flatpickr("#check_in_date", {
@@ -167,22 +179,17 @@ if ($user_id) {
                 dateFormat: "Y-m-d",
                 onChange: function(selectedDates) {
                     if (selectedDates[0]) {
-                        // Update check-out date minimum
-                        const minCheckOut = new Date(selectedDates[0]);
+                        const checkInDate = selectedDates[0];
+                        const minCheckOut = new Date(checkInDate);
                         minCheckOut.setDate(minCheckOut.getDate() + 1);
 
-                        // Find the next available date after check-in
-                        let nextAvailableDate = new Date(minCheckOut);
-                        while (bookedDates.includes(nextAvailableDate.toISOString().split('T')[0])) {
-                            nextAvailableDate.setDate(nextAvailableDate.getDate() + 1);
-                        }
-
-                        // Update check-out picker
+                        // Update check-out picker constraints
                         checkOutPicker.set('minDate', minCheckOut);
-                        if (!checkOutPicker.selectedDates[0] ||
-                            checkOutPicker.selectedDates[0] <= selectedDates[0] ||
-                            bookedDates.includes(checkOutPicker.selectedDates[0].toISOString().split('T')[0])) {
-                            checkOutPicker.setDate(nextAvailableDate);
+                        
+                        // Only set a new date if current selection is invalid
+                        const currentCheckOut = checkOutPicker.selectedDates[0];
+                        if (!currentCheckOut || currentCheckOut <= checkInDate) {
+                            checkOutPicker.setDate(minCheckOut);
                         }
                     }
                 }
@@ -195,22 +202,29 @@ if ($user_id) {
                 dateFormat: "Y-m-d",
                 onChange: function(selectedDates) {
                     if (selectedDates[0] && checkInPicker.selectedDates[0]) {
-                        // Validate the date range
-                        const start = new Date(checkInPicker.selectedDates[0]);
-                        const end = new Date(selectedDates[0]);
-                        let currentDate = new Date(start);
-
-                        // Check if any date in the range is booked
-                        while (currentDate <= end) {
-                            if (bookedDates.includes(currentDate.toISOString().split('T')[0])) {
-                                // Find next available date
-                                while (bookedDates.includes(currentDate.toISOString().split('T')[0])) {
-                                    currentDate.setDate(currentDate.getDate() + 1);
+                        const checkInDate = checkInPicker.selectedDates[0];
+                        const selectedCheckOut = selectedDates[0];
+                        
+                        // Only validate if end date is after start date
+                        if (selectedCheckOut > checkInDate) {
+                            // Check if there are any booked dates between check-in and check-out
+                            let currentDate = new Date(checkInDate);
+                            currentDate.setDate(currentDate.getDate() + 1); // Start checking from day after check-in
+                            
+                            let hasConflict = false;
+                            while (currentDate < selectedCheckOut) {
+                                if (isDateBooked(currentDate)) {
+                                    hasConflict = true;
+                                    break;
                                 }
-                                checkOutPicker.setDate(currentDate);
-                                break;
+                                currentDate.setDate(currentDate.getDate() + 1);
                             }
-                            currentDate.setDate(currentDate.getDate() + 1);
+                            
+                            // If there's a conflict, find the next available date after the conflict
+                            if (hasConflict) {
+                                const nextAvailable = getNextAvailableDate(currentDate);
+                                checkOutPicker.setDate(nextAvailable);
+                            }
                         }
                     }
                 }
