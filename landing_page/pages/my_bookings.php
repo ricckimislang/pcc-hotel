@@ -15,11 +15,11 @@ if (!$user_id) {
 $bookings = [];
 if ($user_id) {
     $stmt = $conn->prepare("SELECT b.*, r.type_name, r.base_price, rm.room_type_id 
-                          FROM bookings b
-                          JOIN rooms rm ON b.room_id = rm.room_id
-                          JOIN room_types r ON rm.room_type_id = r.room_type_id
-                          WHERE b.user_id = ?
-                          ORDER BY FIELD(b.booking_status, 'confirmed', 'pending')");
+                            FROM bookings b
+                            JOIN rooms rm ON b.room_id = rm.room_id
+                            JOIN room_types r ON rm.room_type_id = r.room_type_id
+                            WHERE b.user_id = ?
+                            ORDER BY FIELD(b.booking_status, 'pending', 'confirmed', 'cancelled', 'checked_out'), b.check_in_date");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
