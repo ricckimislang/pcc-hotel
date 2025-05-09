@@ -212,6 +212,65 @@ if ($room_type) {
             </div>
         </div>
 
+        <!-- Reviews Section -->
+        <div class="reviews-section">
+            <h2 class="section-title">Guest Reviews</h2>
+            <div class="reviews-container">
+                <div class="reviews-summary">
+                    <div class="average-rating">
+                        <div class="rating-number">
+                            <span id="avgRating">0.0</span>
+                            <span class="out-of">/5</span>
+                        </div>
+                        <div class="stars-display" id="avgStars"></div>
+                        <div class="total-reviews">
+                            Based on <span id="totalReviews">0</span> reviews
+                        </div>
+                    </div>
+                    <div class="rating-bars">
+                        <div class="rating-bar-item">
+                            <span class="rating-label">5</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" id="fiveStarBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="rating-count" id="fiveStarCount">0</span>
+                        </div>
+                        <div class="rating-bar-item">
+                            <span class="rating-label">4</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" id="fourStarBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="rating-count" id="fourStarCount">0</span>
+                        </div>
+                        <div class="rating-bar-item">
+                            <span class="rating-label">3</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" id="threeStarBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="rating-count" id="threeStarCount">0</span>
+                        </div>
+                        <div class="rating-bar-item">
+                            <span class="rating-label">2</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" id="twoStarBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="rating-count" id="twoStarCount">0</span>
+                        </div>
+                        <div class="rating-bar-item">
+                            <span class="rating-label">1</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" id="oneStarBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="rating-count" id="oneStarCount">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reviews-list" id="reviewsList">
+                    <!-- Reviews will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+
         <div class="book-now-container">
             <a href="#available-rooms" class="book-now">Book Now</a>
         </div>
@@ -353,7 +412,242 @@ if ($room_type) {
         .panorama-link:hover .panorama-overlay {
             background: rgba(0, 0, 0, 0.4);
         }
+
+        /* Add styles for reviews section */
+        .reviews-section {
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+            margin-top: 40px;
+        }
+
+        .reviews-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .reviews-summary {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .average-rating {
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .rating-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2c3e50;
+            line-height: 1;
+        }
+
+        .out-of {
+            font-size: 24px;
+            color: #95a5a6;
+        }
+
+        .stars-display {
+            color: #f1c40f;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .total-reviews {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .rating-bars {
+            flex-grow: 1;
+        }
+
+        .rating-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .rating-label {
+            min-width: 15px;
+        }
+
+        .progress {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #eee;
+        }
+
+        .rating-count {
+            min-width: 30px;
+            text-align: right;
+            color: #7f8c8d;
+        }
+
+        .reviews-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .review-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .reviewer-name {
+            font-weight: 500;
+        }
+
+        .review-date {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .review-rating {
+            color: #f1c40f;
+            font-size: 16px;
+        }
+
+        .review-comment {
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .room-number {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .reviews-summary {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .average-rating {
+                min-width: 100%;
+            }
+        }
     </style>
+
+    <script>
+        // Function to create star rating display
+        function createStarRating(rating) {
+            const stars = [];
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars.push('<i class="fas fa-star"></i>');
+                } else if (i - 0.5 <= rating) {
+                    stars.push('<i class="fas fa-star-half-alt"></i>');
+                } else {
+                    stars.push('<i class="far fa-star"></i>');
+                }
+            }
+            return stars.join('');
+        }
+
+        // Function to load reviews
+        function loadReviews() {
+            fetch(`../api/get_room_reviews.php?room_type_id=<?php echo $room_type_id; ?>`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        // Update summary statistics
+                        const stats = data.data.stats;
+                        document.getElementById('avgRating').textContent = stats.average_rating || '0.0';
+                        document.getElementById('totalReviews').textContent = stats.total_reviews;
+                        document.getElementById('avgStars').innerHTML = createStarRating(stats.average_rating);
+
+                        // Update rating bars
+                        const total = parseInt(stats.total_reviews);
+                        if (total > 0) {
+                            ['five', 'four', 'three', 'two', 'one'].forEach(rating => {
+                                const count = stats[`${rating}_star`];
+                                const percentage = (count / total * 100).toFixed(1);
+                                document.getElementById(`${rating}StarBar`).style.width = `${percentage}%`;
+                                document.getElementById(`${rating}StarCount`).textContent = count;
+                            });
+                        }
+
+                        // Display reviews
+                        const reviewsList = document.getElementById('reviewsList');
+                        reviewsList.innerHTML = '';
+
+                        if (data.data.reviews.length > 0) {
+                            data.data.reviews.forEach(review => {
+                                const reviewCard = document.createElement('div');
+                                reviewCard.className = 'review-card';
+                                reviewCard.innerHTML = `
+                                    <div class="review-header">
+                                        <div class="reviewer-info">
+                                            <div class="reviewer-avatar">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <div class="reviewer-name">${review.customer_name}</div>
+                                                <div class="review-date">${review.review_date}</div>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            ${createStarRating(review.rating)}
+                                        </div>
+                                    </div>
+                                    <div class="review-comment">${review.comment || 'No comment provided.'}</div>
+                                    <div class="room-number">Room ${review.room_number}</div>
+                                `;
+                                reviewsList.appendChild(reviewCard);
+                            });
+                        } else {
+                            reviewsList.innerHTML = `
+                                <div class="no-reviews">
+                                    <p>No reviews yet for this room type.</p>
+                                </div>
+                            `;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading reviews:', error);
+                });
+        }
+
+        // Load reviews when the page loads
+        document.addEventListener('DOMContentLoaded', loadReviews);
+    </script>
 </body>
 
 </html>
