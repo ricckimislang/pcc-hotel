@@ -336,7 +336,7 @@ require_once '../includes/functions.php';
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h2>Peak Booking Days</h2>  
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-primary active" data-booking-period="weekly">Weekly</button>
+                            <button type="button" class="btn btn-outline-primary active" data-booking-period="weekly">Daily</button>
                             <button type="button" class="btn btn-outline-primary" data-booking-period="monthly">Monthly</button>
                             <button type="button" class="btn btn-outline-primary" data-booking-period="yearly">Yearly</button>
                         </div>

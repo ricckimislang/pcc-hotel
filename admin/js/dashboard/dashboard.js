@@ -1634,7 +1634,14 @@ function renderMostBookedRoomsChart(roomsData) {
     const topRooms = sortedData.slice(0, 10);
     
     // Prepare chart data
-    const labels = topRooms.map(room => `Room ${room.room_number} (${room.room_type})`);
+    const labels = topRooms.map(room => {
+        // Create abbreviated room type (e.g., "Deluxe" -> "DLX", "Standard" -> "STD")
+        const typeAbbr = room.room_type
+            .split(' ')[0] // Take first word
+            .substring(0, 3) // Take first 3 letters
+            .toUpperCase(); // Convert to uppercase
+        return `#${room.room_number}\n${typeAbbr}`; // Use line break for better spacing
+    });
     const bookingCounts = topRooms.map(room => room.booking_count);
     const revenues = topRooms.map(room => parseFloat(room.total_revenue) || 0);
     
@@ -1679,33 +1686,58 @@ function renderMostBookedRoomsChart(roomsData) {
                 },
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const room = topRooms[context[0].dataIndex];
+                            return `Room ${room.room_number} (${room.room_type})`;
+                        },
                         label: function(context) {
                             const datasetLabel = context.dataset.label || '';
                             const value = context.parsed.y;
                             if (datasetLabel === 'Revenue') {
-                                return datasetLabel + ': $' + value.toFixed(2);
+                                return `${datasetLabel}: $${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                             }
-                            return datasetLabel + ': ' + value;
+                            return `${datasetLabel}: ${value}`;
                         }
                     }
                 },
                 title: {
                     display: true,
-                    text: 'Top 10 Most Booked Rooms'
+                    text: 'Top 10 Most Booked Rooms',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
                 }
             },
             scales: {
                 x: {
                     ticks: {
-                        maxRotation: 45,
-                        minRotation: 45
+                        maxRotation: 0, // Keep labels horizontal
+                        minRotation: 0,
+                        font: {
+                            weight: 'bold' // Make room numbers bold
+                        },
+                        padding: 10 // Add more padding
+                    },
+                    grid: {
+                        display: false // Remove x-axis grid lines for cleaner look
                     }
                 },
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Booking Count'
+                        text: 'Booking Count',
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
+                    ticks: {
+                        precision: 0 // Show whole numbers only
                     }
                 },
                 y1: {
@@ -1713,11 +1745,27 @@ function renderMostBookedRoomsChart(roomsData) {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Revenue ($)'
+                        text: 'Revenue ($)',
+                        font: {
+                            weight: 'bold'
+                        }
                     },
                     grid: {
                         drawOnChartArea: false
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
                     }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 0,
+                    bottom: 10
                 }
             }
         }
