@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $total_price = $nights * $base_price;
     }
 
-    if ($loyalty_points > 100) {
+    if ($loyalty_points >= 100) {
         $total_price = $total_price * 0.95;
         $is_discount = 1;
     }

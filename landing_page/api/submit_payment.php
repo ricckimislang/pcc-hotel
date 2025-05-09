@@ -161,8 +161,8 @@ try {
     $loyalty_points = $conn->prepare("SELECT * FROM customer_profiles WHERE user_id = ?");
     $loyalty_points->bind_param("i", $user_id);
     $loyalty_points->execute();
-    $loyalty_points_result = $loyalty_points->get_result();
-    if ($loyalty_points_result->num_rows > 0) {
+    $loyalty_points_result = $loyalty_points->fetch_assoc();
+    if ($loyalty_points_result['loyal_points'] >= 100) {
         $loyalty_points = $conn->prepare("UPDATE customer_profiles SET loyal_points = loyal_points - 100 WHERE user_id = ?");
         $loyalty_points->bind_param("i", $user_id);
         $loyalty_points->execute();
