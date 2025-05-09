@@ -87,7 +87,7 @@ function initRoomTypeTable() {
           if (data == 1) return "Ground Floor";
           if (data == 2) return "Second Floor";
           if (data == 3) return "Function Hall";
-          return data; // Return original value if it doesn't match conditions
+          return data;
         },
       },
       { 
@@ -113,17 +113,20 @@ function initRoomTypeTable() {
         }
       },
       {
-        data: null,
+        data: "room_type_id",
         width: "10%",
         className: "text-center",
         render: function (data, type, row) {
-          return `
-          <div class="btn-group" role="group"></div>
-            <button type="button" class="btn btn-sm btn-primary view-btn" data-id="${data.id}">View</button>
-            <button type="button" class="btn btn-sm btn-warning edit-btn" data-id="${data.id}">Edit</button>
-            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="${data.id}">Delete</button>
-          </div>
-        `;
+          if (type === 'display') {
+            return `
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-primary view-btn" data-id="${row.room_type_id}">View</button>
+                <button type="button" class="btn btn-sm btn-warning edit-btn" data-id="${row.room_type_id}">Edit</button>
+                <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="${row.room_type_id}">Delete</button>
+              </div>
+            `;
+          }
+          return data;
         },
       },
     ],
@@ -463,4 +466,86 @@ $(function () {
       reader.readAsDataURL(input.files[0]);
     }
   }
+
+  // Handle Delete Room Type button clicks
+  $(document).on("click", ".delete-btn", function () {
+    const roomTypeId = $(this).data("id");
+    const roomTypeName = $(this).closest("tr").find("td:first").text();
+
+    // First check if room type has associated rooms
+    $.ajax({
+      url: '../api/room_types/check_room_usage.php',
+      type: 'POST',
+      data: { id: roomTypeId },
+      dataType: 'json',
+      success: function(checkResponse) {
+        let warningMessage = `Are you sure you want to delete the room type <strong>${roomTypeName}</strong>?`;
+        
+        if (checkResponse.roomCount > 0) {
+          warningMessage += `<br><br><strong class="text-danger">Warning:</strong> This room type is currently used by ${checkResponse.roomCount} room(s).<br>Deleting this room type will also delete all associated rooms!`;
+        }
+        
+        warningMessage += '<br>This action cannot be undone.';
+
+        Swal.fire({
+          title: 'Delete Room Type?',
+          html: warningMessage,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: checkResponse.roomCount > 0 ? 'Yes, delete everything!' : 'Yes, delete it!',
+          cancelButtonText: 'Cancel',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '../api/room_types/delete_room_type.php',
+              type: 'POST',
+              data: { 
+                id: roomTypeId,
+                force_delete: true
+              },
+              dataType: 'json',
+              success: function(response) {
+                if (response.status) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: response.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+                  
+                  // Refresh the DataTable
+                  roomTypeTable.ajax.reload(null, false);
+                } else {
+                  throw new Error(response.message);
+                }
+              },
+              error: function(xhr, status, error) {
+                let errorMessage = 'An error occurred while deleting the room type';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                  errorMessage = xhr.responseJSON.message;
+                }
+                
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  text: errorMessage
+                });
+              }
+            });
+          }
+        });
+      },
+      error: function(xhr, status, error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to check room type usage. Please try again.'
+        });
+      }
+    });
+  });
 });
