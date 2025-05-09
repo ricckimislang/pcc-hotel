@@ -87,6 +87,7 @@ if ($result->num_rows === 0) {
 
 $booking = $result->fetch_assoc();
 $room_id = $booking['room_id'];
+$is_discount = $booking['is_discount'] ?? 0;
 
 // Process file upload
 try {
@@ -157,15 +158,26 @@ try {
                            WHERE booking_id = ?");
     $stmt->bind_param("ii", $booking_id, $booking_id);
 
-    // check if eligible for loyalty points 
-    $loyalty_points = $conn->prepare("SELECT * FROM customer_profiles WHERE user_id = ?");
-    $loyalty_points->bind_param("i", $user_id);
-    $loyalty_points->execute();
-    $loyalty_points_result = $loyalty_points->fetch_assoc();
-    if ($loyalty_points_result['loyal_points'] >= 100) {
-        $loyalty_points = $conn->prepare("UPDATE customer_profiles SET loyal_points = loyal_points - 100 WHERE user_id = ?");
-        $loyalty_points->bind_param("i", $user_id);
-        $loyalty_points->execute();
+    if ($is_discount === 1) {
+        try {
+            // Verify and deduct loyalty points in one atomic operation
+            $update_points = $conn->prepare("UPDATE customer_profiles 
+                SET loyal_points = loyal_points - 100 
+                WHERE user_id = ? AND loyal_points >= 100");
+
+            $update_points->bind_param("i", $user_id);
+            if (!$update_points->execute() || $update_points->affected_rows === 0) {
+                throw new Exception('Insufficient loyalty points for discount');
+            }
+        } catch (Exception $e) {
+            $conn->rollback();
+            $response['success'] = false;
+            $response['message'] = $e->getMessage();
+            echo json_encode($response);
+            exit;
+        } finally {
+            if (isset($update_points)) $update_points->close();
+        }
     }
 
     if (!$stmt->execute()) {
