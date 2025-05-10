@@ -59,11 +59,15 @@ $(document).ready(function () {
         $.ajax({
             url: '../api/items/get_summary.php',
             type: 'GET',
-            success: function (response) {
-                const data = JSON.parse(response);
+            dataType: 'json',
+            success: function (data) {
                 $('#totalItems').text(data.total_items);
                 $('#averagePrice').text('₱' + parseFloat(data.average_price).toFixed(2));
-                $('#lastUpdate').text(data.last_update ? moment(data.last_update).fromNow() : '-');
+                $('#lastUpdate').text(data.last_update ? new Date(data.last_update).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                }) : '-');
             }
         });
     }
