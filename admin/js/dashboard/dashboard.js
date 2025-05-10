@@ -71,7 +71,7 @@ function initializeFilters() {
             e.target.classList.add('active');
             loadOccupancyTrendData(e.target.dataset.trend);
         }
-        
+
         // Handle peak booking days period buttons
         if (e.target.dataset.bookingPeriod) {
             document.querySelectorAll('[data-booking-period]').forEach(btn => {
@@ -228,19 +228,19 @@ function loadDashboardData(period, startDate = '', endDate = '', roomType = 'all
             if (response.success) {
                 // Only update charts with data that exists
                 updateDashboardStats(response.data);
-                
+
                 if (response.data.occupancy) {
                     renderOccupancyChart(response.data.occupancy);
                 }
-                
+
                 if (response.data.daily_occupancy) {
                     renderDailyOccupancyChart(response.data.daily_occupancy);
                 }
-                
+
                 if (response.data.room_types) {
                     renderRoomTypeDistribution(response.data.room_types);
                 }
-                
+
                 if (response.data.bookings) {
                     renderBookingStatusChart(response.data.bookings);
                 }
@@ -252,12 +252,12 @@ function loadDashboardData(period, startDate = '', endDate = '', roomType = 'all
                     // Load it separately if not included
                     loadOccupancyTrendData('weekly');
                 }
-                
+
                 // Check if revenue vs occupancy data exists
                 if (response.data.revenue_occupancy) {
                     renderRevenueOccupancyChart(response.data.revenue_occupancy);
                 }
-                
+
                 // Check if booking trends data exists
                 if (response.data.most_booked_rooms && response.data.peak_booking_days) {
                     renderMostBookedRoomsChart(response.data.most_booked_rooms);
@@ -303,7 +303,7 @@ function createEmptyCharts() {
         'most-booked-rooms-chart',
         'peak-booking-days-chart'
     ];
-    
+
     chartCanvases.forEach(canvasId => {
         const canvas = document.getElementById(canvasId);
         if (canvas) {
@@ -318,21 +318,21 @@ function createEmptyCharts() {
                 'most-booked-rooms-chart': 'bar',
                 'peak-booking-days-chart': 'bar'
             };
-            
+
             // Get the chart type or default to 'line'
             const chartType = chartTypes[canvasId] || 'line';
-            
+
             // Check if chart already exists and destroy it
             const chartVar = 'window.' + canvasId.replace(/-/g, '') + 'Chart';
             if (eval(chartVar)) {
                 eval(chartVar + '.destroy()');
             }
-            
+
             // Create no data chart
             eval(chartVar + ' = createNoDataChart(ctx, chartType)');
         }
     });
-    
+
     // Set default values for summary stats
     safeSetElementText('total-rooms', 0);
     safeSetElementText('occupied-rooms', 0);
@@ -1071,12 +1071,12 @@ function createNoDataChart(ctx, chartType = 'line') {
             }
         }
     };
-    
+
     // Add no data text plugin
     if (!config.options.plugins) {
         config.options.plugins = {};
     }
-    
+
     // Add center text for doughnut/pie charts
     if (chartType === 'pie' || chartType === 'doughnut') {
         config.options.elements = {
@@ -1105,7 +1105,7 @@ function createNoDataChart(ctx, chartType = 'line') {
             }
         };
     }
-    
+
     return new Chart(ctx, config);
 }
 
@@ -1547,7 +1547,7 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
                 if (response.data.most_booked_rooms) {
                     renderMostBookedRoomsChart(response.data.most_booked_rooms);
                 }
-                
+
                 // Instead of rendering peak booking days directly,
                 // load it with the default 'weekly' period filter
                 loadPeakBookingDaysData('weekly');
@@ -1557,7 +1557,7 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
                     createNoDataChart(canvas, 'bar');
                 });
             }
-            
+
             // Hide loading indicators for most-booked-rooms-chart only
             // (peak-booking-days loading will be handled by loadPeakBookingDaysData)
             const mostBookedCanvas = document.getElementById('most-booked-rooms-chart');
@@ -1574,7 +1574,7 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
             document.querySelectorAll('#most-booked-rooms-chart, #peak-booking-days-chart').forEach(canvas => {
                 createNoDataChart(canvas, 'bar');
             });
-            
+
             // Hide loading indicators
             document.querySelectorAll('#most-booked-rooms-chart, #peak-booking-days-chart').forEach(canvas => {
                 if (canvas.closest('.chart-wrapper')) {
@@ -1592,7 +1592,7 @@ function loadRoomBookingTrends(period, startDate = '', endDate = '', roomType = 
  */
 function renderMostBookedRoomsChart(roomsData) {
     const canvas = document.getElementById('most-booked-rooms-chart');
-    
+
     // If canvas not found
     if (!canvas) {
         console.error('Most booked rooms chart canvas not found');
@@ -1626,13 +1626,13 @@ function renderMostBookedRoomsChart(roomsData) {
         window.mostBookedRoomsChart = createNoDataChart(ctx, 'bar');
         return;
     }
-    
+
     // Sort data by booking count in descending order
     const sortedData = [...roomsData].sort((a, b) => b.booking_count - a.booking_count);
-    
+
     // Take top 10 rooms
     const topRooms = sortedData.slice(0, 10);
-    
+
     // Prepare chart data
     const labels = topRooms.map(room => {
         // Create abbreviated room type (e.g., "Deluxe" -> "DLX", "Standard" -> "STD")
@@ -1644,12 +1644,12 @@ function renderMostBookedRoomsChart(roomsData) {
     });
     const bookingCounts = topRooms.map(room => room.booking_count);
     const revenues = topRooms.map(room => parseFloat(room.total_revenue) || 0);
-    
+
     // Create gradient for bars
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
     gradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
-    
+
     // Create chart
     window.mostBookedRoomsChart = new Chart(ctx, {
         type: 'bar',
@@ -1686,15 +1686,15 @@ function renderMostBookedRoomsChart(roomsData) {
                 },
                 tooltip: {
                     callbacks: {
-                        title: function(context) {
+                        title: function (context) {
                             const room = topRooms[context[0].dataIndex];
                             return `Room ${room.room_number} (${room.room_type})`;
                         },
-                        label: function(context) {
+                        label: function (context) {
                             const datasetLabel = context.dataset.label || '';
                             const value = context.parsed.y;
                             if (datasetLabel === 'Revenue') {
-                                return `${datasetLabel}: $${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                return `${datasetLabel}: P${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                             }
                             return `${datasetLabel}: ${value}`;
                         }
@@ -1745,7 +1745,7 @@ function renderMostBookedRoomsChart(roomsData) {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Revenue ($)',
+                        text: 'Revenue (₱)',
                         font: {
                             weight: 'bold'
                         }
@@ -1754,8 +1754,8 @@ function renderMostBookedRoomsChart(roomsData) {
                         drawOnChartArea: false
                     },
                     ticks: {
-                        callback: function(value) {
-                            return '$' + value.toLocaleString();
+                        callback: function (value) {
+                            return '₱' + value.toLocaleString();
                         }
                     }
                 }
@@ -1790,7 +1790,7 @@ function loadPeakBookingDaysData(periodType) {
     const period = document.getElementById('period-filter').value;
     const roomType = document.getElementById('room-type-filter').value;
     let startDate = '', endDate = '';
-    
+
     if (period === 'custom') {
         startDate = document.getElementById('start-date').value;
         endDate = document.getElementById('end-date').value;
@@ -1801,9 +1801,9 @@ function loadPeakBookingDaysData(periodType) {
     if (period === 'custom') {
         apiUrl += '&start_date=' + startDate + '&end_date=' + endDate;
     }
-    
+
     apiUrl += '&booking_period=' + periodType;
-    
+
     if (roomType && roomType !== 'all') {
         apiUrl += '&room_type=' + roomType;
     }
@@ -1842,7 +1842,7 @@ function loadPeakBookingDaysData(periodType) {
                     window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
                 }
             }
-            
+
             // Hide loading indicator
             if (chartContainer && loadingElement) {
                 loadingElement.style.display = 'none';
@@ -1861,7 +1861,7 @@ function loadPeakBookingDaysData(periodType) {
                 const ctx = canvas.getContext('2d');
                 window.peakBookingDaysChart = createNoDataChart(ctx, 'bar');
             }
-            
+
             // Hide loading indicator
             if (chartContainer && loadingElement) {
                 loadingElement.style.display = 'none';
@@ -1897,7 +1897,7 @@ function renderPeakBookingDaysChart(peakDaysData, periodType = 'weekly') {
         // Prepare data for chart
         let labels = [];
         let data = [];
-        
+
         // Determine labels based on period type
         if (periodType === 'weekly') {
             labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -1905,8 +1905,8 @@ function renderPeakBookingDaysChart(peakDaysData, periodType = 'weekly') {
             data = labels.map(day => peakDaysData[day] || 0);
         } else if (periodType === 'monthly') {
             // For monthly, use month names
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                               'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
             labels = monthNames;
             data = labels.map(month => peakDaysData[month] || 0);
         } else if (periodType === 'yearly') {
@@ -1942,20 +1942,20 @@ function renderPeakBookingDaysChart(peakDaysData, periodType = 'weekly') {
                     x: {
                         title: {
                             display: true,
-                            text: periodType === 'weekly' ? 'Day of Week' : 
-                                  periodType === 'monthly' ? 'Month' : 'Year'
+                            text: periodType === 'weekly' ? 'Day of Week' :
+                                periodType === 'monthly' ? 'Month' : 'Year'
                         }
                     }
                 },
                 plugins: {
                     title: {
                         display: true,
-                        text: `Booking Frequency by ${periodType === 'weekly' ? 'Day of Week' : 
-                               periodType === 'monthly' ? 'Month' : 'Year'}`
+                        text: `Booking Frequency by ${periodType === 'weekly' ? 'Day of Week' :
+                            periodType === 'monthly' ? 'Month' : 'Year'}`
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return `Bookings: ${context.raw}`;
                             }
                         }
