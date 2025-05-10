@@ -1,3 +1,4 @@
+<?php include_once '../includes/head.php'; ?>
 <?php
 require_once '../../config/db.php';
 require_once '../includes/functions.php';
@@ -12,7 +13,6 @@ require_once '../includes/functions.php';
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once '../includes/head.php'; ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="../css/dashboard.css">
 
@@ -22,11 +22,19 @@ require_once '../includes/functions.php';
     <div class="main-content">
         <div class="page-header">
             <h1>Dashboard</h1>
-            <div>
+            <div class="d-flex align-items-center">
                 <span id="last-updated" class="me-2 text-muted">Last updated: Never</span>
-                <button id="refresh-data" class="btn btn-outline-secondary">
+                <button id="refresh-data" class="btn btn-outline-secondary me-2">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
+                <div class="btn-group">
+                    <button id="backup-db" class="btn btn-outline-primary">
+                        <i class="fas fa-download"></i> Backup DB
+                    </button>
+                    <button id="restore-db" class="btn btn-outline-info">
+                        <i class="fas fa-upload"></i> Restore DB
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -334,7 +342,7 @@ require_once '../includes/functions.php';
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h2>Peak Booking Days</h2>  
+                        <h2>Peak Booking Days</h2>
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-outline-primary active" data-booking-period="weekly">Daily</button>
                             <button type="button" class="btn btn-outline-primary" data-booking-period="monthly">Monthly</button>
@@ -380,7 +388,7 @@ require_once '../includes/functions.php';
                 </div>
             </div>
 
-            
+
         </div>
     </div>
 
@@ -388,6 +396,7 @@ require_once '../includes/functions.php';
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="../js/dashboard/dashboard.js"></script>
+    <script src="../js/dashboard/database-backup.js"></script>
 </body>
 
 </html>
