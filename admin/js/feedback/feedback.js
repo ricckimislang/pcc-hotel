@@ -399,7 +399,7 @@ function viewFeedbackDetails(feedbackId) {
             // Populate modal with data
             document.getElementById('modal-customer-name').textContent = data.customer_name;
             document.getElementById('modal-customer-email').textContent = data.email;
-            document.getElementById('modal-customer-phone').textContent = data.phone || 'N/A';
+            document.getElementById('modal-customer-phone').textContent = data.phone_number || 'N/A';
 
             document.getElementById('modal-room-number').textContent = data.room_number;
             document.getElementById('modal-room-type').textContent = data.room_type;

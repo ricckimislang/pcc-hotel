@@ -43,7 +43,8 @@ try {
             JOIN room_types rt ON r.room_type_id = rt.room_type_id
             JOIN bookings b ON f.booking_id = b.booking_id
             WHERE f.id = ?
-            LIMIT 1 ORDER BY f.created_at DESC";
+            ORDER BY f.created_at DESC
+            LIMIT 1";
     
     $stmt = $conn->prepare($sql);
     
