@@ -1,14 +1,12 @@
+<?php include_once '../includes/head.php'; ?>
+
 <?php
 require_once '../../config/db.php';
 require_once '../api/bookings/get_booking_table.php';
 require_once '../api/bookings/get_checkin_table.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
 <link rel="stylesheet" href="../css/manage_bookings.css">
-<?php include_once '../includes/head.php'; ?>
 
 <body>
     <?php include_once '../includes/sidebar.php'; ?>

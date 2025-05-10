@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function createStarRating(rating) {
     let stars = '<div class="star-rating">';
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 5; i >= 1; i--) {
         if (i <= rating) {
             stars += '<i class="fas fa-star text-warning"></i>';
         } else {

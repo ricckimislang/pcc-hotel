@@ -1689,6 +1689,7 @@ function renderMostBookedRoomsChart(roomsData) {
                         title: function (context) {
                             const room = topRooms[context[0].dataIndex];
                             return `Room ${room.room_number} (${room.room_type})`;
+                            
                         },
                         label: function (context) {
                             const datasetLabel = context.dataset.label || '';
