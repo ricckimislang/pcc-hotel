@@ -31,8 +31,8 @@ require_once '../includes/functions.php';
                     <button id="backup-db" class="btn btn-outline-primary">
                         <i class="fas fa-download"></i> Backup DB
                     </button>
-                    <button id="restore-db" class="btn btn-outline-info">
-                        <i class="fas fa-upload"></i> Restore DB
+                    <button id="import-db" class="btn btn-outline-info">
+                        <i class="fas fa-upload"></i> Import DB
                     </button>
                 </div>
             </div>
@@ -392,11 +392,15 @@ require_once '../includes/functions.php';
         </div>
     </div>
 
+    <!-- Database Import Modal -->
+    <?php include 'modals/database-import.php'; ?>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="../js/dashboard/dashboard.js"></script>
     <script src="../js/dashboard/database-backup.js"></script>
+    <script src="../js/dashboard/database-import.js"></script>
 </body>
 
 </html>
