@@ -8,48 +8,77 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Check if room_id is provided
-if (!isset($_POST['room_id']) || empty($_POST['room_id'])) {
+// Check if room_type_id is provided
+if (!isset($_POST['room_type_id']) || empty($_POST['room_type_id'])) {
     echo json_encode(['success' => false, 'message' => 'Room ID is required']);
     exit;
 }
 
-$room_id = $_POST['room_id'];
+$room_type_id = $_POST['room_type_id'];
 
-// Get current image filenames before deletion
-$stmt = $conn->prepare("SELECT card_image, panorama_image FROM room_media WHERE room_id = ?");
-$stmt->bind_param("i", $room_id);
-$stmt->execute();
-$result = $stmt->get_result();
+// Start transaction
+$conn->begin_transaction();
 
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $card_image = $row['card_image'];
-    $panorama_image = $row['panorama_image'];
+try {
+    // Get panorama image before deletion
+    $stmt = $conn->prepare("SELECT panorama_image FROM room_media WHERE room_type_id = ?");
+    $stmt->bind_param("i", $room_type_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $panorama_image = null;
     
-    // Delete record from database
-    $stmt = $conn->prepare("DELETE FROM room_media WHERE room_id = ?");
-    $stmt->bind_param("i", $room_id);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $panorama_image = $row['panorama_image'];
+    }
     
-    if ($stmt->execute()) {
-        // Delete image files if they exist
-        $card_path = '../../uploads/room_images/' . $card_image;
-        $panorama_path = '../../uploads/panoramas/' . $panorama_image;
-        
-        if ($card_image && file_exists($card_path)) {
-            unlink($card_path);
-        }
-        
-        if ($panorama_image && file_exists($panorama_path)) {
+    // Get gallery images before deletion
+    $stmt = $conn->prepare("SELECT image_path FROM room_gallery WHERE room_type_id = ?");
+    $stmt->bind_param("i", $room_type_id);
+    $stmt->execute();
+    $gallery_result = $stmt->get_result();
+    $gallery_images = [];
+    
+    while ($row = $gallery_result->fetch_assoc()) {
+        $gallery_images[] = $row['image_path'];
+    }
+    
+    // Delete from room_media table
+    $stmt = $conn->prepare("DELETE FROM room_media WHERE room_type_id = ?");
+    $stmt->bind_param("i", $room_type_id);
+    $stmt->execute();
+    
+    // Delete from room_gallery table
+    $stmt = $conn->prepare("DELETE FROM room_gallery WHERE room_type_id = ?");
+    $stmt->bind_param("i", $room_type_id);
+    $stmt->execute();
+    
+    // Delete physical files
+    // Delete panorama image if exists
+    if ($panorama_image) {
+        $panorama_path = '../../public/panoramas/' . $panorama_image;
+        if (file_exists($panorama_path)) {
             unlink($panorama_path);
         }
-        
-        echo json_encode(['success' => true, 'message' => 'Room media deleted successfully']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to delete media record: ' . $conn->error]);
     }
-} else {
-    echo json_encode(['success' => false, 'message' => 'No media found for this room']);
+    
+    // Delete gallery images if they exist
+    foreach ($gallery_images as $image) {
+        $gallery_path = '../../public/room_images_details/' . $image;
+        if (file_exists($gallery_path)) {
+            unlink($gallery_path);
+        }
+    }
+    
+    // Commit transaction
+    $conn->commit();
+    
+    echo json_encode(['success' => true, 'message' => 'Room media deleted successfully']);
+    
+} catch (Exception $e) {
+    // Rollback transaction on error
+    $conn->rollback();
+    echo json_encode(['success' => false, 'message' => 'Error deleting room media: ' . $e->getMessage()]);
 }
 
 $stmt->close();
