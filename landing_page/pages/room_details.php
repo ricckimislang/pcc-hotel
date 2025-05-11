@@ -14,7 +14,7 @@ $room_type   = $type_result->fetch_assoc();
 $type_stmt->close();
 
 // Then get available rooms of this type
-$rooms_query = "SELECT r.*, rt.floor_type, rm.* FROM rooms r LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id LEFT JOIN room_media rm ON rt.room_type_id = rm.room_type_id WHERE r.status = 'available' AND r.room_type_id = ?";
+$rooms_query = "SELECT r.*, rt.floor_type, rm.* FROM rooms r LEFT JOIN room_types rt ON r.room_type_id = rt.room_type_id LEFT JOIN room_media rm ON rt.room_type_id = rm.room_type_id WHERE r.status != 'maintenance' AND r.room_type_id = ?";
 $rooms_stmt  = $conn->prepare($rooms_query);
 $rooms_stmt->bind_param("i", $room_type_id);
 $rooms_stmt->execute();
@@ -121,9 +121,9 @@ if ($room_type) {
                                 </div>
                                 <div class="room-card-body">
                                     <div class="room-status">
-                                        <span class="status-badge <?php echo strtolower($room['status']); ?>">
+                                        <span class="status-badge available">
                                             <i class="fas fa-circle"></i>
-                                            <?php echo ucfirst($room['status']); ?>
+                                            Available
                                         </span>
                                     </div>
                                     <div class="room-actions">
