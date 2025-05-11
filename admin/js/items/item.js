@@ -36,10 +36,10 @@ $(document).ready(function () {
                 data: null,
                 render: function (data) {
                     return `
-                        <button class="btn btn-sm btn-primary edit-item" data-id="${data.id}">
+                        <button class="btn btn-sm btn-primary edit-item" data-id="${data.item_id}">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger delete-item" data-id="${data.id}">
+                        <button class="btn btn-sm btn-danger delete-item" data-id="${data.item_id}">
                             <i class="fas fa-trash"></i>
                         </button>
                     `;
@@ -102,18 +102,28 @@ $(document).ready(function () {
     // Edit Item
     $(document).on('click', '.edit-item', function () {
         const itemId = $(this).data('id');
-
+        
         $.ajax({
             url: '../api/items/get_item.php',
             type: 'GET',
             data: { item_id: itemId },
             success: function (response) {
-                const data = JSON.parse(response);
-                $('#editItemId').val(data.item_id);
-                $('#editItemName').val(data.item_name);
-                $('#editItemPrice').val(data.item_price);
-                $('#editItemDescription').val(data.item_description);
-                $('#editItemModal').modal('show');
+                try {
+                    if (response.status === 'success') {
+                        $('#editItemId').val(response.data.item_id);
+                        $('#editItemName').val(response.data.item_name);
+                        $('#editItemPrice').val(response.data.item_price);
+                        $('#editItemDescription').val(response.data.item_description);
+                        $('#editItemModal').modal('show');
+                    } else {
+                        alert(response.message || 'Error fetching item details');
+                    }
+                } catch (e) {
+                    alert('Error parsing server response');
+                }
+            },
+            error: function() {
+                alert('Error fetching item details');
             }
         });
     });
@@ -128,15 +138,38 @@ $(document).ready(function () {
             type: 'POST',
             data: formData,
             success: function (response) {
-                const data = JSON.parse(response);
-                if (data.status === 'success') {
-                    $('#editItemModal').modal('hide');
-                    itemsTable.ajax.reload();
-                    loadSummary();
-                    toastr.success('Item updated successfully');
-                } else {
-                    toastr.error(data.message || 'Error updating item');
+                try {
+                    const data = response;
+                    if (data.status === 'success') {
+                        $('#editItemModal').modal('hide');
+                        itemsTable.ajax.reload();
+                        loadSummary();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Item updated successfully'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Error updating item'
+                        });
+                    }
+                } catch (e) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error parsing server response'
+                    });
                 }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error', 
+                    title: 'Error',
+                    text: 'Error updating item'
+                });
             }
         });
     });
@@ -144,28 +177,47 @@ $(document).ready(function () {
     // Delete Item
     $(document).on('click', '.delete-item', function () {
         const itemId = $(this).data('id');
-        $('#deleteItemId').val(itemId);
-        $('#deleteItemModal').modal('show');
-    });
-
-    // Confirm Delete
-    $('#confirmDeleteItem').on('click', function () {
-        const itemId = $('#deleteItemId').val();
-
-        $.ajax({
-            url: '../api/items/delete_item.php',
-            type: 'POST',
-            data: { item_id: itemId },
-            success: function (response) {
-                const data = JSON.parse(response);
-                if (data.status === 'success') {
-                    $('#deleteItemModal').modal('hide');
-                    itemsTable.ajax.reload();
-                    loadSummary();
-                    toastr.success('Item deleted successfully');
-                } else {
-                    toastr.error(data.message || 'Error deleting item');
-                }
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '../api/items/delete_item.php',
+                    type: 'POST',
+                    data: { item_id: itemId },
+                    dataType: 'json', // Specify that we expect JSON response
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            itemsTable.ajax.reload();
+                            loadSummary();
+                            Swal.fire(
+                                'Deleted!',
+                                'Item has been deleted.',
+                                'success'
+                            );
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                data.message || 'Error deleting item',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function() {
+                        Swal.fire(
+                            'Error!',
+                            'Error deleting item',
+                            'error'
+                        );
+                    }
+                });
             }
         });
     });
