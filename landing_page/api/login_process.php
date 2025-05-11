@@ -86,6 +86,11 @@ try {
         $stmt->bind_param("i", $row['user_id']);
         $stmt->execute();
 
+        // Delete all past login attempts for this user
+        $stmt = $conn->prepare("DELETE FROM login_attempts WHERE user_id = ?");
+        $stmt->bind_param("i", $row['user_id']);
+        $stmt->execute();
+
         echo json_encode([
             "status" => true, 
             "message" => "Account is Valid!", 
