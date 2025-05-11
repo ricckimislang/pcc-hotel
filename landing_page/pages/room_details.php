@@ -91,7 +91,7 @@ if ($room_type) {
             <div class="room-meta">
                 <div class="meta-item">
                     <div class="meta-label">Price</div>
-                    <div class="meta-value">$<?php echo number_format($base_price, 2); ?></div>
+                    <div class="meta-value">₱<?php echo number_format($base_price, 2); ?></div>
                 </div>
                 <div class="meta-item">
                     <div class="meta-label">Capacity</div>
