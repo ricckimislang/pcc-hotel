@@ -42,11 +42,11 @@ function renderCustomerCard(customer) {
                 </div>
             </div>
         </div>
-        <div class="card-footer bg-transparent border-0 pb-4">
+        <!-- <div class="card-footer bg-transparent border-0 pb-4">
             <button class="btn btn-outline-primary btn-sm w-100">
                 <i class="fas fa-user-edit me-2"></i>View Details
             </button>
-        </div>
+        </div> -->
     </div>
 </div>`;
 }
