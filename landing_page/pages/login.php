@@ -5,6 +5,20 @@ require_once '../../config/db.php';
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="../css/login.css">
+<style>
+    .form-group {
+        position: relative;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 55%;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+</style>
 <?php include_once '../includes/head.php'; ?>
 
 <body>
@@ -19,6 +33,7 @@ require_once '../../config/db.php';
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
+                    <i class="fas fa-eye toggle-password" data-target="password"></i>
                 </div>
                 <button type="submit" class="btn-login">Sign In</button>
             </form>
@@ -95,6 +110,23 @@ require_once '../../config/db.php';
                             confirmButtonText: 'OK'
                         });
                     });
+            });
+
+            const togglePasswordIcons = document.querySelectorAll('.toggle-password');
+
+            togglePasswordIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const target = document.getElementById(this.dataset.target);
+                    if (target.type === 'password') {
+                        target.type = 'text';
+                        this.classList.remove('fa-eye');
+                        this.classList.add('fa-eye-slash');
+                    } else {
+                        target.type = 'password';
+                        this.classList.remove('fa-eye-slash');
+                        this.classList.add('fa-eye');
+                    }
+                });
             });
         });
     </script>

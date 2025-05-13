@@ -7,6 +7,28 @@ require_once '../../config/db.php';
 <link rel="stylesheet" href="../css/register.css">
 <?php include_once '../includes/head.php'; ?>
 
+<style>
+    .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* Space for the icon */
+    box-sizing: border-box;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #555;
+    font-size: 1rem;
+}
+
+</style>
 <body>
     <div class="register-container">
         <div class="register-box">
@@ -43,7 +65,10 @@ require_once '../../config/db.php';
                             </div>
                             <div class="form-group">
                                 <label for="password">Password</label>
-                                <input type="password" id="password" name="password" required>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" name="password" required>
+                                    <i class="fas fa-eye toggle-password" data-target="password"></i>
+                                </div>
                                 <div class="password-strength"></div>
                                 <div class="password-requirements">
                                     <ul class="requirements-list">
@@ -55,9 +80,13 @@ require_once '../../config/db.php';
                                     </ul>
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label for="confirm_password">Confirm Password</label>
-                                <input type="password" id="confirm_password" name="confirm_password" required>
+                                <div class="password-wrapper">
+                                    <input type="password" id="confirm_password" name="confirm_password" required>
+                                    <i class="fas fa-eye toggle-password" data-target="confirm_password"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -76,7 +105,7 @@ require_once '../../config/db.php';
             const password = document.getElementById("password");
             const confirmPassword = document.getElementById("confirm_password");
             const passwordStrength = document.querySelector(".password-strength");
-            
+
             // Password requirements elements
             const requirements = {
                 length: document.getElementById("length"),
@@ -208,6 +237,23 @@ require_once '../../config/db.php';
                             confirmButtonText: 'OK'
                         });
                     });
+            });
+
+            const togglePasswordIcons = document.querySelectorAll('.toggle-password');
+
+            togglePasswordIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const target = document.getElementById(this.dataset.target);
+                    if (target.type === 'password') {
+                        target.type = 'text';
+                        this.classList.remove('fa-eye');
+                        this.classList.add('fa-eye-slash');
+                    } else {
+                        target.type = 'password';
+                        this.classList.remove('fa-eye-slash');
+                        this.classList.add('fa-eye');
+                    }
+                });
             });
         });
     </script>
