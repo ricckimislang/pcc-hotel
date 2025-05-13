@@ -294,233 +294,245 @@ $has_partial_payment = $paid_amount > 0 && $paid_amount < $total_price;
     </div>
 
     <script>
-        // Dropdown menu functionality
-        const menuToggle = document.getElementById('menuToggle');
-        const navDropdown = document.getElementById('navDropdown');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dropdown menu functionality
+            const menuToggle = document.getElementById('menuToggle');
+            const navDropdown = document.getElementById('navDropdown');
 
-        if (menuToggle && navDropdown) {
-            // Add a click event handler to close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.menu-button') && navDropdown.classList.contains('show')) {
-                    navDropdown.classList.remove('show');
-                }
-            });
+            if (menuToggle && navDropdown) {
+                // Add a click event handler to close dropdown when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!event.target.closest('.menu-button') && navDropdown.classList.contains('show')) {
+                        navDropdown.classList.remove('show');
+                    }
+                });
 
-            // Toggle the dropdown when clicking the menu button
-            menuToggle.addEventListener('click', function(event) {
-                event.stopPropagation();
-                navDropdown.classList.toggle('show');
-            });
-        }
+                // Toggle the dropdown when clicking the menu button
+                menuToggle.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    navDropdown.classList.toggle('show');
+                });
+            }
 
-        // Payment modal functionality
-        const payButton = document.getElementById('payBooking');
-        const paymentModal = document.getElementById('paymentModal');
-        const closePaymentModal = document.querySelector('.payment-close');
-        const paymentForm = document.getElementById('paymentForm');
-        const screenshotInput = document.getElementById('paymentScreenshot');
-        const screenshotPreview = document.getElementById('screenshotPreview');
+            // Payment modal functionality
+            const payButton = document.getElementById('payBooking');
+            const paymentModal = document.getElementById('paymentModal');
+            const closePaymentModal = document.querySelector('#paymentModal .payment-close');
+            const paymentForm = document.getElementById('paymentForm');
+            const screenshotInput = document.getElementById('paymentScreenshot');
+            const screenshotPreview = document.getElementById('screenshotPreview');
 
-        // Policy modal elements
-        const policyModal = document.getElementById('policyModal');
-        const closePolicyModal = document.querySelector('.policy-close');
-        const policyAgreement = document.getElementById('policyAgreement');
-        const policyAccept = document.getElementById('policyAccept');
-        const policyDecline = document.getElementById('policyDecline');
-        let currentAction = ''; // Track whether we're proceeding with 'payment' or 'cancellation'
+            // Add this code to handle payment modal close button
+            if (closePaymentModal) {
+                closePaymentModal.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    paymentModal.style.display = 'none';
+                    console.log('Payment modal closed');
+                });
+            }
+            // Policy modal elements
+            const policyModal = document.getElementById('policyModal');
+            const closePolicyModal = document.querySelector('#policyModal .policy-close');
+            const policyAgreement = document.getElementById('policyAgreement');
+            const policyAccept = document.getElementById('policyAccept');
+            const policyDecline = document.getElementById('policyDecline');
+            let currentAction = ''; // Track whether we're proceeding with 'payment' or 'cancellation'
 
-        // Policy agreement checkbox handler
-        if (policyAgreement) {
-            policyAgreement.addEventListener('change', function() {
-                policyAccept.disabled = !this.checked;
-            });
-        }
+            // Policy agreement checkbox handler
+            if (policyAgreement) {
+                policyAgreement.addEventListener('change', function() {
+                    policyAccept.disabled = !this.checked;
+                });
+            }
 
-        // Close policy modal
-        if (closePolicyModal) {
-            closePolicyModal.addEventListener('click', function() {
-                policyModal.style.display = 'none';
-            });
-        }
+            // Close policy modal
+            if (closePolicyModal) {
+                closePolicyModal.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    policyModal.style.display = 'none';
+                    console.log('Policy modal close button element:', closePolicyModal);
+                });
+            }
 
-        // Policy decline button
-        if (policyDecline) {
-            policyDecline.addEventListener('click', function() {
-                policyModal.style.display = 'none';
-            });
-        }
+            // Policy decline button
+            if (policyDecline) {
+                policyDecline.addEventListener('click', function() {
+                    policyModal.style.display = 'none';
+                });
+            }
 
-        // Policy accept button
-        if (policyAccept) {
-            policyAccept.addEventListener('click', function() {
-                policyModal.style.display = 'none';
+            // Policy accept button
+            if (policyAccept) {
+                policyAccept.addEventListener('click', function() {
+                    policyModal.style.display = 'none';
 
-                if (currentAction === 'payment') {
-                    paymentModal.style.display = 'block';
-                } else if (currentAction === 'cancellation') {
-                    proceedWithCancellation();
-                }
-            });
-        }
+                    if (currentAction === 'payment') {
+                        paymentModal.style.display = 'block';
+                    } else if (currentAction === 'cancellation') {
+                        proceedWithCancellation();
+                    }
+                });
+            }
 
-        if (payButton) {
-            payButton.addEventListener('click', function() {
-                // Show policy modal first
-                currentAction = 'payment';
-                policyModal.style.display = 'block';
-                policyAgreement.checked = false;
-                policyAccept.disabled = true;
-            });
-        }
+            if (payButton) {
+                payButton.addEventListener('click', function() {
+                    // Show policy modal first
+                    currentAction = 'payment';
+                    policyModal.style.display = 'block';
+                    policyAgreement.checked = false;
+                    policyAccept.disabled = true;
+                });
+            }
 
-        // Cancel booking functionality
-        const cancelButton = document.getElementById('cancelBooking');
-        if (cancelButton) {
-            cancelButton.addEventListener('click', function() {
-                // Show policy modal first
-                currentAction = 'cancellation';
-                policyModal.style.display = 'block';
-                policyAgreement.checked = false;
-                policyAccept.disabled = true;
-            });
-        }
+            // Cancel booking functionality
+            const cancelButton = document.getElementById('cancelBooking');
+            if (cancelButton) {
+                cancelButton.addEventListener('click', function() {
+                    // Show policy modal first
+                    currentAction = 'cancellation';
+                    policyModal.style.display = 'block';
+                    policyAgreement.checked = false;
+                    policyAccept.disabled = true;
+                });
+            }
 
-        // Function to proceed with cancellation after policy acceptance
-        function proceedWithCancellation() {
-            const bookingId = cancelButton.getAttribute('data-booking-id');
+            // Function to proceed with cancellation after policy acceptance
+            function proceedWithCancellation() {
+                const bookingId = cancelButton.getAttribute('data-booking-id');
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to cancel this booking?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, cancel it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Send cancellation request
-                    fetch('../api/cancel_booking.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                booking_id: bookingId
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to cancel this booking?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, cancel it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Send cancellation request
+                        fetch('../api/cancel_booking.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    booking_id: bookingId
+                                })
                             })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Cancelled!',
+                                        'Your booking has been cancelled.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.href = 'my_bookings.php';
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        data.message,
+                                        'error'
+                                    );
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire(
+                                    'Error!',
+                                    'An error occurred while cancelling the booking',
+                                    'error'
+                                );
+                            });
+                    }
+                });
+            }
+
+            // Close modal when clicking outside the modal content
+            window.addEventListener('click', function(event) {
+                if (event.target === paymentModal) {
+                    paymentModal.style.display = 'none';
+                }
+                if (event.target === policyModal) {
+                    policyModal.style.display = 'none';
+                }
+            });
+
+            // Preview payment screenshot when selected
+            if (screenshotInput) {
+                screenshotInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            screenshotPreview.src = e.target.result;
+                            screenshotPreview.style.display = 'block';
+                            document.querySelector('.file-preview-container').classList.add('has-preview');
+                        }
+                        reader.readAsDataURL(file);
+
+                        // Update the file input label with filename
+                        const fileLabel = this.nextElementSibling;
+                        if (fileLabel) {
+                            fileLabel.textContent = file.name;
+                        }
+                    }
+                });
+            }
+
+            // Handle payment form submission
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Processing...';
+
+                    const formData = new FormData(this);
+
+                    fetch('../api/submit_payment.php', {
+                            method: 'POST',
+                            body: formData
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                Swal.fire(
-                                    'Cancelled!',
-                                    'Your booking has been cancelled.',
-                                    'success'
-                                ).then(() => {
-                                    window.location.href = 'my_bookings.php';
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: data.message,
+                                    confirmButtonColor: '#3085d6'
+                                }).then(() => {
+                                    window.location.reload();
                                 });
                             } else {
-                                Swal.fire(
-                                    'Error!',
-                                    data.message,
-                                    'error'
-                                );
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: data.message,
+                                    confirmButtonColor: '#3085d6'
+                                });
+                                submitButton.disabled = false;
+                                submitButton.textContent = 'Submit Payment';
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            Swal.fire(
-                                'Error!',
-                                'An error occurred while cancelling the booking',
-                                'error'
-                            );
-                        });
-                }
-            });
-        }
-
-        // Close modal when clicking outside the modal content
-        window.addEventListener('click', function(event) {
-            if (event.target === paymentModal) {
-                paymentModal.style.display = 'none';
-            }
-            if (event.target === policyModal) {
-                policyModal.style.display = 'none';
-            }
-        });
-
-        // Preview payment screenshot when selected
-        if (screenshotInput) {
-            screenshotInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        screenshotPreview.src = e.target.result;
-                        screenshotPreview.style.display = 'block';
-                        document.querySelector('.file-preview-container').classList.add('has-preview');
-                    }
-                    reader.readAsDataURL(file);
-
-                    // Update the file input label with filename
-                    const fileLabel = this.nextElementSibling;
-                    if (fileLabel) {
-                        fileLabel.textContent = file.name;
-                    }
-                }
-            });
-        }
-
-        // Handle payment form submission
-        if (paymentForm) {
-            paymentForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const submitButton = this.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.textContent = 'Processing...';
-
-                const formData = new FormData(this);
-
-                fetch('../api/submit_payment.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success!',
-                                text: data.message,
-                                confirmButtonColor: '#3085d6'
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
-                                text: data.message,
+                                text: 'An error occurred while processing your payment',
                                 confirmButtonColor: '#3085d6'
                             });
                             submitButton.disabled = false;
                             submitButton.textContent = 'Submit Payment';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'An error occurred while processing your payment',
-                            confirmButtonColor: '#3085d6'
                         });
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Submit Payment';
-                    });
-            });
-        }
+                });
+            }
+        });
     </script>
 </body>
 
