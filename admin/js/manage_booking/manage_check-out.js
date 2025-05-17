@@ -1,11 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Check-out button click handler
-  const checkOutButtons = document.querySelectorAll(".check-out-btn");
-  checkOutButtons.forEach((button) => {
-    button.addEventListener("click", function () {
-      const bookingId = button.getAttribute("data-booking-id");
-      loadBookingDetails(bookingId);
-    });
+  // Check-out button click handler - use delegated event handling
+  $(document).on("click", ".check-out-btn", function() {
+    const bookingId = $(this).data("booking-id");
+    loadBookingDetails(bookingId);
   });
 
   // Load booking details for payment processing

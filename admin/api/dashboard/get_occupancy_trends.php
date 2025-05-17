@@ -1,7 +1,7 @@
 <?php
 // Include necessary files
 require_once '../../../config/db.php';
-require_once '../includes/functions.php';
+require '../../includes/functions.php';
 
 // Set header to return JSON
 header('Content-Type: application/json');
@@ -15,7 +15,7 @@ $trendType = isset($_GET['type']) ? $_GET['type'] : 'weekly';
 
 try {
     // Connect to database
-    $conn = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
+    $conn = new PDO("mysql:host=localhost;dbname=pcc-hotel", username: "root", password: "");
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Define date format and group by clause based on trend type

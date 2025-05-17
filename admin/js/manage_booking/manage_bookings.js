@@ -77,13 +77,13 @@ function initializeCheckInOutDataTable() {
 
 // Event Handlers
 function initializeEventHandlers(bookingsTable) {
-  // View booking
-  $(".view-btn").on("click", function () {
+  // View booking - use delegated event handling
+  $(document).on("click", ".view-btn", function () {
     showBookingDetails($(this).data("booking-id"));
   });
 
-  // Edit booking
-  $(".edit-btn").on("click", function () {
+  // Edit booking - use delegated event handling
+  $(document).on("click", ".edit-btn", function () {
     const bookingId = $(this).data("booking-id");
     if (!bookingId) {
       console.error("No booking ID found on edit button");
